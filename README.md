@@ -1,0 +1,2 @@
+# StratCap
+Fund management application
