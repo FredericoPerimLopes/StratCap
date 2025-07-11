@@ -10,6 +10,16 @@ import logger from './utils/logger';
 
 // Import routes
 import authRoutes from './routes/auth';
+import fundFamilyRoutes from './routes/fundFamily';
+import capitalActivityRoutes from './routes/capitalActivity';
+import fundRoutes from './routes/fund';
+import investorRoutes from './routes/investor';
+import commitmentRoutes from './routes/commitment';
+import transactionRoutes from './routes/transaction';
+import reportRoutes from './routes/report';
+import feeRoutes from './routes/fees';
+import waterfallRoutes from './routes/waterfall';
+import analyticsRoutes from './routes/analytics';
 
 const app: Application = express();
 
@@ -56,14 +66,16 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
-
-// Future routes will be added here:
-// app.use('/api/fund-families', fundFamilyRoutes);
-// app.use('/api/funds', fundRoutes);
-// app.use('/api/investors', investorRoutes);
-// app.use('/api/commitments', commitmentRoutes);
-// app.use('/api/capital-activities', capitalActivityRoutes);
-// app.use('/api/transactions', transactionRoutes);
+app.use('/api/fund-families', fundFamilyRoutes);
+app.use('/api', capitalActivityRoutes);
+app.use('/api/funds', fundRoutes);
+app.use('/api/investors', investorRoutes);
+app.use('/api/commitments', commitmentRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/fees', feeRoutes);
+app.use('/api/waterfall', waterfallRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Error handling
 app.use(notFound);

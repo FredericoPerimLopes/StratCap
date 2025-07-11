@@ -68,6 +68,14 @@ class CapitalActivity extends Model<CapitalActivityAttributes, CapitalActivityCr
       foreignKey: 'capitalActivityId',
       as: 'transactions',
     });
+    CapitalActivity.hasMany(models.CapitalAllocation, {
+      foreignKey: 'capitalActivityId',
+      as: 'capitalAllocations',
+    });
+    CapitalActivity.hasMany(models.DistributionAllocation, {
+      foreignKey: 'capitalActivityId',
+      as: 'distributionAllocations',
+    });
   }
 }
 
