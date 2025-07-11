@@ -1,0 +1,63 @@
+{
+  "name": "stratcap",
+  "version": "1.0.0",
+  "description": "StratCap Fund Management Platform",
+  "private": true,
+  "workspaces": [
+    "frontend/web-app",
+    "frontend/shared-components"
+  ],
+  "scripts": {
+    "dev": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && python -m pytest",
+    "test:frontend": "npm run test --workspace=frontend/web-app",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && python -m flake8",
+    "lint:frontend": "npm run lint --workspace=frontend/web-app",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "docker-compose build",
+    "build:frontend": "npm run build --workspace=frontend/web-app",
+    "clean": "find . -type d -name '__pycache__' -exec rm -rf {} + && find . -type d -name 'node_modules' -exec rm -rf {} +",
+    "setup": "npm run setup:backend && npm run setup:frontend",
+    "setup:backend": "cd backend && pip install -r requirements.txt",
+    "setup:frontend": "npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stratcap/fund-management-platform.git"
+  },
+  "keywords": [
+    "fund-management",
+    "private-equity",
+    "venture-capital",
+    "financial-services"
+  ],
+  "author": "StratCap",
+  "license": "PROPRIETARY",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.py": [
+      "black",
+      "flake8"
+    ],
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
