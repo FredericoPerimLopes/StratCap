@@ -20,6 +20,9 @@ import reportRoutes from './routes/report';
 import feeRoutes from './routes/fees';
 import waterfallRoutes from './routes/waterfall';
 import analyticsRoutes from './routes/analytics';
+import creditFacilityRoutes from './routes/creditFacilityRoutes';
+import dataAnalysisRoutes from './routes/dataAnalysisRoutes';
+import generalLedgerRoutes from './routes/generalLedgerRoutes';
 
 const app: Application = express();
 
@@ -76,6 +79,9 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/fees', feeRoutes);
 app.use('/api/waterfall', waterfallRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/credit-facilities', creditFacilityRoutes);
+app.use('/api/data-analysis', dataAnalysisRoutes);
+app.use('/api/general-ledger', generalLedgerRoutes);
 
 // Error handling
 app.use(notFound);

@@ -6,7 +6,7 @@ import { PaydownService, PaydownRequest } from '../services/PaydownService';
 import { BorrowingBaseService, BorrowingBaseRequest } from '../services/BorrowingBaseService';
 import { CreditFacilityFeeService } from '../services/CreditFacilityFeeService';
 import sequelize from '../db/database';
-import { Decimal } from 'decimal.js';
+import { AppError } from '../middleware/errorHandler';
 
 export class CreditFacilityController {
   private creditFacilityService: CreditFacilityService;
@@ -62,9 +62,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -90,9 +91,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -203,9 +205,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -221,7 +224,7 @@ export class CreditFacilityController {
     try {
       const request: DrawdownRequest = {
         facilityId: req.body.facilityId,
-        requestedBy: req.user.id,
+        requestedBy: req.user?.id || '',
         drawdownAmount: req.body.drawdownAmount,
         purpose: req.body.purpose,
         priority: req.body.priority,
@@ -243,9 +246,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -260,7 +264,7 @@ export class CreditFacilityController {
       const drawdownId = req.params.id;
       const approval = {
         drawdownId,
-        approvedBy: req.user.id,
+        approvedBy: req.user?.id || '',
         approvalNotes: req.body.approvalNotes,
         approvedAmount: req.body.approvedAmount,
         conditions: req.body.conditions,
@@ -277,9 +281,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -294,7 +299,7 @@ export class CreditFacilityController {
       const drawdownId = req.params.id;
       const funding = {
         drawdownId,
-        fundedBy: req.user.id,
+        fundedBy: req.user?.id || '',
         fundingReference: req.body.fundingReference,
         actualFundingDate: req.body.actualFundingDate ? new Date(req.body.actualFundingDate) : undefined,
         actualAmount: req.body.actualAmount,
@@ -311,9 +316,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -352,7 +358,7 @@ export class CreditFacilityController {
     try {
       const request: PaydownRequest = {
         facilityId: req.body.facilityId,
-        initiatedBy: req.user.id,
+        initiatedBy: req.user?.id || '',
         paydownAmount: req.body.paydownAmount,
         paymentDate: new Date(req.body.paymentDate),
         paydownType: req.body.paydownType,
@@ -375,9 +381,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -392,7 +399,7 @@ export class CreditFacilityController {
       const paydownId = req.params.id;
       const processing = {
         paydownId,
-        processedBy: req.user.id,
+        processedBy: req.user?.id || '',
         paymentReference: req.body.paymentReference,
         actualPaymentDate: req.body.actualPaymentDate ? new Date(req.body.actualPaymentDate) : undefined,
         actualAmount: req.body.actualAmount,
@@ -409,9 +416,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -450,7 +458,7 @@ export class CreditFacilityController {
     try {
       const request: BorrowingBaseRequest = {
         facilityId: req.body.facilityId,
-        calculatedBy: req.user.id,
+        calculatedBy: req.user?.id || '',
         reportingDate: new Date(req.body.reportingDate),
         eligibleAssets: req.body.eligibleAssets,
         ineligibleAssets: req.body.ineligibleAssets,
@@ -472,9 +480,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
@@ -489,7 +498,7 @@ export class CreditFacilityController {
       const borrowingBaseId = req.params.id;
       const borrowingBase = await this.borrowingBaseService.submitBorrowingBase(
         borrowingBaseId,
-        req.user.id,
+        req.user?.id || '',
         transaction
       );
       
@@ -502,9 +511,10 @@ export class CreditFacilityController {
       });
     } catch (error) {
       await transaction.rollback();
+      const message = error instanceof Error ? error.message : 'An error occurred';
       res.status(400).json({
         success: false,
-        message: error.message,
+        message,
       });
     }
   };
