@@ -11,20 +11,42 @@ import {
   ChartBarIcon,
   CogIcon,
   Bars3Icon,
+  CreditCardIcon,
+  GlobeAltIcon,
+  CalculatorIcon,
+  BookOpenIcon,
+  TableCellsIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { RootState } from '../../store/store';
 import { toggleSidebar } from '../../store/slices/uiSlice';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Fund Families', href: '/fund-families', icon: BuildingOfficeIcon },
-  { name: 'Funds', href: '/funds', icon: BanknotesIcon },
+  { name: 'Dashboard', href: '/', icon: HomeIcon },
+  { 
+    name: 'Fund Management', 
+    icon: BanknotesIcon,
+    children: [
+      { name: 'Funds', href: '/funds' },
+      { name: 'Fund Families', href: '/fund-families' },
+    ]
+  },
   { name: 'Investors', href: '/investors', icon: UsersIcon },
-  { name: 'Commitments', href: '/commitments', icon: DocumentTextIcon },
   { name: 'Capital Activities', href: '/capital-activities', icon: ArrowsRightLeftIcon },
-  { name: 'Transactions', href: '/transactions', icon: ArrowsRightLeftIcon },
+  { name: 'Waterfall', href: '/waterfall', icon: CalculatorIcon },
+  { name: 'Credit Facilities', href: '/credit-facilities', icon: CreditCardIcon },
+  { name: 'Global Entities', href: '/global-entities', icon: GlobeAltIcon },
+  { name: 'Data Analysis', href: '/data-analysis', icon: TableCellsIcon },
+  { name: 'General Ledger', href: '/general-ledger/journal-entries', icon: BookOpenIcon },
   { name: 'Reports', href: '/reports', icon: ChartBarIcon },
-  { name: 'Settings', href: '/settings', icon: CogIcon },
+  { 
+    name: 'Configuration', 
+    icon: CogIcon,
+    children: [
+      { name: 'System Settings', href: '/configuration/system' },
+      { name: 'User Preferences', href: '/configuration/preferences' },
+    ]
+  },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -61,25 +83,59 @@ export const Sidebar: React.FC = () => {
         {/* Navigation */}
         <nav className="flex-1 px-2 py-4 space-y-1">
           {navigation.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.href}
-              className={({ isActive }) =>
-                `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive
-                    ? 'bg-primary-100 text-primary-900'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`
-              }
-            >
-              <item.icon
-                className={`${
-                  sidebarOpen ? 'mr-3' : 'mx-auto'
-                } flex-shrink-0 h-6 w-6`}
-                aria-hidden="true"
-              />
-              {sidebarOpen && item.name}
-            </NavLink>
+            <div key={item.name}>
+              {item.href ? (
+                <NavLink
+                  to={item.href}
+                  className={({ isActive }) =>
+                    `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+                      isActive
+                        ? 'bg-primary-100 text-primary-900'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`
+                  }
+                >
+                  <item.icon
+                    className={`${
+                      sidebarOpen ? 'mr-3' : 'mx-auto'
+                    } flex-shrink-0 h-6 w-6`}
+                    aria-hidden="true"
+                  />
+                  {sidebarOpen && item.name}
+                </NavLink>
+              ) : (
+                <>
+                  <div className="group flex items-center px-2 py-2 text-sm font-medium text-gray-600">
+                    <item.icon
+                      className={`${
+                        sidebarOpen ? 'mr-3' : 'mx-auto'
+                      } flex-shrink-0 h-6 w-6`}
+                      aria-hidden="true"
+                    />
+                    {sidebarOpen && item.name}
+                  </div>
+                  {sidebarOpen && item.children && (
+                    <div className="ml-6 space-y-1">
+                      {item.children.map((child) => (
+                        <NavLink
+                          key={child.name}
+                          to={child.href}
+                          className={({ isActive }) =>
+                            `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+                              isActive
+                                ? 'bg-primary-50 text-primary-700'
+                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                            }`
+                          }
+                        >
+                          {child.name}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           ))}
         </nav>
 
