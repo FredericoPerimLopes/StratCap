@@ -4,7 +4,6 @@ import {
   CalculatorIcon,
   ChartBarIcon,
   DocumentTextIcon,
-  ExclamationTriangleIcon,
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import {
@@ -15,21 +14,20 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
   Area,
   AreaChart
 } from 'recharts';
 
-interface WaterfallTier {
-  id: number;
-  name: string;
-  type: 'preferred_return' | 'return_of_capital' | 'catch_up' | 'carried_interest' | 'distribution';
-  lpPercentage: number;
-  gpPercentage: number;
-  threshold?: number;
-  cumulative: boolean;
-}
+// WaterfallTier interface - available for future use
+// interface WaterfallTier {
+//   id: number;
+//   name: string;
+//   type: 'preferred_return' | 'return_of_capital' | 'catch_up' | 'carried_interest' | 'distribution';
+//   lpPercentage: number;
+//   gpPercentage: number;
+//   threshold?: number;
+//   cumulative: boolean;
+// }
 
 interface WaterfallResult {
   tier: string;
@@ -46,56 +44,17 @@ interface WaterfallCalculatorProps {
 }
 
 const WaterfallCalculator: React.FC<WaterfallCalculatorProps> = ({ 
-  fundId, 
   initialDistribution = 10000000 
 }) => {
   const [distributionAmount, setDistributionAmount] = useState(initialDistribution);
   const [investmentAmount, setInvestmentAmount] = useState(50000000);
   const [preferredReturn, setPreferredReturn] = useState(8.0);
   const [carryRate, setCarryRate] = useState(20.0);
-  const [catchUpRate, setCatchUpRate] = useState(100.0);
+  const [catchUpRate] = useState(100.0);
   const [results, setResults] = useState<WaterfallResult[]>([]);
   const [scenarioMode, setScenarioMode] = useState(false);
 
-  const defaultTiers: WaterfallTier[] = [
-    {
-      id: 1,
-      name: 'Return of Capital',
-      type: 'return_of_capital',
-      lpPercentage: 100,
-      gpPercentage: 0,
-      threshold: 0,
-      cumulative: true
-    },
-    {
-      id: 2,
-      name: 'Preferred Return',
-      type: 'preferred_return',
-      lpPercentage: 100,
-      gpPercentage: 0,
-      threshold: preferredReturn,
-      cumulative: true
-    },
-    {
-      id: 3,
-      name: 'GP Catch-Up',
-      type: 'catch_up',
-      lpPercentage: 100 - catchUpRate,
-      gpPercentage: catchUpRate,
-      cumulative: false
-    },
-    {
-      id: 4,
-      name: 'Carried Interest Split',
-      type: 'carried_interest',
-      lpPercentage: 100 - carryRate,
-      gpPercentage: carryRate,
-      cumulative: false
-    }
-  ];
-
   const calculateWaterfall = () => {
-    const tiers = defaultTiers;
     const results: WaterfallResult[] = [];
     let remainingDistribution = distributionAmount;
     let totalLpDistributed = 0;

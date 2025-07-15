@@ -35,9 +35,9 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string; mfaToken?: string }) => {
     const response = await authAPI.login(credentials);
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('refreshToken', response.data.refreshToken);
-    return response.data;
+    localStorage.setItem('token', response.data.data.token);
+    localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    return response.data.data;
   }
 );
 
@@ -67,7 +67,7 @@ export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
     throw new Error('No token found');
   }
   const response = await authAPI.getProfile();
-  return response.data;
+  return response.data.data;
 });
 
 export const refreshTokens = createAsyncThunk(
@@ -81,9 +81,9 @@ export const refreshTokens = createAsyncThunk(
     }
     
     const response = await authAPI.refreshToken(refreshToken);
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('refreshToken', response.data.refreshToken);
-    return response.data;
+    localStorage.setItem('token', response.data.data.token);
+    localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    return response.data.data;
   }
 );
 
@@ -91,7 +91,7 @@ export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
   async (userData: { firstName?: string; lastName?: string }) => {
     const response = await authAPI.updateProfile(userData);
-    return response.data;
+    return response.data.data;
   }
 );
 

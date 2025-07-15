@@ -26,7 +26,6 @@ import {
   Download as DownloadIcon,
   Refresh as RefreshIcon,
   Print as PrintIcon,
-  CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -65,7 +64,7 @@ const TrialBalance: React.FC = () => {
   const [asOfDate, setAsOfDate] = useState<Date>(new Date());
   const [selectedFund, setSelectedFund] = useState<string>('');
   const [accountType, setAccountType] = useState<string>('');
-  const [category, setCategory] = useState<string>('');
+  const [category] = useState<string>('');
   const [includeInactive, setIncludeInactive] = useState(false);
   const [hideZeroBalances, setHideZeroBalances] = useState(true);
 
@@ -205,7 +204,7 @@ const TrialBalance: React.FC = () => {
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Grid container spacing={3} alignItems="center">
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <DatePicker
                   label="As of Date"
                   value={asOfDate}
@@ -219,7 +218,7 @@ const TrialBalance: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <TextField
                   fullWidth
                   select
@@ -237,7 +236,7 @@ const TrialBalance: React.FC = () => {
                 </TextField>
               </Grid>
 
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <TextField
                   fullWidth
                   select
@@ -255,7 +254,7 @@ const TrialBalance: React.FC = () => {
                 </TextField>
               </Grid>
 
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -268,7 +267,7 @@ const TrialBalance: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -281,7 +280,7 @@ const TrialBalance: React.FC = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <Button
                   variant="contained"
                   onClick={fetchTrialBalance}
@@ -359,7 +358,7 @@ const TrialBalance: React.FC = () => {
               <Box>
                 {/* Summary Totals */}
                 <Grid container spacing={3} sx={{ mb: 3 }}>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Card variant="outlined">
                       <CardContent sx={{ textAlign: 'center' }}>
                         <Typography color="textSecondary" gutterBottom>
@@ -371,7 +370,7 @@ const TrialBalance: React.FC = () => {
                       </CardContent>
                     </Card>
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Card variant="outlined">
                       <CardContent sx={{ textAlign: 'center' }}>
                         <Typography color="textSecondary" gutterBottom>
@@ -383,7 +382,7 @@ const TrialBalance: React.FC = () => {
                       </CardContent>
                     </Card>
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Card variant="outlined">
                       <CardContent sx={{ textAlign: 'center' }}>
                         <Typography color="textSecondary" gutterBottom>

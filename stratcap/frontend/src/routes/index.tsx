@@ -41,10 +41,10 @@ import ReportBuilder from '../components/Reports/ReportBuilder';
 import ReportViewer from '../components/Reports/ReportViewer';
 
 // Credit Facilities
-import CreditFacilityList from '../components/CreditFacilities/CreditFacilityList';
-import CreditFacilityForm from '../components/CreditFacilities/CreditFacilityForm';
-import DrawdownForm from '../components/CreditFacilities/DrawdownForm';
-import PaydownForm from '../components/CreditFacilities/PaydownForm';
+import CreditFacilityList from '../components/CreditFacility/CreditFacilityList';
+import CreditFacilityForm from '../components/CreditFacility/CreditFacilityForm';
+import DrawdownForm from '../components/CreditFacility/DrawdownForm';
+import PaydownForm from '../components/CreditFacility/PaydownForm';
 
 // Global Entity Management
 import GlobalEntityDirectory from '../components/GlobalEntity/GlobalEntityDirectory';
@@ -75,9 +75,9 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       {/* Auth Routes */}
-      <Route path="/auth" element={<AuthLayout />}>
+      <Route path="/auth" element={<AuthLayout><div /></AuthLayout>}>
         <Route path="login" element={<Login />} />
-        <Route path="mfa" element={<MFALogin />} />
+        <Route path="mfa" element={<MFALogin email="" tempToken="" onSuccess={() => {}} onBack={() => {}} />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="reset-password" element={<ResetPassword />} />
         <Route path="mfa-setup" element={<MFASetup />} />
@@ -88,7 +88,7 @@ const AppRoutes: React.FC = () => {
         path="/"
         element={
           <ProtectedRoute>
-            <DashboardLayout />
+            <DashboardLayout><div /></DashboardLayout>
           </ProtectedRoute>
         }
       >

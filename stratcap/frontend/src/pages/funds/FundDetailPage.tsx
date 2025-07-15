@@ -13,8 +13,7 @@ import {
   UsersIcon,
   DocumentTextIcon,
   BanknotesIcon,
-  TrendingUpIcon,
-  ClockIcon,
+  ArrowTrendingUpIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline';
 import {
@@ -122,7 +121,7 @@ const FundDetailPage: React.FC = () => {
 
   const tabs = [
     { id: 'overview', name: 'Overview', icon: ChartBarIcon },
-    { id: 'performance', name: 'Performance', icon: TrendingUpIcon },
+    { id: 'performance', name: 'Performance', icon: ArrowTrendingUpIcon },
     { id: 'capital', name: 'Capital Activities', icon: BanknotesIcon },
     { id: 'portfolio', name: 'Portfolio', icon: BuildingOfficeIcon },
     { id: 'waterfall', name: 'Waterfall', icon: DocumentTextIcon },
@@ -169,7 +168,7 @@ const FundDetailPage: React.FC = () => {
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
-            <TrendingUpIcon className="h-8 w-8 text-green-500" />
+            <ArrowTrendingUpIcon className="h-8 w-8 text-green-500" />
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">IRR</p>
               <p className="text-2xl font-semibold text-gray-900">21.2%</p>
@@ -448,7 +447,11 @@ const FundDetailPage: React.FC = () => {
                     <XAxis dataKey="category" angle={-45} textAnchor="end" height={100} />
                     <YAxis />
                     <Tooltip formatter={(value) => [formatCurrency(value as number), '']} />
-                    <Bar dataKey="amount" fill={(entry) => entry >= 0 ? '#10B981' : '#EF4444'} />
+                    <Bar dataKey="amount">
+                      {waterfallData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.amount >= 0 ? '#10B981' : '#EF4444'} />
+                      ))}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>

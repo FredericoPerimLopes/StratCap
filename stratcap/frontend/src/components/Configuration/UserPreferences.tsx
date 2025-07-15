@@ -11,7 +11,6 @@ import {
   Switch,
   FormControlLabel,
   Alert,
-  Divider,
   Tabs,
   Tab,
   List,
@@ -28,20 +27,15 @@ import {
 } from '@mui/material';
 import {
   Save as SaveIcon,
-  Refresh as RefreshIcon,
   Delete as DeleteIcon,
   Palette as PaletteIcon,
   Notifications as NotificationsIcon,
   TableChart as ReportsIcon,
   Settings as SettingsIcon,
   Security as SecurityIcon,
-  Visibility as DisplayIcon,
 } from '@mui/icons-material';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import api from '../../services/api';
-import { useAppSelector, useAppDispatch } from '../../hooks/redux';
 
 interface UserPreference {
   id: string;
@@ -76,11 +70,11 @@ function TabPanel(props: TabPanelProps) {
 
 const UserPreferences: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
+  // const dispatch = useAppDispatch();
+  // const user = useAppSelector((state) => state.auth.user);
   
   const [preferences, setPreferences] = useState<UserPreference[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
   const [unsavedChanges, setUnsavedChanges] = useState<Record<string, any>>({});
 
@@ -252,7 +246,7 @@ const UserPreferences: React.FC = () => {
       <Card>
         <Tabs
           value={selectedTab}
-          onChange={(e, newValue) => setSelectedTab(newValue)}
+          onChange={(_e, newValue) => setSelectedTab(newValue)}
           variant="scrollable"
           scrollButtons="auto"
         >
@@ -269,7 +263,7 @@ const UserPreferences: React.FC = () => {
         {/* UI & Display Preferences */}
         <TabPanel value={selectedTab} index={0}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Theme Settings
               </Typography>
@@ -312,7 +306,7 @@ const UserPreferences: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Layout Settings
               </Typography>
@@ -343,7 +337,7 @@ const UserPreferences: React.FC = () => {
               <Typography gutterBottom>Page Size</Typography>
               <Slider
                 value={getPreferenceValue('ui_page_size', 50)}
-                onChange={(e, value) => updatePreference('ui_page_size', value)}
+                onChange={(_e, value) => updatePreference('ui_page_size', value)}
                 min={10}
                 max={100}
                 step={10}
@@ -358,7 +352,7 @@ const UserPreferences: React.FC = () => {
         {/* Notification Preferences */}
         <TabPanel value={selectedTab} index={1}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Email Notifications
               </Typography>
@@ -407,7 +401,7 @@ const UserPreferences: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 In-App Notifications
               </Typography>
@@ -453,7 +447,7 @@ const UserPreferences: React.FC = () => {
         {/* Report Preferences */}
         <TabPanel value={selectedTab} index={2}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Default Report Settings
               </Typography>
@@ -499,7 +493,7 @@ const UserPreferences: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Dashboard Preferences
               </Typography>
@@ -521,7 +515,7 @@ const UserPreferences: React.FC = () => {
               <Typography gutterBottom>Refresh Interval (minutes)</Typography>
               <Slider
                 value={getPreferenceValue('report_refresh_interval', 5)}
-                onChange={(e, value) => updatePreference('report_refresh_interval', value)}
+                onChange={(_e, value) => updatePreference('report_refresh_interval', value)}
                 min={1}
                 max={60}
                 step={1}
@@ -551,7 +545,7 @@ const UserPreferences: React.FC = () => {
         {/* Security Preferences */}
         <TabPanel value={selectedTab} index={3}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Session Settings
               </Typography>
@@ -588,7 +582,7 @@ const UserPreferences: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Privacy Settings
               </Typography>
@@ -634,7 +628,7 @@ const UserPreferences: React.FC = () => {
         {/* General Preferences */}
         <TabPanel value={selectedTab} index={4}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Regional Settings
               </Typography>
@@ -682,7 +676,7 @@ const UserPreferences: React.FC = () => {
               </TextField>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={6}>
               <Typography variant="h6" gutterBottom>
                 Other Settings
               </Typography>

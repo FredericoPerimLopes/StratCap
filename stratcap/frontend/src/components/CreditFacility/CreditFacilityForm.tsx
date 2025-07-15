@@ -7,13 +7,9 @@ import {
   Typography,
   TextField,
   Button,
-  Grid,
   MenuItem,
   InputAdornment,
   Divider,
-  FormControlLabel,
-  Switch,
-  Alert,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -22,7 +18,6 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import api from '../../services/api';
-import { useAppSelector } from '../../hooks/redux';
 
 interface CreditFacilityFormData {
   facilityName: string;
@@ -59,13 +54,11 @@ const validationSchema = Yup.object({
     .min(0, 'Interest rate cannot be negative')
     .max(100, 'Interest rate cannot exceed 100%'),
   interestType: Yup.string().required('Interest type is required'),
-  baseRate: Yup.string().when('interestType', {
-    is: 'floating',
-    then: Yup.string().required('Base rate is required for floating rate'),
+  baseRate: Yup.string().when('interestType', (interestType: any, schema) => {
+    return interestType === 'floating' ? schema.required('Base rate is required for floating rate') : schema;
   }),
-  spread: Yup.number().when('interestType', {
-    is: 'floating',
-    then: Yup.number().required('Spread is required for floating rate'),
+  spread: Yup.number().when('interestType', (interestType: any, schema) => {
+    return interestType === 'floating' ? schema.required('Spread is required for floating rate') : schema;
   }),
   maturityDate: Yup.date()
     .required('Maturity date is required')
@@ -199,15 +192,15 @@ const CreditFacilityForm: React.FC = () => {
         <form onSubmit={formik.handleSubmit}>
           <Card>
             <CardContent>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box>
                   <Typography variant="h6" gutterBottom>
                     Basic Information
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={6}>
+                <Box>
                   <TextField
                     fullWidth
                     label="Facility Name"
@@ -217,9 +210,9 @@ const CreditFacilityForm: React.FC = () => {
                     error={formik.touched.facilityName && Boolean(formik.errors.facilityName)}
                     helperText={formik.touched.facilityName && formik.errors.facilityName}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={6}>
+                <Box>
                   <TextField
                     fullWidth
                     select
@@ -235,9 +228,9 @@ const CreditFacilityForm: React.FC = () => {
                     <MenuItem value="bridge">Bridge Loan</MenuItem>
                     <MenuItem value="acquisition">Acquisition</MenuItem>
                   </TextField>
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={6}>
+                <Box>
                   <TextField
                     fullWidth
                     label="Lender"
@@ -247,9 +240,9 @@ const CreditFacilityForm: React.FC = () => {
                     error={formik.touched.lender && Boolean(formik.errors.lender)}
                     helperText={formik.touched.lender && formik.errors.lender}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={6}>
+                <Box>
                   <TextField
                     fullWidth
                     select
@@ -266,16 +259,16 @@ const CreditFacilityForm: React.FC = () => {
                       </MenuItem>
                     ))}
                   </TextField>
-                </Grid>
+                </Box>
 
-                <Grid item xs={12}>
+                <Box>
                   <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
                     Financial Terms
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={4}>
+                <Box>
                   <TextField
                     fullWidth
                     label="Original Amount"
@@ -289,9 +282,9 @@ const CreditFacilityForm: React.FC = () => {
                       startAdornment: <InputAdornment position="start">$</InputAdornment>,
                     }}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={4}>
+                <Box>
                   <TextField
                     fullWidth
                     select
@@ -307,9 +300,9 @@ const CreditFacilityForm: React.FC = () => {
                     <MenuItem value="GBP">GBP</MenuItem>
                     <MenuItem value="JPY">JPY</MenuItem>
                   </TextField>
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={4}>
+                <Box>
                   <DatePicker
                     label="Maturity Date"
                     value={formik.values.maturityDate}
@@ -322,9 +315,9 @@ const CreditFacilityForm: React.FC = () => {
                       },
                     }}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={4}>
+                <Box>
                   <TextField
                     fullWidth
                     select
@@ -338,10 +331,10 @@ const CreditFacilityForm: React.FC = () => {
                     <MenuItem value="fixed">Fixed</MenuItem>
                     <MenuItem value="floating">Floating</MenuItem>
                   </TextField>
-                </Grid>
+                </Box>
 
                 {formik.values.interestType === 'fixed' ? (
-                  <Grid item xs={12} md={8}>
+                  <Box>
                     <TextField
                       fullWidth
                       label="Interest Rate"
@@ -355,10 +348,10 @@ const CreditFacilityForm: React.FC = () => {
                         endAdornment: <InputAdornment position="end">%</InputAdornment>,
                       }}
                     />
-                  </Grid>
+                  </Box>
                 ) : (
                   <>
-                    <Grid item xs={12} md={4}>
+                    <Box>
                       <TextField
                         fullWidth
                         select
@@ -374,8 +367,8 @@ const CreditFacilityForm: React.FC = () => {
                         <MenuItem value="EURIBOR">EURIBOR</MenuItem>
                         <MenuItem value="PRIME">Prime</MenuItem>
                       </TextField>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
+                    </Box>
+                    <Box>
                       <TextField
                         fullWidth
                         label="Spread"
@@ -389,18 +382,18 @@ const CreditFacilityForm: React.FC = () => {
                           endAdornment: <InputAdornment position="end">bps</InputAdornment>,
                         }}
                       />
-                    </Grid>
+                    </Box>
                   </>
                 )}
 
-                <Grid item xs={12}>
+                <Box>
                   <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
                     Fee Structure
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={4}>
+                <Box>
                   <TextField
                     fullWidth
                     label="Commitment Fee Rate"
@@ -414,9 +407,9 @@ const CreditFacilityForm: React.FC = () => {
                       endAdornment: <InputAdornment position="end">%</InputAdornment>,
                     }}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={4}>
+                <Box>
                   <TextField
                     fullWidth
                     label="Unused Fee Rate"
@@ -430,9 +423,9 @@ const CreditFacilityForm: React.FC = () => {
                       endAdornment: <InputAdornment position="end">%</InputAdornment>,
                     }}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={4}>
+                <Box>
                   <TextField
                     fullWidth
                     label="Upfront Fee Rate"
@@ -446,16 +439,16 @@ const CreditFacilityForm: React.FC = () => {
                       endAdornment: <InputAdornment position="end">%</InputAdornment>,
                     }}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12}>
+                <Box>
                   <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
                     Additional Information
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12}>
+                <Box>
                   <TextField
                     fullWidth
                     multiline
@@ -465,9 +458,9 @@ const CreditFacilityForm: React.FC = () => {
                     value={formik.values.description}
                     onChange={formik.handleChange}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12}>
+                <Box>
                   <TextField
                     fullWidth
                     multiline
@@ -478,9 +471,9 @@ const CreditFacilityForm: React.FC = () => {
                     onChange={formik.handleChange}
                     placeholder="Enter any financial or operational covenants..."
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={6}>
+                <Box>
                   <TextField
                     fullWidth
                     label="Security Type"
@@ -489,9 +482,9 @@ const CreditFacilityForm: React.FC = () => {
                     onChange={formik.handleChange}
                     placeholder="e.g., Unsecured, Asset-backed, etc."
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={6}>
+                <Box>
                   <TextField
                     fullWidth
                     label="Guarantor Information"
@@ -499,28 +492,26 @@ const CreditFacilityForm: React.FC = () => {
                     value={formik.values.guarantorInfo}
                     onChange={formik.handleChange}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12}>
-                  <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
-                    <Button
-                      variant="outlined"
-                      onClick={() => navigate('/credit-facilities')}
-                      disabled={loading}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                    >
-                      {loading ? 'Saving...' : isEdit ? 'Update Facility' : 'Create Facility'}
-                    </Button>
-                  </Box>
-                </Grid>
-              </Grid>
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => navigate('/credit-facilities')}
+                    disabled={loading}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                  >
+                    {loading ? 'Saving...' : isEdit ? 'Update Facility' : 'Create Facility'}
+                  </Button>
+                </Box>
+              </Box>
             </CardContent>
           </Card>
         </form>

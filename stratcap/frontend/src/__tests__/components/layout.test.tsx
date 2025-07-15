@@ -3,9 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import Layout from '../../components/layout/Layout';
-import Header from '../../components/layout/Header';
-import Sidebar from '../../components/layout/Sidebar';
+import { Layout } from '../../components/layout/Layout';
+import { Header } from '../../components/layout/Header';
+import { Sidebar } from '../../components/layout/Sidebar';
 import authSlice from '../../store/slices/authSlice';
 import uiSlice from '../../store/slices/uiSlice';
 
@@ -24,16 +24,20 @@ const createMockStore = (initialState = {}) => {
           email: 'test@example.com',
           firstName: 'John',
           lastName: 'Doe',
-          role: 'admin',
+          role: 'admin' as const,
+          isActive: true,
+          mfaEnabled: false,
         },
         token: 'mock-token',
-        loading: false,
+        refreshToken: 'mock-refresh-token',
+        isLoading: false,
         error: null,
       },
       ui: {
         sidebarOpen: true,
-        theme: 'light',
+        theme: 'light' as const,
         notifications: [],
+        loading: {},
       },
       ...initialState,
     },
@@ -249,8 +253,11 @@ describe('Sidebar Component', () => {
 
   it('highlights active menu item', () => {
     // Mock window.location
-    delete (window as any).location;
-    window.location = { ...window.location, pathname: '/funds' };
+    // Mock window.location properly
+    Object.defineProperty(window, 'location', {
+      value: { pathname: '/funds' },
+      writable: true,
+    });
 
     render(
       <TestWrapper>

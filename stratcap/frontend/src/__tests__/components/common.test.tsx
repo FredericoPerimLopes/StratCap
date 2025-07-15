@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 
 // Mock additional common components that would exist in a real app
 const Button: React.FC<{
@@ -205,8 +205,8 @@ describe('LoadingSpinner Component', () => {
     expect(screen.getByText('Loading data...')).toBeInTheDocument();
   });
 
-  it('renders without text when hideText is true', () => {
-    render(<LoadingSpinner text="Loading..." hideText />);
+  it('renders without text when text is not provided', () => {
+    render(<LoadingSpinner />);
     expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
   });
 

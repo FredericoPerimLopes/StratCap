@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { RootState, AppDispatch } from '../../store/store';
 import {
   MagnifyingGlassIcon,
   EyeIcon,
@@ -11,14 +9,11 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   ArrowRightIcon,
-  CalendarIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -48,7 +43,7 @@ interface Transaction {
 }
 
 const TransactionsPage: React.FC = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([
+  const [transactions] = useState<Transaction[]>([
     {
       id: 1,
       fund: 'Growth Fund III',
@@ -232,12 +227,6 @@ const TransactionsPage: React.FC = () => {
     { name: 'Other', value: 2, color: '#6B7280' }
   ];
 
-  const statusData = [
-    { status: 'Completed', count: 45, color: '#10B981' },
-    { status: 'Processing', count: 8, color: '#F59E0B' },
-    { status: 'Pending', count: 12, color: '#F97316' },
-    { status: 'Failed', count: 3, color: '#EF4444' }
-  ];
 
   const uniqueFunds = [...new Set(transactions.map(t => t.fund))];
 

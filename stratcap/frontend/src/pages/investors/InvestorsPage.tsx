@@ -6,8 +6,7 @@ import {
   fetchInvestors,
   createInvestor,
   deleteInvestor,
-  clearError,
-  Investor
+  clearError
 } from '../../store/slices/investorSlice';
 import {
   PlusIcon,
@@ -40,7 +39,7 @@ interface InvestorFormData {
 
 const InvestorsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { investors, isLoading, error, pagination } = useSelector((state: RootState) => state.investor);
+  const { investors, isLoading, error } = useSelector((state: RootState) => state.investor);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
@@ -231,7 +230,11 @@ const InvestorsPage: React.FC = () => {
               <XAxis dataKey="status" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill={(entry, index) => kycStatusData[index]?.color || '#8884d8'} />
+              <Bar dataKey="count">
+                {kycStatusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color || '#8884d8'} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>

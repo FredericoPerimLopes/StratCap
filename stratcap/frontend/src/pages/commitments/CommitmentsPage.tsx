@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { RootState, AppDispatch } from '../../store/store';
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -21,8 +19,6 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,

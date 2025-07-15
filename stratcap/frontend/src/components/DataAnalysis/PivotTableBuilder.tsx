@@ -6,7 +6,6 @@ import {
   Typography,
   TextField,
   Button,
-  Grid,
   MenuItem,
   Chip,
   List,
@@ -18,12 +17,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Switch,
+  FormControlLabel,
   Divider,
   Alert,
   Paper,
@@ -36,20 +31,15 @@ import {
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Delete as DeleteIcon,
-  DragIndicator as DragIcon,
-  TableChart as TableIcon,
   Settings as SettingsIcon,
   PlayArrow as RunIcon,
   Save as SaveIcon,
   Download as DownloadIcon,
+  DragIndicator as DragIcon,
 } from '@mui/icons-material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import api from '../../services/api';
-import { formatCurrency, formatDate, formatPercentage } from '../../utils/formatters';
 
 interface PivotDimension {
   field: string;
@@ -96,7 +86,7 @@ const PivotTableBuilder: React.FC = () => {
   
   const [addDimensionOpen, setAddDimensionOpen] = useState(false);
   const [addMeasureOpen, setAddMeasureOpen] = useState(false);
-  const [addFilterOpen, setAddFilterOpen] = useState(false);
+  // const [addFilterOpen, setAddFilterOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const [pivotSettings, setPivotSettings] = useState({
@@ -157,15 +147,15 @@ const PivotTableBuilder: React.FC = () => {
     setAddMeasureOpen(false);
   };
 
-  const addFilter = (field: any, operator: string, value: any) => {
-    const newFilter: PivotFilter = {
-      field: field.name,
-      operator: operator as any,
-      value,
-    };
-    setFilters([...filters, newFilter]);
-    setAddFilterOpen(false);
-  };
+  // const addFilter = (field: any, operator: string, value: any) => {
+  //     const newFilter: PivotFilter = {
+  //       field: field.name,
+  //       operator: operator as any,
+  //       value,
+  //     };
+  //     setFilters([...filters, newFilter]);
+  //     setAddFilterOpen(false);
+  //   };
 
   const removeDimension = (index: number) => {
     setDimensions(dimensions.filter((_, i) => i !== index));
@@ -299,9 +289,9 @@ const PivotTableBuilder: React.FC = () => {
         Pivot Table Builder
       </Typography>
 
-      <Grid container spacing={3}>
+      <Box display="flex" gap={3} flexWrap="wrap">
         {/* Configuration Panel */}
-        <Grid item xs={12} md={4}>
+        <Box flex="0 0 33%" minWidth="300px">
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -417,7 +407,7 @@ const PivotTableBuilder: React.FC = () => {
                   <Typography variant="subtitle1">Filters</Typography>
                   <IconButton 
                     size="small" 
-                    onClick={() => setAddFilterOpen(true)}
+                    onClick={() => {/* setAddFilterOpen(true) */}}
                     disabled={!selectedDataSource}
                   >
                     <AddIcon />
@@ -470,10 +460,10 @@ const PivotTableBuilder: React.FC = () => {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
         {/* Results Panel */}
-        <Grid item xs={12} md={8}>
+        <Box flex="1" minWidth="400px">
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -539,7 +529,7 @@ const PivotTableBuilder: React.FC = () => {
               {pivotResult && (
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="caption" color="textSecondary">
-                    Generated: {formatDate(pivotResult.metadata.generatedAt)} | 
+                    Generated: {new Date(pivotResult.metadata.generatedAt).toLocaleString()} | 
                     Execution time: {pivotResult.metadata.executionTime}ms |
                     Rows: {pivotResult.data.rows.length}
                   </Typography>
@@ -547,8 +537,8 @@ const PivotTableBuilder: React.FC = () => {
               )}
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Add Dimension Dialog */}
       <Dialog open={addDimensionOpen} onClose={() => setAddDimensionOpen(false)}>
@@ -558,7 +548,7 @@ const PivotTableBuilder: React.FC = () => {
             {availableFields.filter(field => 
               !dimensions.some(dim => dim.field === field.name)
             ).map((field) => (
-              <ListItem key={field.name} button onClick={() => addDimension(field)}>
+              <ListItem key={field.name} component="button" onClick={() => addDimension(field)}>
                 <ListItemText 
                   primary={field.label} 
                   secondary={field.type}

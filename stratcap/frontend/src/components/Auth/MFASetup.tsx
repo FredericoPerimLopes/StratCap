@@ -21,12 +21,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControlLabel,
-  Switch,
 } from '@mui/material';
 import {
   Security as SecurityIcon,
-  QrCode as QrCodeIcon,
   Smartphone as SmartphoneIcon,
   Key as KeyIcon,
   CheckCircle as CheckCircleIcon,
@@ -35,9 +32,9 @@ import {
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import api from '../../services/api';
-import { useAppSelector, useAppDispatch } from '../../hooks/redux';
+// import { useAppSelector } from '../../hooks/redux';
 
 interface MFASetupData {
   verificationCode: string;
@@ -52,11 +49,10 @@ const validationSchema = Yup.object({
 
 const MFASetup: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
+  // const user = useAppSelector((state) => state.auth.user);
   
   const [activeStep, setActiveStep] = useState(0);
-  const [mfaSetupData, setMfaSetupData] = useState<any>(null);
+  const [mfaSetupData, setMfaSetupData] = useState<{ secret: string; qrCode: string } | null>(null);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [setupComplete, setSetupComplete] = useState(false);
@@ -101,12 +97,12 @@ const MFASetup: React.FC = () => {
       verificationCode: '',
     },
     validationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values: MFASetupData) => {
       try {
         setLoading(true);
         await api.post('/auth/mfa/verify-setup', {
           token: values.verificationCode,
-          secret: mfaSetupData.secret,
+          secret: mfaSetupData?.secret || '',
         });
         
         setSetupComplete(true);
@@ -189,7 +185,7 @@ const MFASetup: React.FC = () => {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={8}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -257,7 +253,7 @@ const MFASetup: React.FC = () => {
                     
                     {mfaSetupData?.qrCode && (
                       <Box sx={{ textAlign: 'center', mb: 3 }}>
-                        <QRCode value={mfaSetupData.qrCode} size={200} />
+                        <QRCodeSVG value={mfaSetupData?.qrCode || ''} size={200} />
                       </Box>
                     )}
 
@@ -372,7 +368,7 @@ const MFASetup: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -442,7 +438,7 @@ const MFASetup: React.FC = () => {
           
           <Grid container spacing={1}>
             {backupCodes.map((code, index) => (
-              <Grid item xs={6} key={index}>
+              <Grid size={6} key={index}>
                 <Chip
                   label={code}
                   variant="outlined"

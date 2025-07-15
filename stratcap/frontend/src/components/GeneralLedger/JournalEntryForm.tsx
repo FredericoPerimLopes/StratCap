@@ -11,7 +11,6 @@ import {
   MenuItem,
   InputAdornment,
   Alert,
-  Divider,
   Table,
   TableBody,
   TableCell,
@@ -305,14 +304,14 @@ const JournalEntryForm: React.FC = () => {
         <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={3}>
             {/* Header Information */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Entry Details
                   </Typography>
                   <Grid container spacing={3}>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <DatePicker
                         label="Entry Date"
                         value={formik.values.entryDate}
@@ -327,7 +326,7 @@ const JournalEntryForm: React.FC = () => {
                       />
                     </Grid>
 
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <TextField
                         fullWidth
                         select
@@ -346,7 +345,7 @@ const JournalEntryForm: React.FC = () => {
                       </TextField>
                     </Grid>
 
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <TextField
                         fullWidth
                         select
@@ -364,7 +363,7 @@ const JournalEntryForm: React.FC = () => {
                       </TextField>
                     </Grid>
 
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <TextField
                         fullWidth
                         label="Reference"
@@ -375,7 +374,7 @@ const JournalEntryForm: React.FC = () => {
                       />
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <TextField
                         fullWidth
                         label="Description"
@@ -394,7 +393,7 @@ const JournalEntryForm: React.FC = () => {
             </Grid>
 
             {/* Line Items */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -533,7 +532,7 @@ const JournalEntryForm: React.FC = () => {
             </Grid>
 
             {/* Actions */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                 <Button
                   variant="outlined"
@@ -594,15 +593,15 @@ const JournalEntryForm: React.FC = () => {
                 </Alert>
 
                 <Grid container spacing={2} sx={{ mb: 2 }}>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <Typography variant="body2" color="textSecondary">Total Debits</Typography>
                     <Typography variant="h6">{validationResult.totals?.debits}</Typography>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <Typography variant="body2" color="textSecondary">Total Credits</Typography>
                     <Typography variant="h6">{validationResult.totals?.credits}</Typography>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <Typography variant="body2" color="textSecondary">Difference</Typography>
                     <Typography variant="h6">{validationResult.totals?.difference}</Typography>
                   </Grid>

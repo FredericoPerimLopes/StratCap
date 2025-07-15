@@ -107,7 +107,7 @@ const fundSlice = createSlice({
       .addCase(fetchFunds.fulfilled, (state, action) => {
         state.isLoading = false;
         state.funds = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.pagination = action.payload.pagination || null;
       })
       .addCase(fetchFunds.rejected, (state, action) => {
         state.isLoading = false;

@@ -114,7 +114,7 @@ const investorSlice = createSlice({
       .addCase(fetchInvestors.fulfilled, (state, action) => {
         state.isLoading = false;
         state.investors = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.pagination = action.payload.pagination || null;
       })
       .addCase(fetchInvestors.rejected, (state, action) => {
         state.isLoading = false;

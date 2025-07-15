@@ -11,7 +11,6 @@ import {
   Switch,
   FormControlLabel,
   Alert,
-  Divider,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -31,7 +30,6 @@ import {
   Security as SecurityIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
-  Warning as WarningIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
 import { useFormik } from 'formik';
@@ -105,7 +103,7 @@ const SystemSettings: React.FC = () => {
     validationSchema: Yup.object({
       configValue: Yup.string().required('Value is required'),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values: any) => {
       if (!editingConfig) return;
 
       try {
@@ -209,7 +207,7 @@ const SystemSettings: React.FC = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={4}>
+            <Grid size={4}>
               <TextField
                 fullWidth
                 label="Search configurations"
@@ -218,7 +216,7 @@ const SystemSettings: React.FC = () => {
                 placeholder="Search by key or description..."
               />
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={4}>
               <TextField
                 fullWidth
                 select
@@ -234,7 +232,7 @@ const SystemSettings: React.FC = () => {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={4}>
               <TextField
                 fullWidth
                 select
@@ -250,7 +248,7 @@ const SystemSettings: React.FC = () => {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid size={4}>
               <Button
                 fullWidth
                 variant="contained"
@@ -295,7 +293,7 @@ const SystemSettings: React.FC = () => {
                   
                   <Grid container spacing={2}>
                     {configs.map((config) => (
-                      <Grid item xs={12} key={config.id}>
+                      <Grid size={12} key={config.id}>
                         <Card variant="outlined">
                           <CardContent>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

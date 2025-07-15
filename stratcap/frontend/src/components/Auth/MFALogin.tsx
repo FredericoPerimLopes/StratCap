@@ -60,7 +60,7 @@ const MFALogin: React.FC<MFALoginProps> = ({ email, tempToken, onSuccess, onBack
           .length(10, 'Backup code must be exactly 10 characters'),
       }) : 
       validationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values: MFALoginData) => {
       try {
         setLoading(true);
         

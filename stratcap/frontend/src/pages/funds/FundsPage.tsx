@@ -6,8 +6,7 @@ import {
   fetchFunds,
   createFund,
   deleteFund,
-  clearError,
-  Fund
+  clearError
 } from '../../store/slices/fundSlice';
 import {
   PlusIcon,
@@ -23,7 +22,7 @@ import {
   CurrencyDollarIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 
 interface FundFormData {
   name: string;
@@ -39,7 +38,7 @@ interface FundFormData {
 
 const FundsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { funds, isLoading, error, pagination } = useSelector((state: RootState) => state.fund);
+  const { funds, isLoading, error } = useSelector((state: RootState) => state.fund);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');

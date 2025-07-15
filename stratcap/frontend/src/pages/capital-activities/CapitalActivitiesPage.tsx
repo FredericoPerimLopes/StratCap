@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { RootState, AppDispatch } from '../../store/store';
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -16,20 +14,15 @@ import {
   CalendarIcon,
   ClockIcon,
   CheckCircleIcon,
-  ExclamationTriangleIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon
 } from '@heroicons/react/24/outline';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
   AreaChart,
   Area,
   PieChart,
@@ -237,12 +230,6 @@ const CapitalActivitiesPage: React.FC = () => {
     { name: 'Transfers', value: 5, color: '#3B82F6' }
   ];
 
-  const statusData = [
-    { status: 'Completed', count: 25, color: '#10B981' },
-    { status: 'Pending', count: 8, color: '#F59E0B' },
-    { status: 'Approved', count: 5, color: '#3B82F6' },
-    { status: 'Draft', count: 12, color: '#6B7280' }
-  ];
 
   // Calculate summary metrics
   const totalCapitalCalls = activities

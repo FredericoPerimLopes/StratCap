@@ -17,7 +17,6 @@ import {
   IconButton,
   TextField,
   InputAdornment,
-  Grid,
   Tooltip,
   LinearProgress,
 } from '@mui/material';
@@ -26,12 +25,11 @@ import {
   Search as SearchIcon,
   Visibility as ViewIcon,
   Edit as EditIcon,
-  AttachMoney as MoneyIcon,
   TrendingUp as DrawdownIcon,
   TrendingDown as PaydownIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { useAppDispatch } from '../../hooks/redux';
 import { formatCurrency, formatDate, formatPercentage } from '../../utils/formatters';
 import { useSnackbar } from 'notistack';
 import api from '../../services/api';
@@ -57,7 +55,7 @@ interface CreditFacility {
 
 const CreditFacilityList: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const [facilities, setFacilities] = useState<CreditFacility[]>([]);
   const [loading, setLoading] = useState(true);
@@ -131,28 +129,24 @@ const CreditFacilityList: React.FC = () => {
 
   return (
     <Box>
-      <Grid container spacing={3} alignItems="center" sx={{ mb: 3 }}>
-        <Grid item xs>
-          <Typography variant="h4" component="h1">
-            Credit Facilities
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleCreateNew}
-          >
-            New Facility
-          </Button>
-        </Grid>
-      </Grid>
+      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h1">
+          Credit Facilities
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={handleCreateNew}
+        >
+          New Facility
+        </Button>
+      </Box>
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={6}>
+          <Box display="flex" gap={3} alignItems="center">
+            <Box flex={1}>
               <TextField
                 fullWidth
                 variant="outlined"
@@ -167,13 +161,13 @@ const CreditFacilityList: React.FC = () => {
                   ),
                 }}
               />
-            </Grid>
-            <Grid item xs={12} md={6} sx={{ textAlign: 'right' }}>
+            </Box>
+            <Box>
               <IconButton onClick={fetchCreditFacilities} color="primary">
                 <RefreshIcon />
               </IconButton>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 
@@ -313,62 +307,54 @@ const CreditFacilityList: React.FC = () => {
       )}
 
       {/* Summary Statistics */}
-      <Grid container spacing={3} sx={{ mt: 3 }}>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Facilities
-              </Typography>
-              <Typography variant="h5">
-                {facilities.length}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Credit Line
-              </Typography>
-              <Typography variant="h5">
-                {formatCurrency(
-                  facilities.reduce((sum, f) => sum + parseFloat(f.originalAmount), 0)
-                )}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Outstanding
-              </Typography>
-              <Typography variant="h5">
-                {formatCurrency(
-                  facilities.reduce((sum, f) => sum + parseFloat(f.currentBalance), 0)
-                )}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Available
-              </Typography>
-              <Typography variant="h5">
-                {formatCurrency(
-                  facilities.reduce((sum, f) => sum + parseFloat(f.availableAmount), 0)
-                )}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box display="flex" gap={3} sx={{ mt: 3 }}>
+        <Card sx={{ flex: 1 }}>
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Total Facilities
+            </Typography>
+            <Typography variant="h5">
+              {facilities.length}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ flex: 1 }}>
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Total Credit Line
+            </Typography>
+            <Typography variant="h5">
+              {formatCurrency(
+                facilities.reduce((sum, f) => sum + parseFloat(f.originalAmount), 0)
+              )}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ flex: 1 }}>
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Total Outstanding
+            </Typography>
+            <Typography variant="h5">
+              {formatCurrency(
+                facilities.reduce((sum, f) => sum + parseFloat(f.currentBalance), 0)
+              )}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ flex: 1 }}>
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Total Available
+            </Typography>
+            <Typography variant="h5">
+              {formatCurrency(
+                facilities.reduce((sum, f) => sum + parseFloat(f.availableAmount), 0)
+              )}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
     </Box>
   );
 };

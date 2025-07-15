@@ -2,6 +2,10 @@ import '@testing-library/jest-dom';
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
+  root: Element | null = null;
+  rootMargin: string = '0px';
+  thresholds: ReadonlyArray<number> = [0];
+
   constructor() {}
 
   disconnect() {
@@ -14,6 +18,10 @@ global.IntersectionObserver = class IntersectionObserver {
 
   unobserve() {
     return null;
+  }
+
+  takeRecords() {
+    return [];
   }
 };
 
@@ -55,6 +63,8 @@ const localStorageMock = {
   setItem: jest.fn(),
   removeItem: jest.fn(),
   clear: jest.fn(),
+  length: 0,
+  key: jest.fn(),
 };
 global.localStorage = localStorageMock;
 
@@ -64,5 +74,7 @@ const sessionStorageMock = {
   setItem: jest.fn(),
   removeItem: jest.fn(),
   clear: jest.fn(),
+  length: 0,
+  key: jest.fn(),
 };
 global.sessionStorage = sessionStorageMock;

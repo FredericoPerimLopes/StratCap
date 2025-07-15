@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fundFamilyAPI } from '../../services/api';
 
 export interface FundFamily {
@@ -100,7 +100,7 @@ const fundFamilySlice = createSlice({
       .addCase(fetchFundFamilies.fulfilled, (state, action) => {
         state.isLoading = false;
         state.fundFamilies = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.pagination = action.payload.pagination || null;
       })
       .addCase(fetchFundFamilies.rejected, (state, action) => {
         state.isLoading = false;

@@ -5,7 +5,6 @@ import {
   CardContent,
   Typography,
   TextField,
-  Button,
   Grid,
   Table,
   TableBody,
@@ -13,7 +12,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Chip,
   IconButton,
   InputAdornment,
@@ -31,7 +29,6 @@ import {
   Business as BusinessIcon,
   Person as PersonIcon,
   AccountBalance as FundIcon,
-  TrendingUp as InvestmentIcon,
   Visibility as ViewIcon,
   Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
@@ -39,7 +36,7 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import api from '../../services/api';
-import { formatCurrency, formatDate, formatPercentage } from '../../utils/formatters';
+import { formatCurrency, formatDate } from '../../utils/formatters';
 
 interface GlobalEntity {
   id: string;
@@ -166,7 +163,7 @@ const GlobalEntityDirectory: React.FC = () => {
   return (
     <Box>
       <Grid container spacing={3} alignItems="center" sx={{ mb: 3 }}>
-        <Grid item xs>
+        <Grid size="grow">
           <Typography variant="h4" component="h1">
             Global Entity Directory
           </Typography>
@@ -174,7 +171,7 @@ const GlobalEntityDirectory: React.FC = () => {
             Comprehensive view of all entities across funds
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid size="auto">
           <IconButton onClick={fetchGlobalEntities} color="primary">
             <RefreshIcon />
           </IconButton>
@@ -185,7 +182,7 @@ const GlobalEntityDirectory: React.FC = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 variant="outlined"
@@ -201,7 +198,7 @@ const GlobalEntityDirectory: React.FC = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 select
@@ -217,7 +214,7 @@ const GlobalEntityDirectory: React.FC = () => {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid size={{ xs: 12, md: 2 }}>
               <Typography variant="body2" color="textSecondary">
                 {filteredEntities.length} entities
               </Typography>
@@ -230,7 +227,7 @@ const GlobalEntityDirectory: React.FC = () => {
         <LinearProgress />
       ) : (
         <Card>
-          <Tabs value={selectedTab} onChange={(e, newValue) => setSelectedTab(newValue)}>
+          <Tabs value={selectedTab} onChange={(_, newValue) => setSelectedTab(newValue)}>
             <Tab label="Table View" />
             <Tab label="Card View" />
             <Tab label="Summary View" />
@@ -347,7 +344,7 @@ const GlobalEntityDirectory: React.FC = () => {
             {/* Card View */}
             <Grid container spacing={2}>
               {filteredEntities.map((entity) => (
-                <Grid item xs={12} md={6} lg={4} key={entity.id}>
+                <Grid size={{ xs: 12, md: 6, lg: 4 }} key={entity.id}>
                   <Card variant="outlined" sx={{ height: '100%' }}>
                     <CardContent>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
@@ -422,9 +419,10 @@ const GlobalEntityDirectory: React.FC = () => {
                 const totalCommitments = typeEntities.reduce((sum, e) => 
                   sum + parseFloat(e.relationshipSummary.totalCommitments), 0
                 );
-                const totalContributions = typeEntities.reduce((sum, e) => 
-                  sum + parseFloat(e.relationshipSummary.totalContributions), 0
-                );
+                // Calculate total contributions for future use
+                // const totalContributions = typeEntities.reduce((sum, e) => 
+                //   sum + parseFloat(e.relationshipSummary.totalContributions), 0
+                // );
 
                 return (
                   <Accordion key={type.value}>
@@ -448,7 +446,7 @@ const GlobalEntityDirectory: React.FC = () => {
                     <AccordionDetails>
                       <Grid container spacing={1}>
                         {typeEntities.map((entity) => (
-                          <Grid item xs={12} md={6} key={entity.id}>
+                          <Grid size={{ xs: 12, md: 6 }} key={entity.id}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
                               <Typography variant="body2">{entity.name}</Typography>
                               <Typography variant="body2">
@@ -469,7 +467,7 @@ const GlobalEntityDirectory: React.FC = () => {
 
       {/* Statistics */}
       <Grid container spacing={3} sx={{ mt: 3 }}>
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
@@ -481,7 +479,7 @@ const GlobalEntityDirectory: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
@@ -495,7 +493,7 @@ const GlobalEntityDirectory: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
@@ -509,7 +507,7 @@ const GlobalEntityDirectory: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>

@@ -3,10 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   HomeIcon,
-  BuildingOfficeIcon,
   BanknotesIcon,
   UsersIcon,
-  DocumentTextIcon,
   ArrowsRightLeftIcon,
   ChartBarIcon,
   CogIcon,
@@ -16,7 +14,6 @@ import {
   CalculatorIcon,
   BookOpenIcon,
   TableCellsIcon,
-  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { RootState } from '../../store/store';
 import { toggleSidebar } from '../../store/slices/uiSlice';

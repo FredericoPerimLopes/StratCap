@@ -3,16 +3,13 @@ import {
   DocumentTextIcon,
   ChartBarIcon,
   DocumentArrowDownIcon,
-  CalendarIcon,
   FunnelIcon,
   PrinterIcon,
   ShareIcon,
   CurrencyDollarIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   UsersIcon,
-  BuildingOfficeIcon,
   EyeIcon,
-  ClockIcon
 } from '@heroicons/react/24/outline';
 import {
   LineChart,
@@ -27,8 +24,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  AreaChart,
-  Area
 } from 'recharts';
 
 interface Report {
@@ -122,7 +117,7 @@ const ReportsPage: React.FC = () => {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'performance': return <TrendingUpIcon className="h-5 w-5 text-green-500" />;
+      case 'performance': return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
       case 'investor': return <UsersIcon className="h-5 w-5 text-blue-500" />;
       case 'capital': return <CurrencyDollarIcon className="h-5 w-5 text-purple-500" />;
       case 'compliance': return <DocumentTextIcon className="h-5 w-5 text-orange-500" />;
@@ -236,7 +231,7 @@ const ReportsPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <div className="flex items-center">
-                    <TrendingUpIcon className="h-8 w-8 text-green-500" />
+                    <ArrowTrendingUpIcon className="h-8 w-8 text-green-500" />
                     <div className="ml-3">
                       <p className="text-sm font-medium text-gray-500">Portfolio IRR</p>
                       <p className="text-2xl font-semibold text-gray-900">21.2%</p>
