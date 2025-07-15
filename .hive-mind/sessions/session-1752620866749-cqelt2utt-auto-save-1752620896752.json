@@ -1,0 +1,81 @@
+{
+  "sessionId": "session-1752620866749-cqelt2utt",
+  "checkpointId": "checkpoint-1752620896752-ua3v0jph6",
+  "checkpointName": "auto-save-1752620896752",
+  "timestamp": "2025-07-15T23:08:16.752Z",
+  "data": {
+    "timestamp": "2025-07-15T23:08:16.752Z",
+    "changeCount": 5,
+    "changesByType": {
+      "swarm_created": [
+        {
+          "type": "swarm_created",
+          "data": {
+            "swarmId": "swarm-1752620866722-bltry3rpl",
+            "swarmName": "hive-1752620866689",
+            "objective": "I need to make sure the front end displays correctly. Right now it's just showing a blank screen. I need to make sure it renders properly.",
+            "workerCount": 8
+          },
+          "timestamp": "2025-07-15T23:07:46.751Z"
+        }
+      ],
+      "agent_activity": [
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1752620866722-bltry3rpl-0",
+            "activity": "spawned",
+            "data": {
+              "type": "researcher",
+              "name": "Researcher Worker 1"
+            }
+          },
+          "timestamp": "2025-07-15T23:07:46.752Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1752620866722-bltry3rpl-1",
+            "activity": "spawned",
+            "data": {
+              "type": "coder",
+              "name": "Coder Worker 2"
+            }
+          },
+          "timestamp": "2025-07-15T23:07:46.752Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1752620866722-bltry3rpl-2",
+            "activity": "spawned",
+            "data": {
+              "type": "analyst",
+              "name": "Analyst Worker 3"
+            }
+          },
+          "timestamp": "2025-07-15T23:07:46.752Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1752620866722-bltry3rpl-3",
+            "activity": "spawned",
+            "data": {
+              "type": "tester",
+              "name": "Tester Worker 4"
+            }
+          },
+          "timestamp": "2025-07-15T23:07:46.752Z"
+        }
+      ]
+    },
+    "statistics": {
+      "tasksProcessed": 0,
+      "tasksCompleted": 0,
+      "memoryUpdates": 0,
+      "agentActivities": 4,
+      "consensusDecisions": 0
+    }
+  }
+}

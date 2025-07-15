@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
 
 import { ErrorBoundary } from './components/ErrorBoundary';
 import AppRoutes from './routes';
-import { LoadingSpinner } from './components/common/LoadingSpinner';
 
 import { RootState } from './store/store';
 import { checkAuth } from './store/slices/authSlice';
@@ -14,18 +12,28 @@ function App() {
   const { isLoading } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    dispatch(checkAuth() as any);
+    // Only check auth if there's a token in localStorage
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(checkAuth() as any);
+    }
   }, [dispatch]);
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div style={{ 
+        fontSize: '24px', 
+        color: 'blue', 
+        padding: '20px' 
+      }}>
+        Loading...
+      </div>
+    );
   }
 
   return (
     <ErrorBoundary>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <AppRoutes />
     </ErrorBoundary>
   );
 }
