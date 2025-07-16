@@ -8,10 +8,8 @@ import {
   InvestorEntity, 
   CapitalActivity,
   InvestorClass,
-  FeeCalculation,
-  WaterfallCalculation
+  FeeCalculation
 } from '../models';
-import { AuthRequest } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 import PerformanceAnalyticsService from '../services/PerformanceAnalyticsService';
 import CashFlowAnalyticsService from '../services/CashFlowAnalyticsService';
@@ -488,7 +486,7 @@ export class ReportController {
     }
   }
 
-  async getDashboardMetrics(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getDashboardMetrics(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       // Get total fund count and AUM
       const fundStats = await Fund.findAll({
@@ -1010,7 +1008,7 @@ export class ReportController {
           const performanceMetrics = await PerformanceAnalyticsService.calculateInvestorPerformance(
             investorId,
             commitment.fundId,
-            asOf
+            asOf.toISOString()
           );
 
           const commitmentAmount = parseFloat(commitment.commitmentAmount);
@@ -1192,8 +1190,11 @@ export class ReportController {
       const { reportType } = req.params;
       const { format, fundId, investorId, startDate, endDate } = req.query;
 
+      const validFormats = ['csv', 'excel', 'pdf', 'json'] as const;
+      const selectedFormat = validFormats.includes(format as any) ? format as 'csv' | 'excel' | 'pdf' | 'json' : 'excel';
+      
       const exportOptions = {
-        format: (format as string) || 'excel',
+        format: selectedFormat,
         includeHeaders: true,
         includeSummary: true
       };
@@ -1260,173 +1261,6 @@ export class ReportController {
     }
   }
 
-  private calculateFundMetrics(commitments: any[], transactions: any[]) {
-    const totalCommitments = commitments.reduce((sum, c) => sum + parseFloat(c.commitmentAmount), 0);
-    
-    const transactionMetrics = transactions.reduce((acc, transaction) => {
-      const amount = parseFloat(transaction.amount);
-      
-      switch (transaction.transactionType) {
-        case 'capital_call':
-          acc.totalCalls += amount;
-          break;
-        case 'distribution':
-          acc.totalDistributions += amount;
-          break;
-        case 'fee':
-          acc.totalFees += amount;
-          break;
-      }
-      
-      return acc;
-    }, {
-      totalCalls: 0,
-      totalDistributions: 0,
-      totalFees: 0
-    });
-
-    return {
-      totalCommitments: totalCommitments.toString(),
-      ...transactionMetrics,
-      callRate: totalCommitments > 0 ? (transactionMetrics.totalCalls / totalCommitments) : 0,
-      multiple: transactionMetrics.totalCalls > 0 ? (transactionMetrics.totalDistributions / transactionMetrics.totalCalls) : 0,
-      netCashFlow: (transactionMetrics.totalDistributions - transactionMetrics.totalCalls).toString()
-    };
-  }
-
-  private calculateInvestorPerformance(commitments: any[], transactions: any[]) {
-    const investorMap = new Map();
-    
-    // Group by investor
-    commitments.forEach(commitment => {
-      const investorId = commitment.investorEntityId;
-      if (!investorMap.has(investorId)) {
-        investorMap.set(investorId, {
-          investor: commitment.investorEntity,
-          commitments: [],
-          transactions: []
-        });
-      }
-      investorMap.get(investorId).commitments.push(commitment);
-    });
-
-    // Add transactions
-    transactions.forEach(transaction => {
-      const investorId = transaction.commitment.investorEntityId;
-      if (investorMap.has(investorId)) {
-        investorMap.get(investorId).transactions.push(transaction);
-      }
-    });
-
-    // Calculate metrics for each investor
-    return Array.from(investorMap.values()).map(investorData => {
-      const metrics = this.calculatePortfolioMetrics(investorData.commitments, investorData.transactions);
-      
-      return {
-        investor: {
-          id: investorData.investor.id,
-          name: investorData.investor.name,
-          type: investorData.investor.type
-        },
-        metrics
-      };
-    });
-  }
-
-  private generateCashFlowAnalysis(transactions: any[]) {
-    const monthlyFlow = new Map();
-    
-    transactions.forEach(transaction => {
-      const month = transaction.transactionDate.toISOString().slice(0, 7);
-      const amount = parseFloat(transaction.amount);
-      
-      if (!monthlyFlow.has(month)) {
-        monthlyFlow.set(month, {
-          calls: 0,
-          distributions: 0,
-          net: 0
-        });
-      }
-      
-      const monthData = monthlyFlow.get(month);
-      
-      if (transaction.transactionType === 'capital_call') {
-        monthData.calls += amount;
-      } else if (transaction.transactionType === 'distribution') {
-        monthData.distributions += amount;
-      }
-      
-      monthData.net = monthData.distributions - monthData.calls;
-    });
-
-    return Array.from(monthlyFlow.entries())
-      .map(([month, data]) => ({ month, ...data }))
-      .sort((a, b) => a.month.localeCompare(b.month));
-  }
-
-  private calculateCommitmentMetrics(commitment: any, transactions: any[]) {
-    const metrics = transactions.reduce((acc, transaction) => {
-      const amount = parseFloat(transaction.amount);
-      
-      switch (transaction.transactionType) {
-        case 'capital_call':
-          acc.capitalCalled += amount;
-          break;
-        case 'distribution':
-          acc.capitalReturned += amount;
-          break;
-      }
-      
-      return acc;
-    }, {
-      capitalCalled: 0,
-      capitalReturned: 0
-    });
-
-    const commitmentAmount = parseFloat(commitment.commitmentAmount);
-    const unfundedCommitment = Math.max(0, commitmentAmount - metrics.capitalCalled);
-
-    return {
-      capitalCalled: metrics.capitalCalled.toString(),
-      capitalReturned: metrics.capitalReturned.toString(),
-      unfundedCommitment: unfundedCommitment.toString(),
-      callRate: commitmentAmount > 0 ? (metrics.capitalCalled / commitmentAmount) : 0,
-      multiple: metrics.capitalCalled > 0 ? (metrics.capitalReturned / metrics.capitalCalled) : 0,
-      netCashFlow: (metrics.capitalReturned - metrics.capitalCalled).toString()
-    };
-  }
-
-  private calculatePortfolioMetrics(commitments: any[], transactions: any[]) {
-    const totalCommitments = commitments.reduce((sum, c) => sum + parseFloat(c.commitmentAmount), 0);
-    
-    const transactionMetrics = transactions.reduce((acc, transaction) => {
-      const amount = parseFloat(transaction.amount);
-      
-      switch (transaction.transactionType) {
-        case 'capital_call':
-          acc.totalCalls += amount;
-          break;
-        case 'distribution':
-          acc.totalDistributions += amount;
-          break;
-      }
-      
-      return acc;
-    }, {
-      totalCalls: 0,
-      totalDistributions: 0
-    });
-
-    return {
-      totalCommitments: totalCommitments.toString(),
-      totalCalled: transactionMetrics.totalCalls.toString(),
-      totalReturned: transactionMetrics.totalDistributions.toString(),
-      totalUnfunded: (totalCommitments - transactionMetrics.totalCalls).toString(),
-      callRate: totalCommitments > 0 ? (transactionMetrics.totalCalls / totalCommitments) : 0,
-      multiple: transactionMetrics.totalCalls > 0 ? (transactionMetrics.totalDistributions / transactionMetrics.totalCalls) : 0,
-      netCashFlow: (transactionMetrics.totalDistributions - transactionMetrics.totalCalls).toString()
-    };
-  }
 }
 
 export default new ReportController();

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import multer from 'multer';
-import { DocumentService } from '../services/DocumentService';
+import DocumentService from '../services/DocumentService';
 
 class DocumentController {
   private documentService: DocumentService;
@@ -15,7 +15,7 @@ class DocumentController {
       limits: {
         fileSize: 50 * 1024 * 1024, // 50MB
       },
-      fileFilter: (req, file, cb) => {
+      fileFilter: (_req, file, cb) => {
         const allowedMimes = [
           'application/pdf',
           'application/msword',
@@ -31,7 +31,7 @@ class DocumentController {
         if (allowedMimes.includes(file.mimetype)) {
           cb(null, true);
         } else {
-          cb(new Error('Unsupported file type'), false);
+          cb(new Error('Unsupported file type'));
         }
       },
     });

@@ -133,13 +133,13 @@ class CapitalActivityController {
         });
       }
 
-      res.json({
+      return res.json({
         activity,
         allocations: allocations || [],
       });
     } catch (error) {
       console.error('Error fetching capital activity:', error);
-      res.status(500).json({ error: 'Failed to fetch capital activity' });
+      return res.status(500).json({ error: 'Failed to fetch capital activity' });
     }
   }
 
@@ -165,10 +165,10 @@ class CapitalActivityController {
 
       const result = await this.capitalCallService.createCapitalCall(capitalCallRequest);
 
-      res.status(201).json(result);
+      return res.status(201).json(result);
     } catch (error) {
       console.error('Error creating capital call:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to create capital call' 
       });
     }
@@ -196,10 +196,10 @@ class CapitalActivityController {
 
       const result = await this.distributionService.createDistribution(distributionRequest);
 
-      res.status(201).json(result);
+      return res.status(201).json(result);
     } catch (error) {
       console.error('Error creating distribution:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to create distribution' 
       });
     }
@@ -230,10 +230,10 @@ class CapitalActivityController {
         return res.status(400).json({ error: 'Invalid activity type for approval' });
       }
 
-      res.json({ message: 'Capital activity approved successfully' });
+      return res.json({ message: 'Capital activity approved successfully' });
     } catch (error) {
       console.error('Error approving capital activity:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to approve capital activity' 
       });
     }
@@ -254,10 +254,10 @@ class CapitalActivityController {
         notes
       );
 
-      res.json({ message: 'Capital allocation payment updated successfully' });
+      return res.json({ message: 'Capital allocation payment updated successfully' });
     } catch (error) {
       console.error('Error updating capital allocation payment:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to update payment' 
       });
     }
@@ -277,7 +277,7 @@ class CapitalActivityController {
         notes
       );
 
-      res.json({ message: 'Distribution allocation payment updated successfully' });
+      return res.json({ message: 'Distribution allocation payment updated successfully' });
     } catch (error) {
       console.error('Error updating distribution allocation payment:', error);
       res.status(500).json({ 
@@ -365,7 +365,7 @@ class CapitalActivityController {
       
       await this.notificationService.sendCapitalCallReminder(parseInt(allocationId));
       
-      res.json({ message: 'Reminder sent successfully' });
+      return res.json({ message: 'Reminder sent successfully' });
     } catch (error) {
       console.error('Error sending reminder:', error);
       res.status(500).json({ 
@@ -426,7 +426,7 @@ class CapitalActivityController {
         new Date(paymentDate)
       );
 
-      res.json({ message: 'Distribution payments processed successfully' });
+      return res.json({ message: 'Distribution payments processed successfully' });
     } catch (error) {
       console.error('Error processing distribution payments:', error);
       res.status(500).json({ 
@@ -470,7 +470,7 @@ class CapitalActivityController {
         );
       }
 
-      res.json({ message: 'Capital activity cancelled successfully' });
+      return res.json({ message: 'Capital activity cancelled successfully' });
     } catch (error) {
       console.error('Error cancelling capital activity:', error);
       res.status(500).json({ 

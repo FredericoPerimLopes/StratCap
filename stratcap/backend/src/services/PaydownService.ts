@@ -1,11 +1,11 @@
 import { Transaction } from 'sequelize';
 import { CreditPaydown, CreditPaydownAttributes, CreditPaydownCreationAttributes } from '../models/CreditPaydown';
 import { CreditFacility } from '../models/CreditFacility';
-import { User } from '../models/User';
+import User from '../models/User';
 import { Decimal } from 'decimal.js';
 import { CreditFacilityService } from './CreditFacilityService';
-import { NotificationService } from './NotificationService';
-import { ApprovalWorkflowService } from './ApprovalWorkflowService';
+import NotificationService from './NotificationService';
+import ApprovalWorkflowService from './ApprovalWorkflowService';
 
 export interface PaydownRequest {
   facilityId: string;
@@ -508,7 +508,7 @@ export class PaydownService {
       };
 
     } catch (error) {
-      errors.push(`Validation error: ${error.message}`);
+      errors.push(`Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       
       return {
         isValid: false,
@@ -529,7 +529,7 @@ export class PaydownService {
    */
   private calculateNewBalances(
     currentOutstanding: Decimal,
-    currentAvailable: Decimal,
+    _currentAvailable: Decimal,
     totalCommitment: Decimal,
     principalReduction: Decimal
   ): { outstanding: Decimal; available: Decimal } {

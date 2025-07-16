@@ -76,7 +76,7 @@ class PreferredReturnService {
         calculations,
       };
     } catch (error) {
-      throw new Error(`Preferred return calculation failed: ${error.message}`);
+      throw new Error(`Preferred return calculation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

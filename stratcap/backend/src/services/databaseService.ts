@@ -1,12 +1,12 @@
-import { QueryInterface, DataTypes } from 'sequelize';
+import { QueryInterface } from 'sequelize';
 import sequelize from '../db/database';
 import logger from '../utils/logger';
 
 export class DatabaseService {
-  private queryInterface: QueryInterface;
+  private _queryInterface: QueryInterface;
 
   constructor() {
-    this.queryInterface = sequelize.getQueryInterface();
+    this._queryInterface = sequelize.getQueryInterface();
   }
 
   async runMigration(migrationFile: string): Promise<void> {
@@ -88,7 +88,7 @@ export class DatabaseService {
           results[query.name] = rows;
         } catch (error) {
           logger.error(`Error running query ${query.name}:`, error);
-          results[query.name] = { error: error.message };
+          results[query.name] = { error: error instanceof Error ? error.message : 'Unknown error' };
         }
       }
 
@@ -243,7 +243,7 @@ export class DatabaseService {
           results[query.name] = rows;
         } catch (error) {
           logger.error(`Error running validation ${query.name}:`, error);
-          results[query.name] = { error: error.message };
+          results[query.name] = { error: error instanceof Error ? error.message : 'Unknown error' };
         }
       }
 

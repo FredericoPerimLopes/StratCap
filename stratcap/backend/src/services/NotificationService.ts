@@ -82,8 +82,7 @@ class NotificationService {
     const [fund, investorEntity, commitment] = await Promise.all([
       Fund.findByPk(allocation.fundId),
       InvestorEntity.findByPk(allocation.investorEntityId),
-      allocation.commitment || 
-        require('../models/Commitment').default.findByPk(allocation.commitmentId),
+      require('../models/Commitment').default.findByPk(allocation.commitmentId),
     ]);
 
     if (!fund || !investorEntity || !commitment) {
@@ -156,8 +155,7 @@ class NotificationService {
     const [fund, investorEntity, commitment] = await Promise.all([
       Fund.findByPk(allocation.fundId),
       InvestorEntity.findByPk(allocation.investorEntityId),
-      allocation.commitment || 
-        require('../models/Commitment').default.findByPk(allocation.commitmentId),
+      require('../models/Commitment').default.findByPk(allocation.commitmentId),
     ]);
 
     if (!fund || !investorEntity || !commitment) {

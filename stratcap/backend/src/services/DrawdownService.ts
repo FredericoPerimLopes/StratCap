@@ -6,8 +6,8 @@ import { User } from '../models/User';
 import { Decimal } from 'decimal.js';
 import { CreditFacilityService } from './CreditFacilityService';
 import { NotificationService } from './NotificationService';
-import { ApprovalWorkflowService } from './ApprovalWorkflowService';
-import { DocumentService } from './DocumentService';
+import ApprovalWorkflowService from './ApprovalWorkflowService';
+import DocumentService from './DocumentService';
 
 export interface DrawdownRequest {
   facilityId: string;

@@ -2,10 +2,7 @@ import { Op } from 'sequelize';
 import { 
   Fund,
   Commitment,
-  Transaction,
-  InvestorEntity,
-  WaterfallCalculation,
-  DistributionEvent
+  Transaction
 } from '../models';
 
 interface IRRData {
@@ -71,7 +68,7 @@ export class PerformanceAnalyticsService {
     // Calculate basic metrics
     const { totalCalled, totalDistributed, nav } = this.calculateBasicMetrics(
       transactions, 
-      includeUnrealized,
+      includeUnrealized || false,
       fundId,
       asOfDate
     );
@@ -190,7 +187,7 @@ export class PerformanceAnalyticsService {
   async compareToBenchmark(
     fundId: string,
     benchmarkType: 'sp500' | 'nasdaq' | 'custom',
-    benchmarkData?: number[],
+    _benchmarkData?: number[],
     asOfDate?: Date
   ): Promise<BenchmarkComparison> {
     const fundMetrics = await this.calculateFundPerformance(fundId, asOfDate);
@@ -304,7 +301,7 @@ export class PerformanceAnalyticsService {
     transactions: any[],
     includeUnrealized: boolean,
     fundId?: string | null,
-    asOfDate?: Date
+    _asOfDate?: Date
   ) {
     const metrics = transactions.reduce((acc, transaction) => {
       const amount = parseFloat(transaction.amount);
@@ -381,7 +378,7 @@ export class PerformanceAnalyticsService {
   /**
    * Calculate Public Market Equivalent (PME)
    */
-  private async calculatePME(cashFlows: IRRData[], asOfDate?: Date): Promise<number> {
+  private async calculatePME(cashFlows: IRRData[], _asOfDate?: Date): Promise<number> {
     // Simplified PME calculation
     // In production, this would use actual market index data
     const marketReturn = 0.08; // Assume 8% market return

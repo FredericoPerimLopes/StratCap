@@ -48,7 +48,7 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Request logging
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   logger.info({
     method: req.method,
     url: req.url,
@@ -59,7 +59,7 @@ app.use((req, res, next) => {
 });
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.status(200).json({
     success: true,
     message: 'Server is running',

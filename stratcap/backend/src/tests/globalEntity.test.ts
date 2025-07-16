@@ -1,11 +1,11 @@
 import request from 'supertest';
-import { app } from '../app';
-import { User } from '../models/User';
-import { Fund } from '../models/Fund';
-import { FundFamily } from '../models/FundFamily';
-import { InvestorEntity } from '../models/InvestorEntity';
-import { Commitment } from '../models/Commitment';
-import { Investment } from '../models/Investment';
+import app from '../app';
+import User from '../models/User';
+import Fund from '../models/Fund';
+import FundFamily from '../models/FundFamily';
+import InvestorEntity from '../models/InvestorEntity';
+import Commitment from '../models/Commitment';
+import Investment from '../models/Investment';
 import { generateTestToken } from '../utils/testHelpers';
 import { Decimal } from 'decimal.js';
 

@@ -58,6 +58,12 @@ class Transaction extends Model<TransactionAttributes, TransactionCreationAttrib
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  // Association properties
+  public readonly fund?: any;
+  public readonly commitment?: any;
+  public readonly capitalActivity?: any;
+  public readonly originalTransaction?: any;
+
   // Associations
   static associate(models: any) {
     Transaction.belongsTo(models.Fund, {

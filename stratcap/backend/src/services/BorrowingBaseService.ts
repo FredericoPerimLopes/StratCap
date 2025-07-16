@@ -5,7 +5,7 @@ import { User } from '../models/User';
 import { Decimal } from 'decimal.js';
 import { CreditFacilityService } from './CreditFacilityService';
 import { NotificationService } from './NotificationService';
-import { ApprovalWorkflowService } from './ApprovalWorkflowService';
+import ApprovalWorkflowService from './ApprovalWorkflowService';
 
 export interface BorrowingBaseRequest {
   facilityId: string;

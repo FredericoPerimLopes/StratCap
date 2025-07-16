@@ -47,6 +47,10 @@ class TierAudit extends Model<TierAuditAttributes, TierAuditCreationAttributes> 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  // Association properties
+  public readonly waterfallCalculation?: any;
+  public readonly waterfallTier?: any;
+
   // Virtual getters for Decimal values
   get inputAmountDecimal(): Decimal {
     return new Decimal(this.inputAmount);

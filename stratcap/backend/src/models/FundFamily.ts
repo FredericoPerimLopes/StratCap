@@ -30,6 +30,10 @@ class FundFamily extends Model<FundFamilyAttributes, FundFamilyCreationAttribute
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  // Association properties
+  public readonly funds?: any[];
+  public readonly users?: any[];
+
   // Associations
   static associate(models: any) {
     FundFamily.hasMany(models.Fund, {

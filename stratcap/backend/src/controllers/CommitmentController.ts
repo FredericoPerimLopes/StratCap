@@ -576,7 +576,7 @@ export class CommitmentController {
     }
   }
 
-  async getCommitmentWorkflowSteps(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getCommitmentWorkflowSteps(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const steps = this.commitmentWorkflowService.getCommitmentWorkflowSteps();
 

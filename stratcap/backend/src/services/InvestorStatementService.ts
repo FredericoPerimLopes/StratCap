@@ -320,7 +320,7 @@ export class InvestorStatementService {
         address: investor.address
       },
       fund: {
-        id: fund.id,
+        id: fund.id.toString(),
         name: fund.name,
         code: fund.code,
         vintage: fund.vintage,
@@ -444,7 +444,7 @@ export class InvestorStatementService {
       try {
         const statement = await this.generateInvestorStatement(
           commitment.investorEntityId,
-          fundId,
+          fundId.toString(),
           quarterStartDate,
           quarterEndDate,
           options.includeAttachments
@@ -471,7 +471,7 @@ export class InvestorStatementService {
         results.push({
           investor: commitment.investorEntity,
           statement: null as any,
-          deliveryStatus: 'failed'
+          deliveryStatus: 'failed' as 'pending' | 'sent' | 'failed'
         });
       }
     }
@@ -650,7 +650,7 @@ export class InvestorStatementService {
 
     const capitalCallsList = capitalCalls.map(call => ({
       date: call.eventDate,
-      notice: call.noticeId || 'N/A',
+      notice: call.metadata?.noticeId || 'N/A',
       requestedAmount: parseFloat(call.totalAmount),
       actualAmount: parseFloat(call.totalAmount), // Simplified
       purpose: call.description || 'Investment purposes'
@@ -708,9 +708,9 @@ export class InvestorStatementService {
    * Build cash flow summary
    */
   private async buildCashFlowSummary(
-    commitment: any,
+    _commitment: any,
     allTransactions: any[],
-    endDate: Date
+    _endDate: Date
   ): Promise<CashFlowSummary> {
     // Group transactions by quarter
     const quarterlyMap = new Map();
@@ -775,7 +775,7 @@ export class InvestorStatementService {
   ): Promise<FeesSummary> {
     const feeCalculations = await FeeCalculation.findAll({
       where: {
-        commitmentId: commitment.id,
+        fundId: commitment.fundId,
         calculationDate: { [Op.between]: [startDate, endDate] }
       }
     });
@@ -784,9 +784,9 @@ export class InvestorStatementService {
       .filter(fee => fee.feeType === 'management')
       .map(fee => ({
         period: this.getQuarterKey(fee.calculationDate),
-        rate: parseFloat(fee.rate),
-        basis: parseFloat(fee.basis),
-        amount: parseFloat(fee.totalAmount),
+        rate: parseFloat(fee.feeRate),
+        basis: parseFloat(fee.basisAmount),
+        amount: parseFloat(fee.netFeeAmount),
         paid: fee.status === 'paid'
       }));
 
@@ -801,7 +801,7 @@ export class InvestorStatementService {
     const otherFees: any[] = []; // Would be populated from other fee types
 
     const totalFeesToDate = feeCalculations.reduce((sum, fee) => 
-      sum + parseFloat(fee.totalAmount), 0
+      sum + parseFloat(fee.netFeeAmount), 0
     );
 
     return {
@@ -816,7 +816,7 @@ export class InvestorStatementService {
    * Build tax information
    */
   private async buildTaxInformation(
-    commitment: any,
+    _commitment: any,
     taxYear: number
   ): Promise<TaxInformation> {
     // This would integrate with tax calculation services
@@ -891,7 +891,7 @@ export class InvestorStatementService {
     return typeMap[transaction.transactionType as keyof typeof typeMap] || transaction.transactionType;
   }
 
-  private calculateCapitalReconciliation(transactions: any[], commitment: any): any {
+  private calculateCapitalReconciliation(_transactions: any[], _commitment: any): any {
     // Simplified reconciliation calculation
     return {
       beginningCapital: 0,
@@ -921,10 +921,10 @@ export class InvestorStatementService {
   }
 
   private async calculateYTDMetrics(
-    investorId: string,
-    fundId: string,
-    yearStart: Date,
-    asOfDate: Date
+    _investorId: string,
+    _fundId: string,
+    _yearStart: Date,
+    _asOfDate: Date
   ): Promise<any> {
     // Simplified YTD calculation
     return {
@@ -944,46 +944,46 @@ export class InvestorStatementService {
   }
 
   private async gatherStatementAttachments(
-    investorId: string,
-    fundId: string,
-    startDate: Date,
-    endDate: Date
+    _investorId: string,
+    _fundId: string,
+    _startDate: Date,
+    _endDate: Date
   ): Promise<StatementAttachment[]> {
     // Would gather actual attachments from document storage
     return [];
   }
 
   private async deliverStatement(
-    investor: any,
-    statement: InvestorStatement,
-    customTemplate?: string
+    _investor: any,
+    _statement: InvestorStatement,
+    _customTemplate?: string
   ): Promise<'sent' | 'failed'> {
     // Would integrate with email delivery service
     return 'sent';
   }
 
   private async getAnnualTransactionHistory(
-    investorId: string,
-    fundId: string,
-    taxYear: number
+    _investorId: string,
+    _fundId: string,
+    _taxYear: number
   ): Promise<any[]> {
     // Would return detailed transaction history for tax purposes
     return [];
   }
 
   private async generateK1Statement(
-    investorId: string,
-    fundId: string,
-    taxYear: number
+    _investorId: string,
+    _fundId: string,
+    _taxYear: number
   ): Promise<any> {
     // Would generate actual K-1 tax document
     return {};
   }
 
   private async gatherTaxSupportingDocuments(
-    investorId: string,
-    fundId: string,
-    taxYear: number
+    _investorId: string,
+    _fundId: string,
+    _taxYear: number
   ): Promise<StatementAttachment[]> {
     // Would gather tax-related supporting documents
     return [];

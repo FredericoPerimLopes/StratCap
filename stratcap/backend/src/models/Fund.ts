@@ -49,6 +49,12 @@ class Fund extends Model<FundAttributes, FundCreationAttributes> implements Fund
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  // Association properties
+  public readonly fundFamily?: any;
+  public readonly commitments?: any[];
+  public readonly investments?: any[];
+  public readonly capitalActivities?: any[];
+
   // Virtual getters for Decimal values
   get targetSizeDecimal(): Decimal {
     return new Decimal(this.targetSize);

@@ -48,6 +48,13 @@ class Commitment extends Model<CommitmentAttributes, CommitmentCreationAttribute
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  // Association properties
+  public readonly fund?: any;
+  public readonly investorEntity?: any;
+  public readonly investorClass?: any;
+  public readonly closing?: any;
+  public readonly transactions?: any[];
+
   // Associations
   static associate(models: any) {
     Commitment.belongsTo(models.Fund, {

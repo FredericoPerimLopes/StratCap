@@ -1,0 +1,81 @@
+{
+  "sessionId": "session-1752672958972-2ips9a0lt",
+  "checkpointId": "checkpoint-1752672988973-itdu9z0sz",
+  "checkpointName": "auto-save-1752672988973",
+  "timestamp": "2025-07-16T13:36:28.974Z",
+  "data": {
+    "timestamp": "2025-07-16T13:36:28.973Z",
+    "changeCount": 5,
+    "changesByType": {
+      "swarm_created": [
+        {
+          "type": "swarm_created",
+          "data": {
+            "swarmId": "swarm-1752672958972-1nlzeae8v",
+            "swarmName": "hive-1752672958967",
+            "objective": "Now I need to make sure the backend is in a working state and well integrated with the frontend",
+            "workerCount": 8
+          },
+          "timestamp": "2025-07-16T13:35:58.974Z"
+        }
+      ],
+      "agent_activity": [
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1752672958972-1nlzeae8v-0",
+            "activity": "spawned",
+            "data": {
+              "type": "researcher",
+              "name": "Researcher Worker 1"
+            }
+          },
+          "timestamp": "2025-07-16T13:35:58.975Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1752672958972-1nlzeae8v-1",
+            "activity": "spawned",
+            "data": {
+              "type": "coder",
+              "name": "Coder Worker 2"
+            }
+          },
+          "timestamp": "2025-07-16T13:35:58.975Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1752672958972-1nlzeae8v-2",
+            "activity": "spawned",
+            "data": {
+              "type": "analyst",
+              "name": "Analyst Worker 3"
+            }
+          },
+          "timestamp": "2025-07-16T13:35:58.976Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1752672958972-1nlzeae8v-3",
+            "activity": "spawned",
+            "data": {
+              "type": "tester",
+              "name": "Tester Worker 4"
+            }
+          },
+          "timestamp": "2025-07-16T13:35:58.976Z"
+        }
+      ]
+    },
+    "statistics": {
+      "tasksProcessed": 0,
+      "tasksCompleted": 0,
+      "memoryUpdates": 0,
+      "agentActivities": 4,
+      "consensusDecisions": 0
+    }
+  }
+}

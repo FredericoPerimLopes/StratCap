@@ -45,6 +45,10 @@ class FeeCalculation extends Model<FeeCalculationAttributes, FeeCalculationCreat
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  // Association properties
+  public readonly offsets?: any[];
+  public readonly waivers?: any[];
+
   // Virtual getters for Decimal values
   get basisAmountDecimal(): Decimal {
     return new Decimal(this.basisAmount);

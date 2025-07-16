@@ -3,8 +3,8 @@ import Commitment from '../models/Commitment';
 import InvestorEntity from '../models/InvestorEntity';
 import Fund from '../models/Fund';
 import User from '../models/User';
-import { DocumentService } from './DocumentService';
-import { NotificationService } from './NotificationService';
+import DocumentService from './DocumentService';
+import NotificationService from './NotificationService';
 import { Op } from 'sequelize';
 
 export interface TransferStep {

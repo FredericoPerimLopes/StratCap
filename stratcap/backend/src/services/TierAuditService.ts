@@ -378,7 +378,7 @@ class TierAuditService {
   private validateStep(step: AuditStep): boolean {
     const validationResults = step.validationResults;
     
-    for (const [key, validation] of Object.entries(validationResults)) {
+    for (const [_key, validation] of Object.entries(validationResults)) {
       if (typeof validation === 'object' && validation.result === false) {
         return false;
       }

@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthRequest } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 import PerformanceAnalyticsService from '../services/PerformanceAnalyticsService';
 import CashFlowAnalyticsService from '../services/CashFlowAnalyticsService';
@@ -469,8 +468,11 @@ export class AnalyticsController {
       const { fundId } = req.params;
       const { format, includeHeaders, customColumns } = req.query;
 
+      const validFormats = ['csv', 'excel', 'pdf', 'json'] as const;
+      const selectedFormat = validFormats.includes(format as any) ? format as 'csv' | 'excel' | 'pdf' | 'json' : 'excel';
+      
       const options = {
-        format: (format as string) || 'excel',
+        format: selectedFormat,
         includeHeaders: includeHeaders !== 'false',
         customColumns: customColumns ? (customColumns as string).split(',') : undefined
       };
@@ -498,8 +500,11 @@ export class AnalyticsController {
       const { investorId } = req.params;
       const { format, includeHeaders } = req.query;
 
+      const validFormats = ['csv', 'excel', 'pdf', 'json'] as const;
+      const selectedFormat = validFormats.includes(format as any) ? format as 'csv' | 'excel' | 'pdf' | 'json' : 'excel';
+
       const options = {
-        format: (format as string) || 'excel',
+        format: selectedFormat,
         includeHeaders: includeHeaders !== 'false'
       };
 
@@ -528,8 +533,11 @@ export class AnalyticsController {
       const start = startDate ? new Date(startDate as string) : undefined;
       const end = endDate ? new Date(endDate as string) : undefined;
       
+      const validFormats = ['csv', 'excel', 'pdf', 'json'] as const;
+      const selectedFormat = validFormats.includes(format as any) ? format as 'csv' | 'excel' | 'pdf' | 'json' : 'excel';
+      
       const options = {
-        format: (format as string) || 'excel'
+        format: selectedFormat
       };
 
       const exportResult = await ExportService.exportCapitalActivity(
@@ -566,8 +574,11 @@ export class AnalyticsController {
       const start = startDate ? new Date(startDate as string) : undefined;
       const end = endDate ? new Date(endDate as string) : undefined;
       
+      const validFormats = ['csv', 'excel', 'pdf', 'json'] as const;
+      const selectedFormat = validFormats.includes(format as any) ? format as 'csv' | 'excel' | 'pdf' | 'json' : 'excel';
+      
       const options = {
-        format: (format as string) || 'excel'
+        format: selectedFormat
       };
 
       const exportResult = await ExportService.exportFeeCalculations(

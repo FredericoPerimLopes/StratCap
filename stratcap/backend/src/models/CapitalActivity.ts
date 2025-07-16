@@ -54,6 +54,13 @@ class CapitalActivity extends Model<CapitalActivityAttributes, CapitalActivityCr
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  // Association properties
+  public readonly fund?: any;
+  public readonly approver?: any;
+  public readonly transactions?: any[];
+  public readonly capitalAllocations?: any[];
+  public readonly distributionAllocations?: any[];
+
   // Associations
   static associate(models: any) {
     CapitalActivity.belongsTo(models.Fund, {

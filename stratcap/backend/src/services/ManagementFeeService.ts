@@ -201,7 +201,7 @@ class ManagementFeeService {
       });
 
       basisAmount = commitments.reduce(
-        (sum, commitment) => sum.plus(commitment.amountDecimal),
+        (sum, commitment) => sum.plus(new Decimal(commitment.commitmentAmount)),
         new Decimal(0)
       );
     } else {

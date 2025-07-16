@@ -122,7 +122,7 @@ class WaterfallCalculationService {
       };
     } catch (error) {
       console.error('Waterfall calculation error:', error);
-      throw new Error(`Waterfall calculation failed: ${error.message}`);
+      throw new Error(`Waterfall calculation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -456,7 +456,7 @@ class WaterfallCalculationService {
   private calculateSummaryMetrics(
     tiers: WaterfallTier[],
     distributions: DistributionEvent[],
-    fundData: any
+    _fundData: any
   ): any {
     const totalDistributed = tiers.reduce((sum, tier) => {
       return sum.plus(tier.distributedAmountDecimal);

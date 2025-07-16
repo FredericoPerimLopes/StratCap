@@ -1,11 +1,11 @@
 import request from 'supertest';
-import { app } from '../app';
+import app from '../app';
 import { CreditFacility } from '../models/CreditFacility';
 import { CreditDrawdown } from '../models/CreditDrawdown';
 import { CreditPaydown } from '../models/CreditPaydown';
 import { BorrowingBase } from '../models/BorrowingBase';
-import { User } from '../models/User';
-import { Fund } from '../models/Fund';
+import User from '../models/User';
+import Fund from '../models/Fund';
 import { generateTestToken } from '../utils/testHelpers';
 import { Decimal } from 'decimal.js';
 
