@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { FundFamily, Fund, User } from '../models';
 import { AuthRequest } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';

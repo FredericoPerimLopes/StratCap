@@ -104,7 +104,7 @@ class WaterfallController {
       console.error('Waterfall calculation error:', error);
       res.status(500).json({
         error: 'Internal server error during waterfall calculation',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -152,7 +152,7 @@ class WaterfallController {
       console.error('Error fetching waterfall calculation:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -204,7 +204,7 @@ class WaterfallController {
       console.error('Error fetching fund waterfall calculations:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -272,7 +272,7 @@ class WaterfallController {
       console.error('Error creating hypothetical scenarios:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -302,7 +302,7 @@ class WaterfallController {
       console.error('Error fetching audit trail:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -326,7 +326,7 @@ class WaterfallController {
       console.error('Error validating calculation:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -370,7 +370,7 @@ class WaterfallController {
       console.error('Error fetching distribution events:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -424,7 +424,7 @@ class WaterfallController {
       console.error('Error updating distribution event status:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -485,7 +485,7 @@ class WaterfallController {
       console.error('Error approving calculation:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -530,7 +530,7 @@ class WaterfallController {
       console.error('Error fetching allocation summary:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -576,7 +576,7 @@ class WaterfallController {
       console.error('Error calculating preferred return:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -625,7 +625,7 @@ class WaterfallController {
       console.error('Error calculating carried interest:', error);
       res.status(500).json({
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };

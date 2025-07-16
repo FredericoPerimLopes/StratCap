@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional, Op } from 'sequelize';
 import sequelize from '../db/database';
 import { Decimal } from 'decimal.js';
 
@@ -103,7 +103,7 @@ class FeeBasis extends Model<FeeBasisAttributes, FeeBasisCreationAttributes> imp
 
     if (asOfDate) {
       whereClause.asOfDate = {
-        [sequelize.Op.lte]: asOfDate,
+        [Op.lte]: asOfDate,
       };
     }
 

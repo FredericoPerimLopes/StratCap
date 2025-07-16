@@ -59,7 +59,7 @@ export const errorHandler = (
   });
 };
 
-export const notFound = (req: Request, res: Response, next: NextFunction): void => {
+export const notFound = (req: Request, _res: Response, next: NextFunction): void => {
   const error = new AppError(`Not found - ${req.originalUrl}`, 404);
   next(error);
 };

@@ -6,7 +6,7 @@ import { AppError } from './errorHandler';
 
 export interface AuthRequest extends Request {
   user?: User;
-  userId?: number;
+  userId?: string;
 }
 
 export const generateToken = (user: User): string => {
@@ -38,7 +38,7 @@ export const generateRefreshToken = (user: User): string => {
 
 export const protect = async (
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -78,7 +78,7 @@ export const protect = async (
 
     // Grant access to protected route
     req.user = user;
-    req.userId = user.id;
+    req.userId = user.id.toString();
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
@@ -92,7 +92,7 @@ export const protect = async (
 };
 
 export const authorize = (...roles: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction): void => {
+  return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     if (!req.user) {
       return next(new AppError('User not authenticated', 401));
     }
@@ -109,7 +109,7 @@ export const authorize = (...roles: string[]) => {
 
 export const optionalAuth = async (
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -133,7 +133,7 @@ export const optionalAuth = async (
       const user = await User.findByPk(decoded.id);
       if (user && user.isActive) {
         req.user = user;
-        req.userId = user.id;
+        req.userId = user.id.toString();
       }
     }
 

@@ -49,7 +49,7 @@ export class AuthController {
     }
   }
 
-  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async logout(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       res.clearCookie('jwt');
       res.clearCookie('refreshToken');
@@ -144,7 +144,7 @@ export class AuthController {
       }
 
       const { currentPassword, newPassword } = req.body;
-      await authService.changePassword(req.userId, currentPassword, newPassword);
+      await authService.changePassword(parseInt(req.userId!), currentPassword, newPassword);
 
       res.status(200).json({
         success: true,
@@ -161,7 +161,7 @@ export class AuthController {
         throw new AppError('User not authenticated', 401);
       }
 
-      const result = await authService.setupMFA(req.userId);
+      const result = await authService.setupMFA(parseInt(req.userId!));
 
       res.status(200).json({
         success: true,
@@ -179,7 +179,7 @@ export class AuthController {
       }
 
       const { token } = req.body;
-      const verified = await authService.verifyMFA(req.userId, token);
+      const verified = await authService.verifyMFA(parseInt(req.userId!), token);
 
       if (!verified) {
         throw new AppError('Invalid MFA token', 400);
@@ -200,7 +200,7 @@ export class AuthController {
         throw new AppError('User not authenticated', 401);
       }
 
-      await authService.disableMFA(req.userId);
+      await authService.disableMFA(parseInt(req.userId!));
 
       res.status(200).json({
         success: true,

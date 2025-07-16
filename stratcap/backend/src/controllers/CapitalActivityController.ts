@@ -280,7 +280,7 @@ class CapitalActivityController {
       return res.json({ message: 'Distribution allocation payment updated successfully' });
     } catch (error) {
       console.error('Error updating distribution allocation payment:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to update payment' 
       });
     }
@@ -293,10 +293,10 @@ class CapitalActivityController {
     try {
       const { id } = req.params;
       const summary = await this.capitalCallService.getCapitalCallSummary(parseInt(id));
-      res.json(summary);
+      return res.json(summary);
     } catch (error) {
       console.error('Error fetching capital call summary:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to fetch summary' 
       });
     }
@@ -309,10 +309,10 @@ class CapitalActivityController {
     try {
       const { id } = req.params;
       const summary = await this.distributionService.getDistributionSummary(parseInt(id));
-      res.json(summary);
+      return res.json(summary);
     } catch (error) {
       console.error('Error fetching distribution summary:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to fetch summary' 
       });
     }
@@ -331,10 +331,10 @@ class CapitalActivityController {
         fundId ? parseInt(fundId as string) : undefined
       );
 
-      res.json(history);
+      return res.json(history);
     } catch (error) {
       console.error('Error fetching investor allocation history:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to fetch allocation history' 
       });
     }
@@ -347,10 +347,10 @@ class CapitalActivityController {
     try {
       const { fundId } = req.params;
       const metrics = await this.allocationService.getFundAllocationMetrics(parseInt(fundId));
-      res.json(metrics);
+      return res.json(metrics);
     } catch (error) {
       console.error('Error fetching fund allocation metrics:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to fetch metrics' 
       });
     }
@@ -368,7 +368,7 @@ class CapitalActivityController {
       return res.json({ message: 'Reminder sent successfully' });
     } catch (error) {
       console.error('Error sending reminder:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to send reminder' 
       });
     }
@@ -386,10 +386,10 @@ class CapitalActivityController {
         type as 'capital' | 'distribution'
       );
       
-      res.json(history);
+      return res.json(history);
     } catch (error) {
       console.error('Error fetching notification history:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to fetch notification history' 
       });
     }
@@ -404,10 +404,10 @@ class CapitalActivityController {
       
       const validationResults = await this.allocationService.validateAllocations(allocations);
       
-      res.json(validationResults);
+      return res.json(validationResults);
     } catch (error) {
       console.error('Error validating allocations:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to validate allocations' 
       });
     }
@@ -429,7 +429,7 @@ class CapitalActivityController {
       return res.json({ message: 'Distribution payments processed successfully' });
     } catch (error) {
       console.error('Error processing distribution payments:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to process payments' 
       });
     }
@@ -473,7 +473,7 @@ class CapitalActivityController {
       return res.json({ message: 'Capital activity cancelled successfully' });
     } catch (error) {
       console.error('Error cancelling capital activity:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to cancel activity' 
       });
     }
@@ -498,10 +498,10 @@ class CapitalActivityController {
 
       await activity.update(updates);
 
-      res.json(activity);
+      return res.json(activity);
     } catch (error) {
       console.error('Error updating capital activity:', error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to update activity' 
       });
     }

@@ -889,7 +889,7 @@ export class ReportController {
       };
 
       // Generate report for each fund in the family
-      for (const fund of fundFamily.funds) {
+      for (const fund of fundFamily.funds || []) {
         try {
           const performanceMetrics = await PerformanceAnalyticsService.calculateFundPerformance(
             fund.id,
@@ -1007,8 +1007,8 @@ export class ReportController {
         try {
           const performanceMetrics = await PerformanceAnalyticsService.calculateInvestorPerformance(
             investorId,
-            commitment.fundId,
-            asOf.toISOString()
+            commitment.fundId.toString(),
+            asOf
           );
 
           const commitmentAmount = parseFloat(commitment.commitmentAmount);
@@ -1134,15 +1134,15 @@ export class ReportController {
         }
         
         acc[type].count += 1;
-        acc[type].totalAmount += parseFloat(fee.totalAmount);
+        acc[type].totalAmount += parseFloat(fee.netFeeAmount);
         acc[type].fees.push({
           id: fee.id,
           calculationDate: fee.calculationDate,
-          fund: fee.fund?.name,
-          investor: fee.commitment?.investorEntity?.name,
-          basis: parseFloat(fee.basis),
-          rate: parseFloat(fee.rate),
-          amount: parseFloat(fee.totalAmount),
+          fund: (fee as any).fund?.name,
+          investor: (fee as any).commitment?.investorEntity?.name,
+          basis: parseFloat(fee.basisAmount),
+          rate: parseFloat(fee.feeRate),
+          amount: parseFloat(fee.netFeeAmount),
           status: fee.status
         });
         
@@ -1151,12 +1151,12 @@ export class ReportController {
 
       // Calculate summary statistics
       const summary = {
-        totalFees: feeCalculations.reduce((sum, fee) => sum + parseFloat(fee.totalAmount), 0),
+        totalFees: feeCalculations.reduce((sum, fee) => sum + parseFloat(fee.netFeeAmount), 0),
         feeCount: feeCalculations.length,
         periodStart: startDate,
         periodEnd: endDate,
         byStatus: feeCalculations.reduce((acc, fee) => {
-          acc[fee.status] = (acc[fee.status] || 0) + parseFloat(fee.totalAmount);
+          acc[fee.status] = (acc[fee.status] || 0) + parseFloat(fee.netFeeAmount);
           return acc;
         }, {} as Record<string, number>)
       };

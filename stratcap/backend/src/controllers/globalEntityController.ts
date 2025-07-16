@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { GlobalEntityService, EntitySearchFilters } from '../services/GlobalEntityService';
+import { Decimal } from 'decimal.js';
 
 export class GlobalEntityController {
   private globalEntityService: GlobalEntityService;
