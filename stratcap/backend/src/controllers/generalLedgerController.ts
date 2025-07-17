@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import { Transaction } from 'sequelize';
 import { GeneralLedgerService, JournalEntryRequest, AutoJournalEntryRequest, GLAccountRequest, TrialBalanceOptions } from '../services/GeneralLedgerService';
 import sequelize from '../db/database';
@@ -13,7 +14,7 @@ export class GeneralLedgerController {
   /**
    * Create a new GL account
    */
-  createGLAccount = async (req: Request, res: Response): Promise<void> => {
+  createGLAccount = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -56,7 +57,7 @@ export class GeneralLedgerController {
   /**
    * Create a manual journal entry
    */
-  createJournalEntry = async (req: Request, res: Response): Promise<void> => {
+  createJournalEntry = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -97,7 +98,7 @@ export class GeneralLedgerController {
   /**
    * Create automated journal entry
    */
-  createAutomatedJournalEntry = async (req: Request, res: Response): Promise<void> => {
+  createAutomatedJournalEntry = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -139,7 +140,7 @@ export class GeneralLedgerController {
   /**
    * Post a journal entry
    */
-  postJournalEntry = async (req: Request, res: Response): Promise<void> => {
+  postJournalEntry = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -171,7 +172,7 @@ export class GeneralLedgerController {
   /**
    * Reverse a journal entry
    */
-  reverseJournalEntry = async (req: Request, res: Response): Promise<void> => {
+  reverseJournalEntry = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -205,7 +206,7 @@ export class GeneralLedgerController {
   /**
    * Get journal entry by ID
    */
-  getJournalEntry = async (req: Request, res: Response): Promise<void> => {
+  getJournalEntry = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const journalEntryId = req.params.id;
       const journalEntry = await this.generalLedgerService.getJournalEntryById(journalEntryId);
@@ -226,7 +227,7 @@ export class GeneralLedgerController {
   /**
    * Get trial balance
    */
-  getTrialBalance = async (req: Request, res: Response): Promise<void> => {
+  getTrialBalance = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const options: TrialBalanceOptions = {
         asOfDate: new Date(req.query.asOfDate as string),
@@ -263,7 +264,7 @@ export class GeneralLedgerController {
   /**
    * Get account balance
    */
-  getAccountBalance = async (req: Request, res: Response): Promise<void> => {
+  getAccountBalance = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const accountId = req.params.accountId;
       const asOfDate = new Date(req.query.asOfDate as string || new Date());
@@ -291,7 +292,7 @@ export class GeneralLedgerController {
   /**
    * Get chart of accounts
    */
-  getChartOfAccounts = async (req: Request, res: Response): Promise<void> => {
+  getChartOfAccounts = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const includeInactive = req.query.includeInactive === 'true';
       const accountType = req.query.accountType as string;
@@ -332,7 +333,7 @@ export class GeneralLedgerController {
   /**
    * Get account activity (journal entry line items for an account)
    */
-  getAccountActivity = async (req: Request, res: Response): Promise<void> => {
+  getAccountActivity = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const accountId = req.params.accountId;
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : null;
@@ -401,7 +402,7 @@ export class GeneralLedgerController {
   /**
    * Get GL dashboard metrics
    */
-  getDashboardMetrics = async (req: Request, res: Response): Promise<void> => {
+  getDashboardMetrics = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const fundId = req.query.fundId as string;
       const asOfDate = new Date(req.query.asOfDate as string || new Date());
@@ -489,7 +490,7 @@ export class GeneralLedgerController {
   /**
    * Validate journal entry
    */
-  validateJournalEntry = async (req: Request, res: Response): Promise<void> => {
+  validateJournalEntry = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { lineItems } = req.body;
 

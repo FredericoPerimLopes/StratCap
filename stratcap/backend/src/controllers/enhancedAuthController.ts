@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import { Transaction } from 'sequelize';
 import { EnhancedAuthService, LoginRequest, PasswordResetRequest } from '../services/EnhancedAuthService';
 import sequelize from '../db/database';
@@ -16,7 +17,7 @@ export class EnhancedAuthController {
   /**
    * Helper method to ensure user ID is available
    */
-  private getUserId(req: Request): number {
+  private getUserId(req: AuthRequest): number {
     const user = req.user as User;
     if (!user || !user.id) {
       throw new AppError('User ID is required', 400);
@@ -27,7 +28,7 @@ export class EnhancedAuthController {
   /**
    * Enhanced login with MFA and device tracking
    */
-  login = async (req: Request, res: Response): Promise<void> => {
+  login = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -86,7 +87,7 @@ export class EnhancedAuthController {
   /**
    * Setup MFA for user
    */
-  setupMFA = async (req: Request, res: Response): Promise<void> => {
+  setupMFA = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -120,7 +121,7 @@ export class EnhancedAuthController {
   /**
    * Enable MFA after verification
    */
-  enableMFA = async (req: Request, res: Response): Promise<void> => {
+  enableMFA = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -159,7 +160,7 @@ export class EnhancedAuthController {
   /**
    * Disable MFA
    */
-  disableMFA = async (req: Request, res: Response): Promise<void> => {
+  disableMFA = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -198,7 +199,7 @@ export class EnhancedAuthController {
   /**
    * Request password reset
    */
-  requestPasswordReset = async (req: Request, res: Response): Promise<void> => {
+  requestPasswordReset = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -235,7 +236,7 @@ export class EnhancedAuthController {
   /**
    * Reset password with token
    */
-  resetPassword = async (req: Request, res: Response): Promise<void> => {
+  resetPassword = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -273,7 +274,7 @@ export class EnhancedAuthController {
   /**
    * Change password (authenticated user)
    */
-  changePassword = async (req: Request, res: Response): Promise<void> => {
+  changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -312,7 +313,7 @@ export class EnhancedAuthController {
   /**
    * Refresh access token
    */
-  refreshToken = async (req: Request, res: Response): Promise<void> => {
+  refreshToken = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -354,7 +355,7 @@ export class EnhancedAuthController {
   /**
    * Logout from current session
    */
-  logout = async (req: Request, res: Response): Promise<void> => {
+  logout = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -386,7 +387,7 @@ export class EnhancedAuthController {
   /**
    * Logout from all devices
    */
-  logoutAll = async (req: Request, res: Response): Promise<void> => {
+  logoutAll = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -415,7 +416,7 @@ export class EnhancedAuthController {
   /**
    * Get user sessions
    */
-  getSessions = async (req: Request, res: Response): Promise<void> => {
+  getSessions = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = this.getUserId(req);
       const currentSessionToken = req.cookies.refreshToken;
@@ -437,7 +438,7 @@ export class EnhancedAuthController {
   /**
    * Revoke specific session
    */
-  revokeSession = async (req: Request, res: Response): Promise<void> => {
+  revokeSession = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -476,7 +477,7 @@ export class EnhancedAuthController {
   /**
    * Get security settings
    */
-  getSecuritySettings = async (req: Request, res: Response): Promise<void> => {
+  getSecuritySettings = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = this.getUserId(req);
       const settings = await this.authService.getSecuritySettings(userId);
@@ -503,7 +504,7 @@ export class EnhancedAuthController {
   /**
    * Validate current session
    */
-  validateSession = async (req: Request, res: Response): Promise<void> => {
+  validateSession = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       res.json({
         success: true,

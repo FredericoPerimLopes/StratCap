@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import { DataAnalysisService, PivotTableConfig, PivotFilter, ExportOptions } from '../services/DataAnalysisService';
 
 export class DataAnalysisController {
@@ -11,7 +12,7 @@ export class DataAnalysisController {
   /**
    * Create a new pivot table configuration
    */
-  createPivotTable = async (req: Request, res: Response): Promise<void> => {
+  createPivotTable = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const config = {
         name: req.body.name,
@@ -45,7 +46,7 @@ export class DataAnalysisController {
   /**
    * Execute a pivot table
    */
-  executePivotTable = async (req: Request, res: Response): Promise<void> => {
+  executePivotTable = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const configId = req.params.configId;
       const runtimeFilters = req.body.filters as PivotFilter[] | undefined;
@@ -68,7 +69,7 @@ export class DataAnalysisController {
   /**
    * Get data source schema information
    */
-  getDataSourceSchema = async (req: Request, res: Response): Promise<void> => {
+  getDataSourceSchema = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const dataSource = req.params.dataSource;
       const schema = await this.dataAnalysisService.getDataSourceSchema(dataSource);
@@ -89,7 +90,7 @@ export class DataAnalysisController {
   /**
    * Create a custom report
    */
-  createCustomReport = async (req: Request, res: Response): Promise<void> => {
+  createCustomReport = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const report = {
         name: req.body.name,
@@ -121,7 +122,7 @@ export class DataAnalysisController {
   /**
    * Execute a custom report
    */
-  executeCustomReport = async (req: Request, res: Response): Promise<void> => {
+  executeCustomReport = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const reportId = req.params.reportId;
       const parameters = req.body.parameters;
@@ -144,7 +145,7 @@ export class DataAnalysisController {
   /**
    * Export data in various formats
    */
-  exportData = async (req: Request, res: Response): Promise<void> => {
+  exportData = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const dataSource = req.params.dataSource;
       const options: ExportOptions = {
@@ -181,7 +182,7 @@ export class DataAnalysisController {
   /**
    * Get predefined analysis templates
    */
-  getAnalysisTemplates = async (req: Request, res: Response): Promise<void> => {
+  getAnalysisTemplates = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const category = req.query.category as string;
       const type = req.query.type as string;
@@ -214,7 +215,7 @@ export class DataAnalysisController {
   /**
    * Get available data sources
    */
-  getDataSources = async (_req: Request, res: Response): Promise<void> => {
+  getDataSources = async (_req: AuthRequest, res: Response): Promise<void> => {
     try {
       const dataSources = [
         {
@@ -270,7 +271,7 @@ export class DataAnalysisController {
   /**
    * Preview data from a data source
    */
-  previewData = async (req: Request, res: Response): Promise<void> => {
+  previewData = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const dataSource = req.params.dataSource;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -311,7 +312,7 @@ export class DataAnalysisController {
   /**
    * Execute template-based analysis
    */
-  executeTemplate = async (req: Request, res: Response): Promise<void> => {
+  executeTemplate = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const templateId = req.params.templateId;
       const runtimeFilters = req.body.filters as PivotFilter[] | undefined;
@@ -335,7 +336,7 @@ export class DataAnalysisController {
   /**
    * Validate pivot table configuration
    */
-  validatePivotConfig = async (req: Request, res: Response): Promise<void> => {
+  validatePivotConfig = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const config = req.body as Omit<PivotTableConfig, 'id' | 'createdAt' | 'updatedAt'>;
       
@@ -387,7 +388,7 @@ export class DataAnalysisController {
   /**
    * Get aggregation functions available for measures
    */
-  getAggregationFunctions = async (_req: Request, res: Response): Promise<void> => {
+  getAggregationFunctions = async (_req: AuthRequest, res: Response): Promise<void> => {
     try {
       const functions = [
         {

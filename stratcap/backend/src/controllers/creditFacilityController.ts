@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import { Transaction } from 'sequelize';
 import { CreditFacilityService, CreditFacilityCreateRequest, CreditFacilityUpdateRequest } from '../services/CreditFacilityService';
 import { DrawdownService, DrawdownRequest } from '../services/DrawdownService';
@@ -25,7 +26,7 @@ export class CreditFacilityController {
   /**
    * Create a new credit facility
    */
-  createFacility = async (req: Request, res: Response): Promise<void> => {
+  createFacility = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -72,7 +73,7 @@ export class CreditFacilityController {
   /**
    * Update an existing credit facility
    */
-  updateFacility = async (req: Request, res: Response): Promise<void> => {
+  updateFacility = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -101,7 +102,7 @@ export class CreditFacilityController {
   /**
    * Get facility by ID
    */
-  getFacility = async (req: Request, res: Response): Promise<void> => {
+  getFacility = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const facilityId = req.params.id;
       const facility = await this.creditFacilityService.getFacilityById(facilityId);
@@ -121,7 +122,7 @@ export class CreditFacilityController {
   /**
    * Get facilities by fund
    */
-  getFacilitiesByFund = async (req: Request, res: Response): Promise<void> => {
+  getFacilitiesByFund = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const fundId = req.params.fundId;
       const facilities = await this.creditFacilityService.getFacilitiesByFund(fundId);
@@ -141,7 +142,7 @@ export class CreditFacilityController {
   /**
    * Get facility utilization summary
    */
-  getFacilityUtilization = async (req: Request, res: Response): Promise<void> => {
+  getFacilityUtilization = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const facilityId = req.params.id;
       const utilization = await this.creditFacilityService.getFacilityUtilization(facilityId);
@@ -161,7 +162,7 @@ export class CreditFacilityController {
   /**
    * Get credit metrics for a fund
    */
-  getCreditMetrics = async (req: Request, res: Response): Promise<void> => {
+  getCreditMetrics = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const fundId = req.params.fundId;
       const metrics = await this.creditFacilityService.getCreditMetrics(fundId);
@@ -181,7 +182,7 @@ export class CreditFacilityController {
   /**
    * Terminate a credit facility
    */
-  terminateFacility = async (req: Request, res: Response): Promise<void> => {
+  terminateFacility = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -217,7 +218,7 @@ export class CreditFacilityController {
   /**
    * Request a drawdown
    */
-  requestDrawdown = async (req: Request, res: Response): Promise<void> => {
+  requestDrawdown = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -256,7 +257,7 @@ export class CreditFacilityController {
   /**
    * Approve a drawdown
    */
-  approveDrawdown = async (req: Request, res: Response): Promise<void> => {
+  approveDrawdown = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -291,7 +292,7 @@ export class CreditFacilityController {
   /**
    * Fund a drawdown
    */
-  fundDrawdown = async (req: Request, res: Response): Promise<void> => {
+  fundDrawdown = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -326,7 +327,7 @@ export class CreditFacilityController {
   /**
    * Get drawdowns for a facility
    */
-  getDrawdowns = async (req: Request, res: Response): Promise<void> => {
+  getDrawdowns = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const facilityId = req.params.facilityId;
       const status = req.query.status as string;
@@ -351,7 +352,7 @@ export class CreditFacilityController {
   /**
    * Initiate a paydown
    */
-  initiatePaydown = async (req: Request, res: Response): Promise<void> => {
+  initiatePaydown = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -391,7 +392,7 @@ export class CreditFacilityController {
   /**
    * Process a paydown
    */
-  processPaydown = async (req: Request, res: Response): Promise<void> => {
+  processPaydown = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -426,7 +427,7 @@ export class CreditFacilityController {
   /**
    * Get paydowns for a facility
    */
-  getPaydowns = async (req: Request, res: Response): Promise<void> => {
+  getPaydowns = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const facilityId = req.params.facilityId;
       const status = req.query.status as string;
@@ -451,7 +452,7 @@ export class CreditFacilityController {
   /**
    * Create borrowing base calculation
    */
-  createBorrowingBase = async (req: Request, res: Response): Promise<void> => {
+  createBorrowingBase = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -490,7 +491,7 @@ export class CreditFacilityController {
   /**
    * Submit borrowing base for approval
    */
-  submitBorrowingBase = async (req: Request, res: Response): Promise<void> => {
+  submitBorrowingBase = async (req: AuthRequest, res: Response): Promise<void> => {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
@@ -521,7 +522,7 @@ export class CreditFacilityController {
   /**
    * Get borrowing base summary
    */
-  getBorrowingBaseSummary = async (req: Request, res: Response): Promise<void> => {
+  getBorrowingBaseSummary = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const borrowingBaseId = req.params.id;
       const summary = await this.borrowingBaseService.getBorrowingBaseSummary(borrowingBaseId);
@@ -543,7 +544,7 @@ export class CreditFacilityController {
   /**
    * Calculate facility fees for a period
    */
-  calculateFees = async (req: Request, res: Response): Promise<void> => {
+  calculateFees = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const facilityId = req.params.id;
       const periodStart = new Date(req.query.periodStart as string);
@@ -566,7 +567,7 @@ export class CreditFacilityController {
   /**
    * Get daily fee accruals
    */
-  getDailyAccruals = async (req: Request, res: Response): Promise<void> => {
+  getDailyAccruals = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const facilityId = req.params.id;
       const accrualDate = req.query.date ? new Date(req.query.date as string) : new Date();
@@ -588,7 +589,7 @@ export class CreditFacilityController {
   /**
    * Generate fee schedule
    */
-  generateFeeSchedule = async (req: Request, res: Response): Promise<void> => {
+  generateFeeSchedule = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const facilityId = req.params.id;
       const scheduleType = req.query.scheduleType as 'monthly' | 'quarterly' | 'annual' || 'quarterly';
@@ -611,7 +612,7 @@ export class CreditFacilityController {
   /**
    * Calculate effective interest rate
    */
-  calculateEffectiveRate = async (req: Request, res: Response): Promise<void> => {
+  calculateEffectiveRate = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const facilityId = req.params.id;
       const periodStart = new Date(req.query.periodStart as string);
@@ -634,7 +635,7 @@ export class CreditFacilityController {
   /**
    * Get facilities requiring attention
    */
-  getFacilitiesRequiringAttention = async (req: Request, res: Response): Promise<void> => {
+  getFacilitiesRequiringAttention = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const fundId = req.query.fundId as string;
       const attention = await this.creditFacilityService.getFacilitiesRequiringAttention(fundId);

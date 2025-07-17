@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import { Decimal } from 'decimal.js';
 import WaterfallCalculationService from '../services/WaterfallCalculationService';
 import PreferredReturnService from '../services/PreferredReturnService';
@@ -29,7 +30,7 @@ class WaterfallController {
   /**
    * Calculate waterfall distribution
    */
-  calculateWaterfall = async (req: Request, res: Response): Promise<void> => {
+  calculateWaterfall = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const {
         fundId,
@@ -112,7 +113,7 @@ class WaterfallController {
   /**
    * Get waterfall calculation by ID
    */
-  getWaterfallCalculation = async (req: Request, res: Response): Promise<void> => {
+  getWaterfallCalculation = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
 
@@ -160,7 +161,7 @@ class WaterfallController {
   /**
    * Get all waterfall calculations for a fund
    */
-  getFundWaterfallCalculations = async (req: Request, res: Response): Promise<void> => {
+  getFundWaterfallCalculations = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { fundId } = req.params;
       const { status, calculationType, page = 1, limit = 10 } = req.query;
@@ -212,7 +213,7 @@ class WaterfallController {
   /**
    * Create hypothetical waterfall scenarios
    */
-  createHypotheticalScenarios = async (req: Request, res: Response): Promise<void> => {
+  createHypotheticalScenarios = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { fundId, scenarios } = req.body;
 
@@ -280,7 +281,7 @@ class WaterfallController {
   /**
    * Get audit trail for calculation
    */
-  getAuditTrail = async (req: Request, res: Response): Promise<void> => {
+  getAuditTrail = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { calculationId } = req.params;
       const { format = 'summary' } = req.query;
@@ -310,7 +311,7 @@ class WaterfallController {
   /**
    * Validate waterfall calculation
    */
-  validateCalculation = async (req: Request, res: Response): Promise<void> => {
+  validateCalculation = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { calculationId } = req.params;
 
@@ -334,7 +335,7 @@ class WaterfallController {
   /**
    * Get distribution events for calculation
    */
-  getDistributionEvents = async (req: Request, res: Response): Promise<void> => {
+  getDistributionEvents = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { calculationId } = req.params;
       const { investorId, eventType, status } = req.query;
@@ -378,7 +379,7 @@ class WaterfallController {
   /**
    * Update distribution event status
    */
-  updateDistributionEventStatus = async (req: Request, res: Response): Promise<void> => {
+  updateDistributionEventStatus = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { eventId } = req.params;
       const { status, paymentDate, paymentReference, notes } = req.body;
@@ -432,7 +433,7 @@ class WaterfallController {
   /**
    * Approve waterfall calculation
    */
-  approveCalculation = async (req: Request, res: Response): Promise<void> => {
+  approveCalculation = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { calculationId } = req.params;
       const { approvalNotes } = req.body;
@@ -493,7 +494,7 @@ class WaterfallController {
   /**
    * Get allocation summary for calculation
    */
-  getAllocationSummary = async (req: Request, res: Response): Promise<void> => {
+  getAllocationSummary = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { calculationId } = req.params;
 
@@ -538,7 +539,7 @@ class WaterfallController {
   /**
    * Calculate preferred return only
    */
-  calculatePreferredReturn = async (req: Request, res: Response): Promise<void> => {
+  calculatePreferredReturn = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const {
         capitalBase,
@@ -584,7 +585,7 @@ class WaterfallController {
   /**
    * Calculate carried interest only
    */
-  calculateCarriedInterest = async (req: Request, res: Response): Promise<void> => {
+  calculateCarriedInterest = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const {
         distributionAmount,
