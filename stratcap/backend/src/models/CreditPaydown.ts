@@ -167,7 +167,7 @@ export class CreditPaydown extends Model<CreditPaydownAttributes, CreditPaydownC
     return Math.floor((today.getTime() - this.paymentDate.getTime()) / (1000 * 60 * 60 * 24));
   }
 
-  public calculateNewFacilityBalances(currentOutstanding: Decimal, currentAvailable: Decimal, totalCommitment: Decimal) {
+  public calculateNewFacilityBalances(currentOutstanding: Decimal, _currentAvailable: Decimal, totalCommitment: Decimal) {
     const principalReduction = this.getPrincipalAmountDecimal();
     const newOutstanding = currentOutstanding.minus(principalReduction);
     const newAvailable = totalCommitment.minus(newOutstanding);
@@ -229,6 +229,8 @@ export class CreditPaydown extends Model<CreditPaydownAttributes, CreditPaydownC
     };
   }
 }
+
+export default CreditPaydown;
 
 export function initCreditPaydown(sequelize: Sequelize): typeof CreditPaydown {
   CreditPaydown.init(

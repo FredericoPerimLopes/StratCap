@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import FeeController from '../controllers/FeeController';
-import { authMiddleware } from '../middleware/auth';
-import { validateRequest } from '../middleware/validation';
+import { protect } from '../middleware/auth';
+import { validateQuery } from '../middleware/validation';
 import { body, param, query } from 'express-validator';
 
 const router = Router();
 const feeController = new FeeController();
 
 // Apply authentication middleware to all routes
-router.use(authMiddleware);
+router.use(protect);
 
 // Validation schemas
 const managementFeeValidation = [
@@ -55,14 +55,14 @@ const feeBasisValidation = [
 router.post(
   '/funds/:fundId/management-fees/calculate',
   managementFeeValidation,
-  validateRequest,
+  validateQuery,
   feeController.calculateManagementFee
 );
 
 router.post(
   '/calculations/:calculationId/true-up',
   trueUpValidation,
-  validateRequest,
+  validateQuery,
   feeController.createManagementFeetrueUp
 );
 
@@ -70,7 +70,7 @@ router.post(
 router.post(
   '/funds/:fundId/carried-interest/calculate',
   carriedInterestValidation,
-  validateRequest,
+  validateQuery,
   feeController.calculateCarriedInterest
 );
 
@@ -83,14 +83,14 @@ router.get(
     query('endDate').optional().isISO8601().withMessage('End date must be a valid date'),
     query('feeType').optional().isIn(['management', 'carried_interest', 'other']).withMessage('Invalid fee type'),
   ],
-  validateRequest,
+  validateQuery,
   feeController.getFeeCalculations
 );
 
 router.post(
   '/calculations/:calculationId/post',
   [param('calculationId').isInt({ min: 1 }).withMessage('Valid calculation ID is required')],
-  validateRequest,
+  validateQuery,
   feeController.postFeeCalculation
 );
 
@@ -100,7 +100,7 @@ router.post(
     param('calculationId').isInt({ min: 1 }).withMessage('Valid calculation ID is required'),
     body('reason').isString().isLength({ min: 10 }).withMessage('Reversal reason is required and must be at least 10 characters'),
   ],
-  validateRequest,
+  validateQuery,
   feeController.reverseFeeCalculation
 );
 
@@ -108,7 +108,7 @@ router.post(
 router.post(
   '/calculations/:calculationId/offsets',
   offsetValidation,
-  validateRequest,
+  validateQuery,
   feeController.createFeeOffset
 );
 
@@ -118,14 +118,14 @@ router.post(
     param('offsetId').isInt({ min: 1 }).withMessage('Valid offset ID is required'),
     body('userId').optional().isInt({ min: 1 }).withMessage('Valid user ID is required'),
   ],
-  validateRequest,
+  validateQuery,
   feeController.approveFeeOffset
 );
 
 router.get(
   '/offsets/pending',
   [query('fundId').optional().isInt({ min: 1 }).withMessage('Fund ID must be a valid integer')],
-  validateRequest,
+  validateQuery,
   feeController.getPendingOffsets
 );
 
@@ -135,7 +135,7 @@ router.get(
     param('fundId').isInt({ min: 1 }).withMessage('Valid fund ID is required'),
     query('year').optional().isInt({ min: 2000, max: 2100 }).withMessage('Year must be a valid year'),
   ],
-  validateRequest,
+  validateQuery,
   feeController.getOffsetSummary
 );
 
@@ -143,7 +143,7 @@ router.get(
 router.post(
   '/funds/:fundId/basis/snapshot',
   feeBasisValidation,
-  validateRequest,
+  validateQuery,
   feeController.createFeeBasisSnapshot
 );
 
@@ -155,7 +155,7 @@ router.get(
     query('startDate').optional().isISO8601().withMessage('Start date must be a valid date'),
     query('endDate').optional().isISO8601().withMessage('End date must be a valid date'),
   ],
-  validateRequest,
+  validateQuery,
   feeController.getFeeBasisHistory
 );
 
@@ -166,12 +166,12 @@ router.get(
     param('fundId').isInt({ min: 1 }).withMessage('Valid fund ID is required'),
     query('year').optional().isInt({ min: 2000, max: 2100 }).withMessage('Year must be a valid year'),
   ],
-  validateRequest,
+  validateQuery,
   feeController.getFeeSummary
 );
 
 // Health check endpoint
-router.get('/health', (req, res) => {
+router.get('/health', (_req, res) => {
   res.json({
     success: true,
     message: 'Fee service is healthy',

@@ -284,3 +284,4 @@ DistributionAllocation.init(
 );
 
 export default DistributionAllocation;
+export { DistributionAllocation };

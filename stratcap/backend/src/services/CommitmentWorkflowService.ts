@@ -4,7 +4,7 @@ import InvestorEntity from '../models/InvestorEntity';
 import InvestorClass from '../models/InvestorClass';
 import Transaction from '../models/Transaction';
 import CapitalActivity from '../models/CapitalActivity';
-import { NotificationService } from './NotificationService';
+import NotificationService from './NotificationService';
 import { Op } from 'sequelize';
 
 export interface CommitmentAnalytics {

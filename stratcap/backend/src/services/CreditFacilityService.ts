@@ -4,7 +4,7 @@ import { CreditDrawdown } from '../models/CreditDrawdown';
 import { CreditPaydown } from '../models/CreditPaydown';
 import { BorrowingBase } from '../models/BorrowingBase';
 import { Decimal } from 'decimal.js';
-import { NotificationService } from './NotificationService';
+import NotificationService from './NotificationService';
 
 export interface CreditFacilityCreateRequest {
   fundId: string;

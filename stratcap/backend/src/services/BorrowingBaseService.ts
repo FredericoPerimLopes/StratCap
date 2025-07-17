@@ -4,7 +4,7 @@ import { CreditFacility } from '../models/CreditFacility';
 import { User } from '../models/User';
 import { Decimal } from 'decimal.js';
 import { CreditFacilityService } from './CreditFacilityService';
-import { NotificationService } from './NotificationService';
+import NotificationService from './NotificationService';
 import ApprovalWorkflowService from './ApprovalWorkflowService';
 
 export interface BorrowingBaseRequest {
@@ -162,7 +162,7 @@ export class BorrowingBaseService {
     const borrowingBase = await BorrowingBase.create(borrowingBaseData, { transaction });
 
     // Send notification
-    await this.notificationService.sendNotification({
+    await this.notificationService.sendSimpleNotification({
       type: 'borrowing_base_created',
       title: 'New Borrowing Base Calculation',
       message: `Borrowing base calculation created for facility "${facility.facilityName}"`,
@@ -216,7 +216,7 @@ export class BorrowingBaseService {
     });
 
     // Send notifications
-    await this.notificationService.sendNotification({
+    await this.notificationService.sendSimpleNotification({
       type: 'borrowing_base_submitted',
       title: 'Borrowing Base Submitted for Approval',
       message: `Borrowing base calculation submitted for approval`,
@@ -278,7 +278,7 @@ export class BorrowingBaseService {
     });
 
     // Send notifications
-    await this.notificationService.sendNotification({
+    await this.notificationService.sendSimpleNotification({
       type: 'borrowing_base_approved',
       title: 'Borrowing Base Approved',
       message: `Borrowing base calculation has been approved`,
@@ -328,7 +328,7 @@ export class BorrowingBaseService {
     });
 
     // Send notifications
-    await this.notificationService.sendNotification({
+    await this.notificationService.sendSimpleNotification({
       type: 'borrowing_base_rejected',
       title: 'Borrowing Base Rejected',
       message: `Borrowing base calculation has been rejected`,

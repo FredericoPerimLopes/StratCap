@@ -231,3 +231,4 @@ CapitalAllocation.init(
 );
 
 export default CapitalAllocation;
+export { CapitalAllocation };

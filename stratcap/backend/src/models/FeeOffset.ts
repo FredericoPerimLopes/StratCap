@@ -150,3 +150,4 @@ FeeOffset.init(
 );
 
 export default FeeOffset;
+export { FeeOffset };

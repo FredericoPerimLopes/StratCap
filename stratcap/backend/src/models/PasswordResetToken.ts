@@ -61,6 +61,8 @@ export class PasswordResetToken extends Model<PasswordResetTokenAttributes, Pass
   }
 }
 
+export default PasswordResetToken;
+
 export function initPasswordResetToken(sequelize: Sequelize): typeof PasswordResetToken {
   PasswordResetToken.init(
     {

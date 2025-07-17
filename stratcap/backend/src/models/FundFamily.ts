@@ -99,3 +99,4 @@ FundFamily.init(
 );
 
 export default FundFamily;
+export { FundFamily };

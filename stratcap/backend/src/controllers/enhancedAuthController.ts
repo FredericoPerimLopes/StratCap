@@ -59,7 +59,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -77,7 +77,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id?.toString() || '';
       const mfaSetup = await this.authService.setupMFA(userId, transaction);
       
       await transaction.commit();
@@ -93,7 +93,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -111,7 +111,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id?.toString() || '';
       const { token } = req.body;
 
       if (!token) {
@@ -132,7 +132,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -150,7 +150,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id?.toString() || '';
       const { password } = req.body;
 
       if (!password) {
@@ -171,7 +171,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -208,7 +208,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -246,7 +246,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -264,7 +264,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id?.toString() || '';
       const { currentPassword, newPassword } = req.body;
 
       if (!currentPassword || !newPassword) {
@@ -285,7 +285,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -327,7 +327,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -377,7 +377,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id?.toString() || '';
       await this.authService.logoutAll(userId, transaction);
       
       await transaction.commit();
@@ -404,7 +404,7 @@ export class EnhancedAuthController {
    */
   getSessions = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id?.toString() || '';
       const currentSessionToken = req.cookies.refreshToken;
       
       const sessions = await this.authService.getUserSessions(userId, currentSessionToken);
@@ -428,7 +428,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id?.toString() || '';
       const sessionId = req.params.sessionId;
 
       if (!sessionId) {
@@ -449,7 +449,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({
@@ -465,7 +465,7 @@ export class EnhancedAuthController {
    */
   getSecuritySettings = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id?.toString() || '';
       const settings = await this.authService.getSecuritySettings(userId);
       
       res.json({
@@ -476,7 +476,7 @@ export class EnhancedAuthController {
       if (error instanceof AppError) {
         res.status(error.statusCode).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'An error occurred',
         });
       } else {
         res.status(500).json({

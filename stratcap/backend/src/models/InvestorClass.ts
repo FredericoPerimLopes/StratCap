@@ -168,3 +168,4 @@ InvestorClass.init(
 );
 
 export default InvestorClass;
+export { InvestorClass };

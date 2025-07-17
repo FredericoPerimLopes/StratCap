@@ -213,3 +213,4 @@ Investment.init(
 );
 
 export default Investment;
+export { Investment };

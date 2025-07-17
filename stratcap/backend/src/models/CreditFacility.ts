@@ -121,7 +121,7 @@ export class CreditFacility extends Model<CreditFacilityAttributes, CreditFacili
            paymentAmount.lessThanOrEqualTo(this.getOutstandingBalanceDecimal());
   }
 
-  public calculateDailyInterest(date: Date = new Date()): Decimal {
+  public calculateDailyInterest(_date: Date = new Date()): Decimal {
     const principal = this.getOutstandingBalanceDecimal();
     const annualRate = this.getInterestRateDecimal().dividedBy(100);
     const dailyRate = annualRate.dividedBy(365);
@@ -129,7 +129,7 @@ export class CreditFacility extends Model<CreditFacilityAttributes, CreditFacili
     return principal.times(dailyRate);
   }
 
-  public calculateCommitmentFee(date: Date = new Date()): Decimal {
+  public calculateCommitmentFee(_date: Date = new Date()): Decimal {
     if (!this.commitmentFeeRate) {
       return new Decimal(0);
     }
@@ -152,6 +152,8 @@ export class CreditFacility extends Model<CreditFacilityAttributes, CreditFacili
     return this.maturityDate < today && this.facilityStatus === 'active';
   }
 }
+
+export default CreditFacility;
 
 export function initCreditFacility(sequelize: Sequelize): typeof CreditFacility {
   CreditFacility.init(

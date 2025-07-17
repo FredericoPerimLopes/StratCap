@@ -195,3 +195,4 @@ InvestorEntity.init(
 );
 
 export default InvestorEntity;
+export { InvestorEntity };

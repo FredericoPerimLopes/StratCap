@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { DataAnalysisService, PivotTableConfig, PivotFilter, CustomReport, ExportOptions } from '../services/DataAnalysisService';
+import { DataAnalysisService, PivotTableConfig, PivotFilter, ExportOptions } from '../services/DataAnalysisService';
 
 export class DataAnalysisController {
   private dataAnalysisService: DataAnalysisService;
@@ -23,7 +23,7 @@ export class DataAnalysisController {
         filters: req.body.filters || [],
         sorting: req.body.sorting || [],
         formatting: req.body.formatting,
-        createdBy: req.user?.id || 'unknown',
+        createdBy: req.user?.id?.toString() || 'unknown',
       };
 
       const pivotTable = await this.dataAnalysisService.createPivotTable(config);
@@ -99,7 +99,7 @@ export class DataAnalysisController {
         parameters: req.body.parameters || [],
         schedule: req.body.schedule,
         distribution: req.body.distribution,
-        createdBy: req.user?.id || 'unknown',
+        createdBy: req.user?.id?.toString() || 'unknown',
       };
 
       const customReport = await this.dataAnalysisService.createCustomReport(report);
@@ -214,7 +214,7 @@ export class DataAnalysisController {
   /**
    * Get available data sources
    */
-  getDataSources = async (req: Request, res: Response): Promise<void> => {
+  getDataSources = async (_req: Request, res: Response): Promise<void> => {
     try {
       const dataSources = [
         {
@@ -387,7 +387,7 @@ export class DataAnalysisController {
   /**
    * Get aggregation functions available for measures
    */
-  getAggregationFunctions = async (req: Request, res: Response): Promise<void> => {
+  getAggregationFunctions = async (_req: Request, res: Response): Promise<void> => {
     try {
       const functions = [
         {

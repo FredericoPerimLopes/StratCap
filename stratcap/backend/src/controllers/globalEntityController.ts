@@ -24,7 +24,7 @@ export class GlobalEntityController {
     } catch (error) {
       res.status(404).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'Failed to get investor summary',
       });
     }
   };
@@ -44,7 +44,7 @@ export class GlobalEntityController {
     } catch (error) {
       res.status(404).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'Failed to get fund summary',
       });
     }
   };
@@ -64,7 +64,7 @@ export class GlobalEntityController {
     } catch (error) {
       res.status(404).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'Failed to get investment summary',
       });
     }
   };
@@ -72,7 +72,7 @@ export class GlobalEntityController {
   /**
    * Get global entity metrics
    */
-  getGlobalMetrics = async (req: Request, res: Response): Promise<void> => {
+  getGlobalMetrics = async (_req: Request, res: Response): Promise<void> => {
     try {
       const metrics = await this.globalEntityService.getGlobalEntityMetrics();
       
@@ -139,7 +139,7 @@ export class GlobalEntityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'Failed to search entities',
       });
     }
   };
@@ -147,7 +147,7 @@ export class GlobalEntityController {
   /**
    * Get relationship map
    */
-  getRelationshipMap = async (req: Request, res: Response): Promise<void> => {
+  getRelationshipMap = async (_req: Request, res: Response): Promise<void> => {
     try {
       const relationshipMap = await this.globalEntityService.getRelationshipMap();
       
@@ -202,7 +202,7 @@ export class GlobalEntityController {
     } catch (error) {
       res.status(404).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'Failed to get investor portfolio',
       });
     }
   };
@@ -235,7 +235,7 @@ export class GlobalEntityController {
     } catch (error) {
       res.status(404).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'Failed to get fund investor base',
       });
     }
   };
@@ -243,7 +243,7 @@ export class GlobalEntityController {
   /**
    * Get cross-fund analytics
    */
-  getCrossFundAnalytics = async (req: Request, res: Response): Promise<void> => {
+  getCrossFundAnalytics = async (_req: Request, res: Response): Promise<void> => {
     try {
       const metrics = await this.globalEntityService.getGlobalEntityMetrics();
       const relationshipMap = await this.globalEntityService.getRelationshipMap();

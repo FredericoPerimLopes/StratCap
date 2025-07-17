@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./stratcap/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - stratcap-network
 
@@ -24,10 +24,10 @@ services:
     networks:
       - stratcap-network
 
-  # API Gateway
-  api-gateway:
+  # Backend API Server (Monolithic)
+  backend:
     build:
-      context: ./backend/api-gateway
+      context: ./stratcap/backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
@@ -36,170 +36,27 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: your-secret-key-here
       ENVIRONMENT: development
+      NODE_ENV: development
     depends_on:
       - postgres
       - redis
     networks:
       - stratcap-network
     volumes:
-      - ./backend/api-gateway:/app
-
-  # User Management Service
-  user-management:
-    build:
-      context: ./backend/services/user-management
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://stratcap:stratcap123@postgres:5432/stratcap
-      REDIS_URL: redis://redis:6379
-      JWT_SECRET: your-secret-key-here
-      ENVIRONMENT: development
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - stratcap-network
-    volumes:
-      - ./backend/services/user-management:/app
-
-  # Fund Management Service
-  fund-management:
-    build:
-      context: ./backend/services/fund-management
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://stratcap:stratcap123@postgres:5432/stratcap
-      REDIS_URL: redis://redis:6379
-      ENVIRONMENT: development
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - stratcap-network
-    volumes:
-      - ./backend/services/fund-management:/app
-
-  # Data Ingestion Service
-  data-ingestion:
-    build:
-      context: ./backend/services/data-ingestion
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://stratcap:stratcap123@postgres:5432/stratcap
-      REDIS_URL: redis://redis:6379
-      ENVIRONMENT: development
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - stratcap-network
-    volumes:
-      - ./backend/services/data-ingestion:/app
-
-  # Calculation Engine Service
-  calculation-engine:
-    build:
-      context: ./backend/services/calculation-engine
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://stratcap:stratcap123@postgres:5432/stratcap
-      REDIS_URL: redis://redis:6379
-      ENVIRONMENT: development
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - stratcap-network
-    volumes:
-      - ./backend/services/calculation-engine:/app
-
-  # Workflow Engine Service
-  workflow-engine:
-    build:
-      context: ./backend/services/workflow-engine
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://stratcap:stratcap123@postgres:5432/stratcap
-      REDIS_URL: redis://redis:6379
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      ENVIRONMENT: development
-    depends_on:
-      - postgres
-      - redis
-      - kafka
-    networks:
-      - stratcap-network
-    volumes:
-      - ./backend/services/workflow-engine:/app
-
-  # Reporting Service
-  reporting:
-    build:
-      context: ./backend/services/reporting
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://stratcap:stratcap123@postgres:5432/stratcap
-      REDIS_URL: redis://redis:6379
-      ENVIRONMENT: development
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - stratcap-network
-    volumes:
-      - ./backend/services/reporting:/app
-
-  # Notification Service
-  notification:
-    build:
-      context: ./backend/services/notification
-      dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://stratcap:stratcap123@postgres:5432/stratcap
-      REDIS_URL: redis://redis:6379
-      ENVIRONMENT: development
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - stratcap-network
-    volumes:
-      - ./backend/services/notification:/app
-
-  # Kafka Message Queue
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.4.0
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    networks:
-      - stratcap-network
-
-  kafka:
-    image: confluentinc/cp-kafka:7.4.0
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    networks:
-      - stratcap-network
+      - ./stratcap/backend:/app
+      - /app/node_modules
 
   # Frontend Development Server
   frontend:
     build:
-      context: ./frontend/web-app
+      context: ./stratcap/frontend
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     environment:
       REACT_APP_API_URL: http://localhost:8000
     volumes:
-      - ./frontend/web-app:/app
+      - ./stratcap/frontend:/app
       - /app/node_modules
     networks:
       - stratcap-network
@@ -235,4 +92,3 @@ networks:
 
 volumes:
   postgres_data:
-  kafka_data:

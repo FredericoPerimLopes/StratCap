@@ -207,3 +207,4 @@ Fund.init(
 );
 
 export default Fund;
+export { Fund };

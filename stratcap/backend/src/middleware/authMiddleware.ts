@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { User } from '../models/User';
+import User from '../models/User';
 
 // Define an interface that extends the Express Request
 interface AuthenticatedRequest extends Request {
@@ -8,7 +7,7 @@ interface AuthenticatedRequest extends Request {
 }
 
 // Simplified auth middleware for the credit facility routes
-export const authenticate = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+export const authenticate = (req: AuthenticatedRequest, _res: Response, next: NextFunction): void => {
   // For now, create a mock user for testing
   // In production, this would verify the JWT token
   req.user = {
@@ -16,7 +15,7 @@ export const authenticate = (req: AuthenticatedRequest, res: Response, next: Nex
     email: 'test@example.com',
     role: 'fund_manager',
     isActive: true,
-  } as User;
+  } as unknown as User;
   
   next();
 };

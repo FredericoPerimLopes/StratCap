@@ -484,7 +484,7 @@ export class CashFlowAnalyticsService {
     if (fundAge >= 2 || monthFromNow >= 24) {
       const distributionPeakMonth = 7 * 12; // Peak at year 7
       const timeToPeak = Math.abs(monthFromNow - distributionPeakMonth);
-      const distributionFactor = Math.exp(-timeToeak / (2 * 12)); // Bell curve
+      const distributionFactor = Math.exp(-timeToPeak / (2 * 12)); // Bell curve
       
       distributions = totalCommitments * currentDeploymentRate * 0.15 * distributionFactor / 12;
     }

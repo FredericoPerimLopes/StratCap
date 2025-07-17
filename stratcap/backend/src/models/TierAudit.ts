@@ -230,3 +230,4 @@ TierAudit.init(
 );
 
 export default TierAudit;
+export { TierAudit };

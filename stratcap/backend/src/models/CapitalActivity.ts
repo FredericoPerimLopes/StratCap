@@ -222,3 +222,4 @@ CapitalActivity.init(
 );
 
 export default CapitalActivity;
+export { CapitalActivity };

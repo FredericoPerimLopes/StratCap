@@ -104,6 +104,8 @@ export class UserSession extends Model<UserSessionAttributes, UserSessionCreatio
   }
 }
 
+export default UserSession;
+
 export function initUserSession(sequelize: Sequelize): typeof UserSession {
   UserSession.init(
     {

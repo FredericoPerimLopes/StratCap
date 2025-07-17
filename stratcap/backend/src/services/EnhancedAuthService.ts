@@ -7,7 +7,7 @@ import { User } from '../models/User';
 import { UserSession } from '../models/UserSession';
 import { PasswordResetToken } from '../models/PasswordResetToken';
 import { LoginAttempt } from '../models/LoginAttempt';
-import { NotificationService } from './NotificationService';
+import NotificationService from './NotificationService';
 import { Transaction } from 'sequelize';
 import { AppError } from '../middleware/errorHandler';
 import logger from '../utils/logger';
@@ -639,7 +639,7 @@ export class EnhancedAuthService {
         role: user.role 
       },
       this.JWT_SECRET,
-      { expiresIn: this.ACCESS_TOKEN_EXPIRES }
+      { expiresIn: this.ACCESS_TOKEN_EXPIRES } as jwt.SignOptions
     );
   }
 
@@ -650,7 +650,7 @@ export class EnhancedAuthService {
     return jwt.sign(
       { userId: user.id },
       this.JWT_REFRESH_SECRET,
-      { expiresIn: this.REFRESH_TOKEN_EXPIRES }
+      { expiresIn: this.REFRESH_TOKEN_EXPIRES } as jwt.SignOptions
     );
   }
 

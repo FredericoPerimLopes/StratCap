@@ -33,7 +33,7 @@ export function rateLimiter(options: RateLimiterOptions) {
       const userId = req.user?.id || 'anonymous';
       return `${ip}:${userId}`;
     },
-    handler: (req: Request, res: Response) => {
+    handler: (_req: Request, res: Response) => {
       res.status(429).json({
         success: false,
         message: options.message,
@@ -197,13 +197,16 @@ export function slidingWindowRateLimiter(options: RateLimiterOptions & {
     // Enable sliding window if specified
     windowMs: options.slidingWindow ? options.windowMs : options.windowMs,
     // Custom logic for sliding window
-    onLimitReached: (req: Request, res: Response) => {
+    handler: (req: Request, res: Response) => {
       console.log(`Rate limit exceeded for ${req.ip} on ${req.path}`);
       
       // Log suspicious activity
-      if (req.rateLimit?.remaining === 0) {
-        console.warn(`Suspicious activity detected: ${req.ip} exceeded rate limit for ${req.path}`);
-      }
+      console.warn(`Suspicious activity detected: ${req.ip} exceeded rate limit for ${req.path}`);
+      
+      res.status(429).json({
+        error: 'Too many requests from this IP, please try again later.',
+        retryAfter: Math.ceil(options.windowMs / 1000)
+      });
     },
   });
 }

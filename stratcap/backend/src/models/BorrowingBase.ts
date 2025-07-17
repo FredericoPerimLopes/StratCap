@@ -257,6 +257,8 @@ export class BorrowingBase extends Model<BorrowingBaseAttributes, BorrowingBaseC
   }
 }
 
+export default BorrowingBase;
+
 export function initBorrowingBase(sequelize: Sequelize): typeof BorrowingBase {
   BorrowingBase.init(
     {

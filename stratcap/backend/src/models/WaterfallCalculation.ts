@@ -383,3 +383,4 @@ WaterfallCalculation.init(
 );
 
 export default WaterfallCalculation;
+export { WaterfallCalculation };

@@ -32,7 +32,7 @@ export class GeneralLedgerController {
 
       const glAccount = await this.generalLedgerService.createGLAccount(
         request,
-        req.user?.id || '',
+        req.user?.id?.toString() || '',
         transaction
       );
       
@@ -73,7 +73,7 @@ export class GeneralLedgerController {
 
       const journalEntry = await this.generalLedgerService.createJournalEntry(
         request,
-        req.user?.id || '',
+        req.user?.id?.toString() || '',
         transaction
       );
       
@@ -147,7 +147,7 @@ export class GeneralLedgerController {
 
       const journalEntry = await this.generalLedgerService.postJournalEntry(
         journalEntryId,
-        req.user?.id || '',
+        req.user?.id?.toString() || '',
         transaction
       );
       
@@ -181,7 +181,7 @@ export class GeneralLedgerController {
       const reversalEntry = await this.generalLedgerService.reverseJournalEntry(
         journalEntryId,
         reversalReason,
-        req.user?.id || '',
+        req.user?.id?.toString() || '',
         transaction
       );
       

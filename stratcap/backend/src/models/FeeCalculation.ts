@@ -196,3 +196,4 @@ FeeCalculation.init(
 );
 
 export default FeeCalculation;
+export { FeeCalculation };

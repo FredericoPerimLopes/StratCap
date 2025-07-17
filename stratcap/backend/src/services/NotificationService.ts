@@ -372,9 +372,36 @@ class NotificationService {
   }
 
   /**
+   * Send simple notification (internal use)
+   */
+  async sendSimpleNotification(notification: {
+    type: string;
+    title: string;
+    message: string;
+    recipients: string[];
+    metadata?: Record<string, any>;
+  }): Promise<void> {
+    // Convert simple notification to full notification data
+    const recipients: NotificationRecipient[] = notification.recipients.map(recipient => ({
+      email: recipient,
+      name: recipient,
+      type: 'primary' as const
+    }));
+
+    const notificationData: NotificationData = {
+      subject: notification.title,
+      body: notification.message,
+      recipients,
+      metadata: notification.metadata || {}
+    };
+
+    await this.sendNotification(notificationData);
+  }
+
+  /**
    * Send notification (placeholder for actual email service integration)
    */
-  private async sendNotification(notificationData: NotificationData): Promise<void> {
+  async sendNotification(notificationData: NotificationData): Promise<void> {
     // This would integrate with an actual email service like SendGrid, AWS SES, etc.
     console.log('Sending notification:', {
       to: notificationData.recipients.filter(r => r.type === 'primary').map(r => r.email),

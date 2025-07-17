@@ -1,4 +1,5 @@
 import { Model, DataTypes, Sequelize } from 'sequelize';
+import sequelize from '../db/database';
 
 export interface LoginAttemptAttributes {
   id: string;
@@ -166,6 +167,8 @@ export class LoginAttempt extends Model<LoginAttemptAttributes, LoginAttemptCrea
     };
   }
 }
+
+export default LoginAttempt;
 
 export function initLoginAttempt(sequelize: Sequelize): typeof LoginAttempt {
   LoginAttempt.init(

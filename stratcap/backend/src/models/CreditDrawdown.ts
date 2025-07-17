@@ -144,7 +144,6 @@ export class CreditDrawdown extends Model<CreditDrawdownAttributes, CreditDrawdo
   }
 
   public calculateExpectedFees(): { commitment: Decimal; utilization: Decimal; arrangement: Decimal } {
-    const amount = this.getDrawdownAmountDecimal();
     const fees = this.fees || {};
 
     return {
@@ -166,6 +165,8 @@ export class CreditDrawdown extends Model<CreditDrawdownAttributes, CreditDrawdo
     return Object.values(checks).every(check => check === true);
   }
 }
+
+export default CreditDrawdown;
 
 export function initCreditDrawdown(sequelize: Sequelize): typeof CreditDrawdown {
   CreditDrawdown.init(

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import commitmentController from '../controllers/CommitmentController';
 import { protect } from '../middleware/auth';
 import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';
+import Joi from 'joi';
 
 const router = Router();
 
@@ -23,7 +24,7 @@ router.post('/:id/recalculate', validateParams(schemas.id), commitmentController
 // Enhanced workflow endpoints
 router.get('/:id/analytics', validateParams(schemas.id), commitmentController.generateCommitmentAnalytics);
 router.put('/:id/side-letter-terms', validateParams(schemas.id), commitmentController.updateSideLetterTerms);
-router.post('/fund/:fundId/bulk-recalculate', validateParams({ fundId: schemas.id.properties.id }), commitmentController.bulkRecalculateCommitments);
+router.post('/fund/:fundId/bulk-recalculate', validateParams(Joi.object({ fundId: Joi.number().integer().positive().required() })), commitmentController.bulkRecalculateCommitments);
 router.get('/attention', commitmentController.getCommitmentsRequiringAttention);
 router.get('/workflow/steps', commitmentController.getCommitmentWorkflowSteps);
 

@@ -1,8 +1,8 @@
 import { Transaction } from 'sequelize';
 import { CreditFacility } from '../models/CreditFacility';
 import { Decimal } from 'decimal.js';
-import { FeeService } from './FeeService';
-import { NotificationService } from './NotificationService';
+import FeeService from './FeeService';
+import NotificationService from './NotificationService';
 
 export interface CreditFacilityFeeCalculation {
   facilityId: string;
@@ -379,7 +379,7 @@ export class CreditFacilityFeeService {
     const totalAccrual = accruals.reduce((sum, accrual) => sum.plus(accrual.amount), new Decimal(0));
     
     if (totalAccrual.greaterThan(new Decimal(10000))) {
-      await this.notificationService.sendNotification({
+      await this.notificationService.sendSimpleNotification({
         type: 'credit_facility_fees_posted',
         title: 'Credit Facility Fees Posted',
         message: `Daily fee accruals of ${totalAccrual.toFixed(2)} posted for credit facilities`,

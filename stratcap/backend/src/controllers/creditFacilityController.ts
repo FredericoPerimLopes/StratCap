@@ -6,7 +6,6 @@ import { PaydownService, PaydownRequest } from '../services/PaydownService';
 import { BorrowingBaseService, BorrowingBaseRequest } from '../services/BorrowingBaseService';
 import { CreditFacilityFeeService } from '../services/CreditFacilityFeeService';
 import sequelize from '../db/database';
-import { AppError } from '../middleware/errorHandler';
 
 export class CreditFacilityController {
   private creditFacilityService: CreditFacilityService;
@@ -114,7 +113,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(404).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -134,7 +133,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -154,7 +153,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -174,7 +173,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -224,7 +223,7 @@ export class CreditFacilityController {
     try {
       const request: DrawdownRequest = {
         facilityId: req.body.facilityId,
-        requestedBy: req.user?.id || '',
+        requestedBy: req.user?.id?.toString() || '',
         drawdownAmount: req.body.drawdownAmount,
         purpose: req.body.purpose,
         priority: req.body.priority,
@@ -264,7 +263,7 @@ export class CreditFacilityController {
       const drawdownId = req.params.id;
       const approval = {
         drawdownId,
-        approvedBy: req.user?.id || '',
+        approvedBy: req.user?.id?.toString() || '',
         approvalNotes: req.body.approvalNotes,
         approvedAmount: req.body.approvedAmount,
         conditions: req.body.conditions,
@@ -299,7 +298,7 @@ export class CreditFacilityController {
       const drawdownId = req.params.id;
       const funding = {
         drawdownId,
-        fundedBy: req.user?.id || '',
+        fundedBy: req.user?.id?.toString() || '',
         fundingReference: req.body.fundingReference,
         actualFundingDate: req.body.actualFundingDate ? new Date(req.body.actualFundingDate) : undefined,
         actualAmount: req.body.actualAmount,
@@ -342,7 +341,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -358,7 +357,7 @@ export class CreditFacilityController {
     try {
       const request: PaydownRequest = {
         facilityId: req.body.facilityId,
-        initiatedBy: req.user?.id || '',
+        initiatedBy: req.user?.id?.toString() || '',
         paydownAmount: req.body.paydownAmount,
         paymentDate: new Date(req.body.paymentDate),
         paydownType: req.body.paydownType,
@@ -399,7 +398,7 @@ export class CreditFacilityController {
       const paydownId = req.params.id;
       const processing = {
         paydownId,
-        processedBy: req.user?.id || '',
+        processedBy: req.user?.id?.toString() || '',
         paymentReference: req.body.paymentReference,
         actualPaymentDate: req.body.actualPaymentDate ? new Date(req.body.actualPaymentDate) : undefined,
         actualAmount: req.body.actualAmount,
@@ -442,7 +441,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -458,7 +457,7 @@ export class CreditFacilityController {
     try {
       const request: BorrowingBaseRequest = {
         facilityId: req.body.facilityId,
-        calculatedBy: req.user?.id || '',
+        calculatedBy: req.user?.id?.toString() || '',
         reportingDate: new Date(req.body.reportingDate),
         eligibleAssets: req.body.eligibleAssets,
         ineligibleAssets: req.body.ineligibleAssets,
@@ -498,7 +497,7 @@ export class CreditFacilityController {
       const borrowingBaseId = req.params.id;
       const borrowingBase = await this.borrowingBaseService.submitBorrowingBase(
         borrowingBaseId,
-        req.user?.id || '',
+        req.user?.id?.toString() || '',
         transaction
       );
       
@@ -534,7 +533,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -559,7 +558,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -581,7 +580,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -604,7 +603,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -627,7 +626,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -647,7 +646,7 @@ export class CreditFacilityController {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: error.message,
+        message: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };

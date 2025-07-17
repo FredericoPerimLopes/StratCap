@@ -203,3 +203,4 @@ FeeWaiver.init(
 );
 
 export default FeeWaiver;
+export { FeeWaiver };

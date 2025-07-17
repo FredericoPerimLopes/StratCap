@@ -252,3 +252,4 @@ WaterfallTier.init(
 );
 
 export default WaterfallTier;
+export { WaterfallTier };

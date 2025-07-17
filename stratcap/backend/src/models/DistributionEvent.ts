@@ -255,3 +255,4 @@ DistributionEvent.init(
 );
 
 export default DistributionEvent;
+export { DistributionEvent };

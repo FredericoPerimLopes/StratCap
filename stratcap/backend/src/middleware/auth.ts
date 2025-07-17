@@ -19,7 +19,7 @@ export const generateToken = (user: User): string => {
     config.jwt.secret,
     {
       expiresIn: config.jwt.expiresIn,
-    }
+    } as jwt.SignOptions
   );
 };
 
@@ -32,7 +32,7 @@ export const generateRefreshToken = (user: User): string => {
     config.jwt.refreshSecret,
     {
       expiresIn: config.jwt.refreshExpiresIn,
-    }
+    } as jwt.SignOptions
   );
 };
 
@@ -143,3 +143,7 @@ export const optionalAuth = async (
     next();
   }
 };
+
+// Export aliases for compatibility
+export const auth = protect;
+export const authenticateToken = protect;

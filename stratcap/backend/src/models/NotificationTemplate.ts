@@ -145,3 +145,4 @@ NotificationTemplate.init(
 );
 
 export default NotificationTemplate;
+export { NotificationTemplate };

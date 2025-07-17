@@ -219,3 +219,4 @@ Commitment.init(
 );
 
 export default Commitment;
+export { Commitment };

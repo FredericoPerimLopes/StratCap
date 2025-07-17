@@ -213,3 +213,4 @@ FeeCharge.init(
 );
 
 export default FeeCharge;
+export { FeeCharge };

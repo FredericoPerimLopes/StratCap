@@ -5,7 +5,7 @@ import { BorrowingBase } from '../models/BorrowingBase';
 import { User } from '../models/User';
 import { Decimal } from 'decimal.js';
 import { CreditFacilityService } from './CreditFacilityService';
-import { NotificationService } from './NotificationService';
+import NotificationService from './NotificationService';
 import ApprovalWorkflowService from './ApprovalWorkflowService';
 import DocumentService from './DocumentService';
 

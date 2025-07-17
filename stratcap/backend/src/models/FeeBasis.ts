@@ -229,3 +229,4 @@ FeeBasis.init(
 );
 
 export default FeeBasis;
+export { FeeBasis };

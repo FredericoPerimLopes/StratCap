@@ -194,3 +194,4 @@ Closing.init(
 );
 
 export default Closing;
+export { Closing };

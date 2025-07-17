@@ -5,8 +5,8 @@ import InvestorEntity from '../models/InvestorEntity';
 import User from '../models/User';
 import CapitalActivity from '../models/CapitalActivity';
 import { EqualizationService } from './EqualizationService';
-import { DocumentService } from './DocumentService';
-import { NotificationService } from './NotificationService';
+import DocumentService from './DocumentService';
+import NotificationService from './NotificationService';
 import { Op } from 'sequelize';
 
 export interface ClosingStep {
@@ -435,7 +435,13 @@ class ClosingWorkflowService {
     });
 
     // Send completion notifications
-    await this.notificationService.sendClosingCompletionNotification(closing.id);
+    await this.notificationService.sendSimpleNotification({
+      type: 'closing_completed',
+      title: 'Closing Completed',
+      message: `Closing ${closing.id} has been completed successfully`,
+      recipients: ['operations_team'],
+      metadata: { closingId: closing.id }
+    });
   }
 
   /**

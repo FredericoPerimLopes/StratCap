@@ -223,25 +223,25 @@ class CarriedInterestFeeService {
   ): Promise<InvestmentPerformance> {
     const capitalActivities = await CapitalActivity.findAll({
       where: {
-        investmentId: investment.id,
-        activityDate: { [Op.lte]: asOfDate },
+        fundId: investment.id,
+        eventDate: { [Op.lte]: asOfDate },
       },
-      order: [['activity_date', 'ASC']],
+      order: [['eventDate', 'ASC']],
     });
 
     let totalInvested = new Decimal(0);
     let totalRealized = new Decimal(0);
 
     for (const activity of capitalActivities) {
-      if (activity.type === 'investment' || activity.type === 'follow_on') {
-        totalInvested = totalInvested.plus(activity.amountDecimal);
-      } else if (activity.type === 'distribution' || activity.type === 'exit') {
-        totalRealized = totalRealized.plus(activity.amountDecimal);
+      if (activity.eventType === 'capital_call') {
+        totalInvested = totalInvested.plus(new Decimal(activity.totalAmount));
+      } else if (activity.eventType === 'distribution') {
+        totalRealized = totalRealized.plus(new Decimal(activity.totalAmount));
       }
     }
 
     // Get current unrealized value (this would typically come from valuation data)
-    const unrealizedValue = investment.currentValueDecimal || new Decimal(0);
+    const unrealizedValue = new Decimal(investment.currentValue || '0');
     const totalReturn = totalRealized.plus(unrealizedValue);
     const returnMultiple = totalInvested.isZero() ? new Decimal(0) : totalReturn.dividedBy(totalInvested);
 
@@ -272,18 +272,18 @@ class CarriedInterestFeeService {
     const capitalCalls = await CapitalActivity.findAll({
       where: {
         fundId,
-        type: ['capital_call', 'initial_closing'],
-        activityDate: { [Op.lte]: asOfDate },
+        eventType: ['capital_call'],
+        eventDate: { [Op.lte]: asOfDate },
       },
-      order: [['activity_date', 'ASC']],
+      order: [['eventDate', 'ASC']],
     });
 
     const preferredReturnRate = new Decimal(fund.preferredReturnRate);
     let preferredReturn = new Decimal(0);
 
     for (const capitalCall of capitalCalls) {
-      const capitalAmount = capitalCall.amountDecimal;
-      const daysInvested = this.calculateDaysBetween(capitalCall.activityDate, asOfDate);
+      const capitalAmount = new Decimal(capitalCall.totalAmount);
+      const daysInvested = this.calculateDaysBetween(capitalCall.eventDate, asOfDate);
       const yearlyReturn = capitalAmount.times(preferredReturnRate);
       const periodReturn = yearlyReturn.times(daysInvested).dividedBy(365);
       
@@ -310,13 +310,13 @@ class CarriedInterestFeeService {
     let weightedDays = new Decimal(0);
 
     for (const activity of capitalActivities) {
-      const days = this.calculateDaysBetween(activity.activityDate, asOfDate);
+      const days = this.calculateDaysBetween(activity.eventDate, asOfDate);
       
-      if (activity.type === 'investment' || activity.type === 'follow_on') {
-        totalInvested = totalInvested.plus(activity.amountDecimal);
-        weightedDays = weightedDays.plus(new Decimal(days).times(activity.amountDecimal));
-      } else if (activity.type === 'distribution' || activity.type === 'exit') {
-        totalRealized = totalRealized.plus(activity.amountDecimal);
+      if (activity.eventType === 'capital_call') {
+        totalInvested = totalInvested.plus(new Decimal(activity.totalAmount));
+        weightedDays = weightedDays.plus(new Decimal(days).times(new Decimal(activity.totalAmount)));
+      } else if (activity.eventType === 'distribution') {
+        totalRealized = totalRealized.plus(new Decimal(activity.totalAmount));
       }
     }
 

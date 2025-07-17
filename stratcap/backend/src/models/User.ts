@@ -134,3 +134,4 @@ User.init(
 );
 
 export default User;
+export { User };

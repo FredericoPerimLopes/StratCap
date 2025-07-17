@@ -58,7 +58,7 @@ class AllocationService {
     }, {} as Record<string, number>);
 
     const byInvestorClass = allocations.reduce((summary, allocation) => {
-      const className = allocation.investorClass?.name || 'Unknown';
+      const className = `Class ${allocation.investorClassId}` || 'Unknown';
       if (!summary[className]) {
         summary[className] = { count: 0, amount: '0' };
       }
@@ -102,7 +102,7 @@ class AllocationService {
     }, {} as Record<string, number>);
 
     const byInvestorClass = allocations.reduce((summary, allocation) => {
-      const className = allocation.investorClass?.name || 'Unknown';
+      const className = `Class ${allocation.investorClassId}` || 'Unknown';
       if (!summary[className]) {
         summary[className] = { count: 0, amount: '0' };
       }

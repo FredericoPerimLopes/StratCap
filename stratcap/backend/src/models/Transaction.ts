@@ -238,3 +238,4 @@ Transaction.init(
 );
 
 export default Transaction;
+export { Transaction };

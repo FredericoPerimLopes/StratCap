@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { EnhancedAuthController } from '../controllers/enhancedAuthController';
-import { authenticate } from '../middleware/auth';
+import { protect } from '../middleware/auth';
 import { rateLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
@@ -26,7 +26,7 @@ router.post('/request-password-reset', strictRateLimit, authController.requestPa
 router.post('/reset-password', strictRateLimit, authController.resetPassword);
 
 // Protected routes (authentication required)
-router.use(authenticate);
+router.use(protect);
 
 // Session management
 router.post('/logout', authController.logout);

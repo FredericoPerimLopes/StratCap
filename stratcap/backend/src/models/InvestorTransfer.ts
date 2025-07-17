@@ -332,3 +332,4 @@ InvestorTransfer.init(
 );
 
 export default InvestorTransfer;
+export { InvestorTransfer };
