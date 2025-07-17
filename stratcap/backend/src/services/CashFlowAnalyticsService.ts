@@ -2,9 +2,7 @@ import { Op } from 'sequelize';
 import { 
   Fund,
   Commitment,
-  Transaction,
-  CapitalActivity,
-  DistributionEvent
+  Transaction
 } from '../models';
 
 interface CashFlowProjection {

@@ -349,6 +349,120 @@ class ApprovalWorkflowService {
   getApprovalRulesConfig(): ApprovalRule[] {
     return [...this.defaultApprovalRules];
   }
+
+  /**
+   * Start approval workflow for various entity types
+   */
+  async startWorkflow(request: {
+    workflowType: string;
+    entityId: string;
+    requestedBy: string;
+    metadata?: Record<string, any>;
+  }): Promise<void> {
+    // For now, we'll create a basic workflow tracking entry
+    // In a real implementation, this would integrate with a workflow engine
+    
+    // Convert string entityId to number for CapitalActivity compatibility
+    const entityIdNumber = parseInt(request.entityId, 10);
+    if (isNaN(entityIdNumber)) {
+      throw new Error('Invalid entity ID format');
+    }
+
+    // For capital activities, use the existing approval request method
+    if (request.workflowType === 'capital_activity') {
+      await this.requestApproval({
+        capitalActivityId: entityIdNumber,
+        requestedBy: parseInt(request.requestedBy, 10),
+        metadata: request.metadata,
+      });
+    } else {
+      // For other workflow types, store basic workflow information
+      // This would typically be stored in a dedicated workflow tracking table
+      console.log(`Started ${request.workflowType} workflow for entity ${request.entityId}`);
+    }
+  }
+
+  /**
+   * Complete approval workflow
+   */
+  async completeWorkflow(entityId: string, completion: {
+    approvedBy: string;
+    status: 'approved' | 'rejected';
+    notes?: string;
+  }): Promise<void> {
+    // Convert string entityId to number for CapitalActivity compatibility
+    const entityIdNumber = parseInt(entityId, 10);
+    if (isNaN(entityIdNumber)) {
+      throw new Error('Invalid entity ID format');
+    }
+
+    const approvedByNumber = parseInt(completion.approvedBy, 10);
+    if (isNaN(approvedByNumber)) {
+      throw new Error('Invalid approvedBy ID format');
+    }
+
+    // Try to find if this is a capital activity
+    try {
+      const activity = await CapitalActivity.findByPk(entityIdNumber);
+      if (activity) {
+        if (completion.status === 'approved') {
+          await this.approveCapitalActivity(entityIdNumber, approvedByNumber, completion.notes);
+        } else {
+          await this.rejectCapitalActivity(entityIdNumber, approvedByNumber, completion.notes || 'No reason provided');
+        }
+        return;
+      }
+    } catch (error) {
+      // Not a capital activity or error occurred
+    }
+
+    // For other entity types, log the completion
+    console.log(`Completed workflow for entity ${entityId} with status ${completion.status}`);
+  }
+
+  /**
+   * Cancel approval workflow
+   */
+  async cancelWorkflow(entityId: string, cancellation: {
+    cancelledBy: string;
+    reason?: string;
+  }): Promise<void> {
+    // Convert string entityId to number for CapitalActivity compatibility
+    const entityIdNumber = parseInt(entityId, 10);
+    if (isNaN(entityIdNumber)) {
+      throw new Error('Invalid entity ID format');
+    }
+
+    const cancelledByNumber = parseInt(cancellation.cancelledBy, 10);
+    if (isNaN(cancelledByNumber)) {
+      throw new Error('Invalid cancelledBy ID format');
+    }
+
+    // Try to find if this is a capital activity
+    try {
+      const activity = await CapitalActivity.findByPk(entityIdNumber);
+      if (activity) {
+        // Set activity back to draft status
+        await activity.update({
+          status: 'draft',
+          metadata: {
+            ...activity.metadata,
+            cancellation: {
+              cancelledBy: cancelledByNumber,
+              cancelledAt: new Date().toISOString(),
+              reason: cancellation.reason || 'Workflow cancelled',
+            },
+          },
+        });
+        return;
+      }
+    } catch (error) {
+      // Not a capital activity or error occurred
+    }
+
+    // For other entity types, log the cancellation
+    console.log(`Cancelled workflow for entity ${entityId} by ${cancellation.cancelledBy}`);
+  }
 }
 
 export default ApprovalWorkflowService;

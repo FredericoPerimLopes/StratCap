@@ -5,7 +5,6 @@ import InvestorEntity from '../models/InvestorEntity';
 import User from '../models/User';
 import CapitalActivity from '../models/CapitalActivity';
 import { EqualizationService } from './EqualizationService';
-import DocumentService from './DocumentService';
 import NotificationService from './NotificationService';
 import { Op } from 'sequelize';
 
@@ -70,12 +69,10 @@ export interface ClosingValidationResult {
 
 class ClosingWorkflowService {
   private equalizationService: EqualizationService;
-  private documentService: DocumentService;
   private notificationService: NotificationService;
 
   constructor() {
     this.equalizationService = new EqualizationService();
-    this.documentService = new DocumentService();
     this.notificationService = new NotificationService();
   }
 
@@ -344,7 +341,7 @@ class ClosingWorkflowService {
       equalizationStartDate: startDate,
       equalizationEndDate: endDate,
       capitalEqualization,
-      nonCapitalEqualization,
+      nonCapitalEqualization: nonCapitalEqualization || undefined,
     });
   }
 

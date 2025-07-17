@@ -338,7 +338,7 @@ class InvestorTransferController {
       };
 
       let totalValue = 0;
-      let completionTimes: number[] = [];
+      const completionTimes: number[] = [];
 
       transfers.forEach(transfer => {
         // Count by status

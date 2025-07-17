@@ -279,7 +279,12 @@ class NotificationService {
         description: capitalActivity.description,
         totalAmount: capitalActivity.totalAmount,
       },
-      allocation: allocationData,
+      allocation: {
+        amount: allocationData.amount?.toString() || '0',
+        percentageOfCommitment: allocationData.percentageOfCommitment?.toString() || '0',
+        percentageOfTotal: allocationData.percentageOfTotal?.toString() || '0',
+        dueDate: allocationData.dueDate,
+      },
       commitment: {
         commitmentAmount: commitment.commitmentAmount,
         capitalCalled: commitment.capitalCalled,
@@ -401,16 +406,45 @@ class NotificationService {
   /**
    * Send notification (placeholder for actual email service integration)
    */
-  async sendNotification(notificationData: NotificationData): Promise<void> {
-    // This would integrate with an actual email service like SendGrid, AWS SES, etc.
-    console.log('Sending notification:', {
-      to: notificationData.recipients.filter(r => r.type === 'primary').map(r => r.email),
-      cc: notificationData.recipients.filter(r => r.type === 'cc').map(r => r.email),
-      bcc: notificationData.recipients.filter(r => r.type === 'bcc').map(r => r.email),
-      subject: notificationData.subject,
-      bodyLength: notificationData.body.length,
-      attachmentCount: notificationData.attachments?.length || 0,
-    });
+  async sendNotification(notificationData: NotificationData): Promise<void>;
+  async sendNotification(notification: {
+    type: string;
+    title: string;
+    message: string;
+    recipients: string[];
+    metadata?: Record<string, any>;
+  }): Promise<void>;
+  async sendNotification(notificationDataOrSimple: NotificationData | {
+    type: string;
+    title: string;
+    message: string;
+    recipients: string[];
+    metadata?: Record<string, any>;
+  }): Promise<void> {
+    // Handle both full NotificationData and simple notification objects
+    if ('subject' in notificationDataOrSimple) {
+      // Full NotificationData
+      const notificationData = notificationDataOrSimple as NotificationData;
+      // This would integrate with an actual email service like SendGrid, AWS SES, etc.
+      console.log('Sending notification:', {
+        to: notificationData.recipients.filter(r => r.type === 'primary').map(r => r.email),
+        cc: notificationData.recipients.filter(r => r.type === 'cc').map(r => r.email),
+        bcc: notificationData.recipients.filter(r => r.type === 'bcc').map(r => r.email),
+        subject: notificationData.subject,
+        bodyLength: notificationData.body.length,
+        attachmentCount: notificationData.attachments?.length || 0,
+      });
+    } else {
+      // Simple notification object
+      const notification = notificationDataOrSimple;
+      console.log('Sending simple notification:', {
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        recipients: notification.recipients,
+        metadata: notification.metadata,
+      });
+    }
 
     // For now, just log that notification would be sent
     // In production, implement actual email sending logic
@@ -495,6 +529,60 @@ class NotificationService {
       lastModifiedBy,
       version: currentTemplate.version + 1,
       isActive: true,
+    });
+  }
+
+  /**
+   * Send transfer approval notification
+   */
+  async sendTransferApprovalNotification(transferId: number): Promise<void> {
+    // This would typically load the transfer details and send appropriate notifications
+    // For now, we'll send a simple notification
+    await this.sendSimpleNotification({
+      type: 'transfer_approval',
+      title: 'Transfer Approval Required',
+      message: `Transfer ${transferId} requires approval`,
+      recipients: ['transfer_team', 'compliance_team'],
+      metadata: {
+        transferId,
+        type: 'approval_required',
+      },
+    });
+  }
+
+  /**
+   * Send transfer completion notification
+   */
+  async sendTransferCompletionNotification(transferId: number): Promise<void> {
+    // This would typically load the transfer details and send appropriate notifications
+    // For now, we'll send a simple notification
+    await this.sendSimpleNotification({
+      type: 'transfer_completion',
+      title: 'Transfer Completed',
+      message: `Transfer ${transferId} has been completed`,
+      recipients: ['transfer_team', 'compliance_team'],
+      metadata: {
+        transferId,
+        type: 'completion',
+      },
+    });
+  }
+
+  /**
+   * Send transfer submission notification
+   */
+  async sendTransferSubmissionNotification(transferId: number): Promise<void> {
+    // This would typically load the transfer details and send appropriate notifications
+    // For now, we'll send a simple notification
+    await this.sendSimpleNotification({
+      type: 'transfer_submission',
+      title: 'Transfer Submitted',
+      message: `Transfer ${transferId} has been submitted for review`,
+      recipients: ['transfer_team', 'compliance_team'],
+      metadata: {
+        transferId,
+        type: 'submission',
+      },
     });
   }
 }

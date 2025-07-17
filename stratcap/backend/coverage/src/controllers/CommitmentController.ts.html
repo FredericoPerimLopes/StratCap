@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.69% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/149</span>
+                <span class='fraction'>7/149</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">6.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>1/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.69% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/149</span>
+                <span class='fraction'>7/149</span>
             </div>
         
             
@@ -656,17 +656,17 @@
 <a name='L591'></a><a href='#L591'>591</a>
 <a name='L592'></a><a href='#L592'>592</a>
 <a name='L593'></a><a href='#L593'>593</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1247,18 +1247,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response, NextFunction } from 'express';
-<span class="cstat-no" title="statement not covered" >import { Op } from 'sequelize';</span>
-<span class="cstat-no" title="statement not covered" >import { Commitment, Fund, InvestorEntity, InvestorClass, Transaction, CapitalActivity } from '../models';</span>
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response, NextFunction } from 'express';
+import { Op } from 'sequelize';
+import { Commitment, Fund, InvestorEntity, InvestorClass, Transaction, CapitalActivity } from '../models';
 import { AuthRequest } from '../middleware/auth';
-<span class="cstat-no" title="statement not covered" >import { AppError } from '../middleware/errorHandler';</span>
-<span class="cstat-no" title="statement not covered" >import CommitmentWorkflowService from '../services/CommitmentWorkflowService';</span>
+import { AppError } from '../middleware/errorHandler';
+import CommitmentWorkflowService from '../services/CommitmentWorkflowService';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class C</span>ommitmentController {
+export class CommitmentController {
   private commitmentWorkflowService: CommitmentWorkflowService;
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor() {</span>
-<span class="cstat-no" title="statement not covered" >    this.commitmentWorkflowService = new CommitmentWorkflowService();</span>
+  constructor() {
+    this.commitmentWorkflowService = new CommitmentWorkflowService();
   }
 <span class="fstat-no" title="function not covered" >  async </span>createCommitment(req: AuthRequest, res: Response, next: NextFunction): Promise&lt;void&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -1839,14 +1839,14 @@ import { AuthRequest } from '../middleware/auth';
   }
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default new CommitmentController();</span></pre></td></tr></table></pre>
+export default new CommitmentController();</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.882Z
+                at 2025-07-17T15:31:22.820Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

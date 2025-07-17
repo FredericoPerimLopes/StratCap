@@ -89,7 +89,7 @@ export class GeneralLedgerService {
   /**
    * Create a new GL account
    */
-  async createGLAccount(request: GLAccountRequest, createdBy: string, transaction?: Transaction): Promise<GLAccount> {
+  async createGLAccount(request: GLAccountRequest, _createdBy: string, transaction?: Transaction): Promise<GLAccount> {
     // Validate account number uniqueness
     const existingAccount = await GLAccount.findOne({
       where: { accountNumber: request.accountNumber },
@@ -725,7 +725,7 @@ export class GeneralLedgerService {
     }
   }
 
-  private shouldAutoPost(sourceSystem: string, sourceType: string): boolean {
+  private shouldAutoPost(_sourceSystem: string, sourceType: string): boolean {
     // Configuration would determine which automated entries should be auto-posted
     const autoPostTypes = ['capital_activity', 'fee', 'distribution'];
     return autoPostTypes.includes(sourceType);

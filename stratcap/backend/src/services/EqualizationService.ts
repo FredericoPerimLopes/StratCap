@@ -1,5 +1,4 @@
 import Commitment from '../models/Commitment';
-import CapitalActivity from '../models/CapitalActivity';
 import Transaction from '../models/Transaction';
 import InvestorEntity from '../models/InvestorEntity';
 import FeeCalculation from '../models/FeeCalculation';
@@ -144,7 +143,7 @@ export class EqualizationService {
         transactionDate: {
           [Op.between]: [startDate, endDate],
         },
-        type: ['capital_call', 'distribution'],
+        transactionType: ['capital_call', 'distribution'],
       },
       order: [['transactionDate', 'ASC']],
     });
@@ -168,11 +167,11 @@ export class EqualizationService {
       const dailyRate = interestRate / 365;
       const interest = transactionAmount * dailyRate * remainingDays;
 
-      if (transaction.type === 'capital_call') {
+      if (transaction.transactionType === 'capital_call') {
         capitalContributions += transactionAmount;
         capitalWeightedDays += remainingDays;
         totalCapitalInterest += interest;
-      } else if (transaction.type === 'distribution') {
+      } else if (transaction.transactionType === 'distribution') {
         distributions += transactionAmount;
         distributionWeightedDays += remainingDays;
         totalDistributionCredit += interest;
@@ -180,7 +179,7 @@ export class EqualizationService {
 
       details.push({
         date: transaction.transactionDate,
-        type: transaction.type as 'capital_call' | 'distribution',
+        type: transaction.transactionType as 'capital_call' | 'distribution',
         amount: transactionAmount.toFixed(2),
         days: remainingDays,
         interest: interest.toFixed(2),
@@ -269,7 +268,7 @@ export class EqualizationService {
     // Get fee calculations for this commitment during the period
     const feeCalculations = await FeeCalculation.findAll({
       where: {
-        commitmentId: commitment.id,
+        fundId: commitment.fundId,
         calculationDate: {
           [Op.between]: [startDate, endDate],
         },
@@ -284,7 +283,7 @@ export class EqualizationService {
 
     // Aggregate fee data
     for (const feeCalc of feeCalculations) {
-      const feeAmount = parseFloat(feeCalc.feeAmount);
+      const feeAmount = parseFloat(feeCalc.netFeeAmount);
       
       switch (feeCalc.feeType) {
         case 'management':
@@ -295,7 +294,7 @@ export class EqualizationService {
           break;
         case 'carried_interest':
           carriedInterestAccrued += feeAmount;
-          if (feeCalc.status === 'distributed') {
+          if (feeCalc.status === 'paid') {
             carriedInterestDistributed += feeAmount;
           }
           break;
@@ -394,7 +393,7 @@ export class EqualizationService {
   /**
    * Get recommended equalization interest rate based on market conditions
    */
-  getRecommendedInterestRate(effectiveDate: Date): number {
+  getRecommendedInterestRate(_effectiveDate: Date): number {
     // This would typically integrate with financial data services
     // For now, return a base rate plus spread
     const baseRate = 0.02; // 2% base rate
@@ -473,12 +472,16 @@ export class EqualizationService {
 
       // Create equalization transaction
       await Transaction.create({
+        fundId: commitment.fundId,
         commitmentId: commitment.id,
-        type: netAmount > 0 ? 'equalization_charge' : 'equalization_credit',
+        transactionType: 'equalization',
+        transactionCode: netAmount > 0 ? 'EQ_CHARGE' : 'EQ_CREDIT',
         amount: Math.abs(netAmount).toFixed(2),
+        currency: 'USD',
         transactionDate: new Date(),
-        settleDate: new Date(),
-        status: 'pending',
+        effectiveDate: new Date(),
+        direction: netAmount > 0 ? 'debit' : 'credit',
+        isReversed: false,
         description: `Capital equalization adjustment for period ${equalizationSummary.equalizationPeriod.startDate.toISOString().split('T')[0]} to ${equalizationSummary.equalizationPeriod.endDate.toISOString().split('T')[0]}`,
         metadata: {
           equalizationType: 'capital',
@@ -511,12 +514,16 @@ export class EqualizationService {
         }
 
         await Transaction.create({
+          fundId: commitment.fundId,
           commitmentId: commitment.id,
-          type: totalAmount > 0 ? 'fee_equalization_charge' : 'fee_equalization_credit',
+          transactionType: 'equalization',
+          transactionCode: totalAmount > 0 ? 'FEE_EQ_CHARGE' : 'FEE_EQ_CREDIT',
           amount: Math.abs(totalAmount).toFixed(2),
+          currency: 'USD',
           transactionDate: new Date(),
-          settleDate: new Date(),
-          status: 'pending',
+          effectiveDate: new Date(),
+          direction: totalAmount > 0 ? 'debit' : 'credit',
+          isReversed: false,
           description: `Fee equalization adjustment for period ${equalizationSummary.equalizationPeriod.startDate.toISOString().split('T')[0]} to ${equalizationSummary.equalizationPeriod.endDate.toISOString().split('T')[0]}`,
           metadata: {
             equalizationType: 'fees',

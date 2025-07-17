@@ -1,5 +1,3 @@
-import { Op } from 'sequelize';
-import User from '../models/User';
 
 export interface Document {
   id: string;
@@ -610,7 +608,7 @@ class DocumentService {
   /**
    * Store file in AWS S3 (placeholder implementation)
    */
-  private async storeFileS3(path: string, content: Buffer): Promise<void> {
+  private async storeFileS3(_path: string, _content: Buffer): Promise<void> {
     // This would use AWS SDK to store in S3
     throw new Error('S3 storage not implemented in this example');
   }
@@ -619,8 +617,8 @@ class DocumentService {
    * Extract document content for searchability
    */
   private async extractDocumentContent(
-    filePath: string,
-    mimeType: string
+    _filePath: string,
+    _mimeType: string
   ): Promise<{ text: string; data: Record<string, any>; analysis: any }> {
     // This would use OCR and document parsing libraries
     // For now, return placeholder data
@@ -669,7 +667,7 @@ class DocumentService {
   /**
    * Check document access permissions
    */
-  private async checkDocumentAccess(document: Document, userId: number): Promise<boolean> {
+  private async checkDocumentAccess(document: Document, _userId: number): Promise<boolean> {
     // In a real implementation, this would check user roles and permissions
     // For now, return true for internal and public documents
     return ['public', 'internal'].includes(document.accessLevel);
@@ -714,7 +712,7 @@ class DocumentService {
   /**
    * Check for malicious content (basic implementation)
    */
-  private async containsMaliciousContent(file: Buffer | string): Promise<boolean> {
+  private async containsMaliciousContent(_file: Buffer | string): Promise<boolean> {
     // Basic check for potentially dangerous patterns
     // In production, this would use proper security scanning
     return false;
@@ -761,7 +759,7 @@ class DocumentService {
     return []; // Placeholder
   }
 
-  private async getDocumentHistory(documentId: string): Promise<Document[]> {
+  private async getDocumentHistory(_documentId: string): Promise<Document[]> {
     // Get all versions of a document
     return []; // Placeholder
   }

@@ -3,7 +3,7 @@ import { User } from './User';
 
 export interface UserSessionAttributes {
   id: string;
-  userId: string;
+  userId: number;
   sessionToken: string;
   deviceInfo: any; // JSON object with device information
   ipAddress: string;
@@ -19,7 +19,7 @@ export interface UserSessionCreationAttributes extends Omit<UserSessionAttribute
 
 export class UserSession extends Model<UserSessionAttributes, UserSessionCreationAttributes> implements UserSessionAttributes {
   public id!: string;
-  public userId!: string;
+  public userId!: number;
   public sessionToken!: string;
   public deviceInfo!: any;
   public ipAddress!: string;
@@ -115,7 +115,7 @@ export function initUserSession(sequelize: Sequelize): typeof UserSession {
         primaryKey: true,
       },
       userId: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: 'Users',

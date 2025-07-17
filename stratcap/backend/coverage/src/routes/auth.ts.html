@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -90,68 +90,68 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Router } from 'express';</span>
-<span class="cstat-no" title="statement not covered" >import authController from '../controllers/authController';</span>
-<span class="cstat-no" title="statement not covered" >import { protect } from '../middleware/auth';</span>
-<span class="cstat-no" title="statement not covered" >import { validate, schemas } from '../middleware/validation';</span>
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">import { Router } from 'express';
+import authController from '../controllers/authController';
+import { protect } from '../middleware/auth';
+import { validate, schemas } from '../middleware/validation';
 &nbsp;
-const router = <span class="cstat-no" title="statement not covered" >Router();</span>
+const router = Router();
 &nbsp;
 // Public routes
-<span class="cstat-no" title="statement not covered" >router.post('/register', validate(schemas.register), authController.register);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/login', validate(schemas.login), authController.login);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/logout', authController.logout);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/refresh-token', authController.refreshToken);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/password/forgot', authController.requestPasswordReset);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/password/reset', validate(schemas.resetPassword), authController.resetPassword);</span>
+router.post('/register', validate(schemas.register), authController.register);
+router.post('/login', validate(schemas.login), authController.login);
+router.post('/logout', authController.logout);
+router.post('/refresh-token', authController.refreshToken);
+router.post('/password/forgot', authController.requestPasswordReset);
+router.post('/password/reset', validate(schemas.resetPassword), authController.resetPassword);
 &nbsp;
 // Protected routes
-<span class="cstat-no" title="statement not covered" >router.use(protect); </span>// All routes below require authentication
+router.use(protect); // All routes below require authentication
 &nbsp;
-<span class="cstat-no" title="statement not covered" >router.get('/profile', authController.getProfile);</span>
-<span class="cstat-no" title="statement not covered" >router.patch('/profile', authController.updateProfile);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/password/change', validate(schemas.changePassword), authController.changePassword);</span>
+router.get('/profile', authController.getProfile);
+router.patch('/profile', authController.updateProfile);
+router.post('/password/change', validate(schemas.changePassword), authController.changePassword);
 &nbsp;
 // MFA routes
-<span class="cstat-no" title="statement not covered" >router.post('/mfa/setup', authController.setupMFA);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/mfa/verify', authController.verifyMFA);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/mfa/disable', authController.disableMFA);</span>
+router.post('/mfa/setup', authController.setupMFA);
+router.post('/mfa/verify', authController.verifyMFA);
+router.post('/mfa/disable', authController.disableMFA);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default router;</span></pre></td></tr></table></pre>
+export default router;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.882Z
+                at 2025-07-17T15:31:22.820Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

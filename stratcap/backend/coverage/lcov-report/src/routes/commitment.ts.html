@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -93,74 +93,74 @@
 <a name='L28'></a><a href='#L28'>28</a>
 <a name='L29'></a><a href='#L29'>29</a>
 <a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L31'></a><a href='#L31'>31</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Router } from 'express';</span>
-<span class="cstat-no" title="statement not covered" >import commitmentController from '../controllers/CommitmentController';</span>
-<span class="cstat-no" title="statement not covered" >import { protect } from '../middleware/auth';</span>
-<span class="cstat-no" title="statement not covered" >import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';</span>
-<span class="cstat-no" title="statement not covered" >import Joi from 'joi';</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">import { Router } from 'express';
+import commitmentController from '../controllers/CommitmentController';
+import { protect } from '../middleware/auth';
+import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';
+import Joi from 'joi';
 &nbsp;
-const router = <span class="cstat-no" title="statement not covered" >Router();</span>
+const router = Router();
 &nbsp;
 // All routes require authentication
-<span class="cstat-no" title="statement not covered" >router.use(protect);</span>
+router.use(protect);
 &nbsp;
 // Commitment CRUD operations
-<span class="cstat-no" title="statement not covered" >router.post('/', validate(schemas.createCommitment), commitmentController.createCommitment);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/', validateQuery(schemas.pagination), commitmentController.getCommitments);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/:id', validateParams(schemas.id), commitmentController.getCommitmentById);</span>
-<span class="cstat-no" title="statement not covered" >router.patch('/:id', validateParams(schemas.id), commitmentController.updateCommitment);</span>
+router.post('/', validate(schemas.createCommitment), commitmentController.createCommitment);
+router.get('/', validateQuery(schemas.pagination), commitmentController.getCommitments);
+router.get('/:id', validateParams(schemas.id), commitmentController.getCommitmentById);
+router.patch('/:id', validateParams(schemas.id), commitmentController.updateCommitment);
 &nbsp;
 // Commitment-specific operations
-<span class="cstat-no" title="statement not covered" >router.patch('/:id/status', validateParams(schemas.id), commitmentController.updateCommitmentStatus);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/:id/transactions', validateParams(schemas.id), validateQuery(schemas.pagination), commitmentController.getCommitmentTransactions);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/:id/summary', validateParams(schemas.id), commitmentController.getCommitmentSummary);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/:id/recalculate', validateParams(schemas.id), commitmentController.recalculateCommitment);</span>
+router.patch('/:id/status', validateParams(schemas.id), commitmentController.updateCommitmentStatus);
+router.get('/:id/transactions', validateParams(schemas.id), validateQuery(schemas.pagination), commitmentController.getCommitmentTransactions);
+router.get('/:id/summary', validateParams(schemas.id), commitmentController.getCommitmentSummary);
+router.post('/:id/recalculate', validateParams(schemas.id), commitmentController.recalculateCommitment);
 &nbsp;
 // Enhanced workflow endpoints
-<span class="cstat-no" title="statement not covered" >router.get('/:id/analytics', validateParams(schemas.id), commitmentController.generateCommitmentAnalytics);</span>
-<span class="cstat-no" title="statement not covered" >router.put('/:id/side-letter-terms', validateParams(schemas.id), commitmentController.updateSideLetterTerms);</span>
-<span class="cstat-no" title="statement not covered" >router.post('/fund/:fundId/bulk-recalculate', validateParams(Joi.object({ fundId: Joi.number().integer().positive().required() })), commitmentController.bulkRecalculateCommitments);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/attention', commitmentController.getCommitmentsRequiringAttention);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/workflow/steps', commitmentController.getCommitmentWorkflowSteps);</span>
+router.get('/:id/analytics', validateParams(schemas.id), commitmentController.generateCommitmentAnalytics);
+router.put('/:id/side-letter-terms', validateParams(schemas.id), commitmentController.updateSideLetterTerms);
+router.post('/fund/:fundId/bulk-recalculate', validateParams(Joi.object({ fundId: Joi.number().integer().positive().required() })), commitmentController.bulkRecalculateCommitments);
+router.get('/attention', commitmentController.getCommitmentsRequiringAttention);
+router.get('/workflow/steps', commitmentController.getCommitmentWorkflowSteps);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default router;</span></pre></td></tr></table></pre>
+export default router;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.617Z
+                at 2025-07-17T15:31:22.409Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

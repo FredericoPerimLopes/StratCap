@@ -6,11 +6,9 @@ import {
   InvestorEntity,
   CapitalActivity,
   FeeCalculation,
-  WaterfallCalculation,
   InvestorClass
 } from '../models';
 import PerformanceAnalyticsService from './PerformanceAnalyticsService';
-import CashFlowAnalyticsService from './CashFlowAnalyticsService';
 
 interface InvestorStatement {
   investor: {
@@ -312,11 +310,11 @@ export class InvestorStatementService {
 
     return {
       investor: {
-        id: investor.id,
+        id: investor.id.toString(),
         name: investor.name,
         legalName: investor.legalName,
-        type: investor.type,
-        taxId: investor.taxId,
+        type: investor.type || 'Unknown',
+        taxId: investor.taxId || 'Unknown',
         address: investor.address
       },
       fund: {
@@ -443,7 +441,7 @@ export class InvestorStatementService {
     for (const commitment of commitments) {
       try {
         const statement = await this.generateInvestorStatement(
-          commitment.investorEntityId,
+          commitment.investorEntityId.toString(),
           fundId.toString(),
           quarterStartDate,
           quarterEndDate,

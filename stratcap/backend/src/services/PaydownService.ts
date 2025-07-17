@@ -1,5 +1,5 @@
 import { Transaction } from 'sequelize';
-import { CreditPaydown, CreditPaydownAttributes, CreditPaydownCreationAttributes } from '../models/CreditPaydown';
+import { CreditPaydown, CreditPaydownCreationAttributes } from '../models/CreditPaydown';
 import { CreditFacility } from '../models/CreditFacility';
 import User from '../models/User';
 import { Decimal } from 'decimal.js';

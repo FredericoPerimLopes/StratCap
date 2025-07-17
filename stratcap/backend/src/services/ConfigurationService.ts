@@ -539,7 +539,7 @@ export class ConfigurationService {
       }
 
       const clonedData = originalWorkflow.cloneWorkflow(newName, createdBy);
-      const clonedWorkflow = await WorkflowConfiguration.create(clonedData, { transaction: t });
+      const clonedWorkflow = await WorkflowConfiguration.create(clonedData as any, { transaction: t });
 
       if (!transaction) {
         await t.commit();
@@ -628,13 +628,13 @@ export class ConfigurationService {
     return { webhookCalled: true, url: action.actionConfig.url };
   }
 
-  private async executeDelayAction(action: WorkflowAction, context: Record<string, any>): Promise<any> {
+  private async executeDelayAction(action: WorkflowAction, _context: Record<string, any>): Promise<any> {
     const delayMs = action.actionConfig.delayMs || 1000;
     await new Promise(resolve => setTimeout(resolve, delayMs));
     return { delayed: true, duration: delayMs };
   }
 
-  private async executeValidateAction(action: WorkflowAction, context: Record<string, any>): Promise<any> {
+  private async executeValidateAction(action: WorkflowAction, _context: Record<string, any>): Promise<any> {
     // Implementation would perform validation based on rules
     const rules = action.actionConfig.rules || [];
     const results = rules.map((rule: any) => ({
@@ -644,10 +644,10 @@ export class ConfigurationService {
     return { validated: true, results };
   }
 
-  private async executeTransformAction(action: WorkflowAction, context: Record<string, any>): Promise<any> {
+  private async executeTransformAction(action: WorkflowAction, _context: Record<string, any>): Promise<any> {
     // Implementation would transform data based on transformation rules
     const transformations = action.actionConfig.transformations || [];
-    const transformedData = { ...context };
+    const transformedData = { ..._context };
     
     transformations.forEach((transform: any) => {
       // Apply transformation logic

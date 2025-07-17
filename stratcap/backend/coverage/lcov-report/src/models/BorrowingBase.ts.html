@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">6.75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>5/74</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">7.04% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/71</span>
+                <span class='fraction'>5/71</span>
             </div>
         
             
@@ -505,10 +505,10 @@
 <a name='L440'></a><a href='#L440'>440</a>
 <a name='L441'></a><a href='#L441'>441</a>
 <a name='L442'></a><a href='#L442'>442</a>
-<a name='L443'></a><a href='#L443'>443</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L443'></a><a href='#L443'>443</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -543,7 +543,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -764,9 +764,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -947,10 +947,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Model, DataTypes, Sequelize, Association } from 'sequelize';</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Model, DataTypes, Sequelize, Association } from 'sequelize';
 import { CreditFacility } from './CreditFacility';
 import { User } from './User';
-<span class="cstat-no" title="statement not covered" >import { Decimal } from 'decimal.js';</span>
+import { Decimal } from 'decimal.js';
 &nbsp;
 export interface BorrowingBaseAttributes {
   id: string;
@@ -985,7 +985,7 @@ export interface BorrowingBaseAttributes {
 &nbsp;
 export interface BorrowingBaseCreationAttributes extends Omit&lt;BorrowingBaseAttributes, 'id' | 'createdAt' | 'updatedAt'&gt; {}
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class B</span>orrowingBase extends Model&lt;BorrowingBaseAttributes, BorrowingBaseCreationAttributes&gt; implements BorrowingBaseAttributes {
+export class BorrowingBase extends Model&lt;BorrowingBaseAttributes, BorrowingBaseCreationAttributes&gt; implements BorrowingBaseAttributes {
   public id!: string;
   public facilityId!: string;
   public calculatedBy!: string;
@@ -1206,9 +1206,9 @@ export interface BorrowingBaseCreationAttributes extends Omit&lt;BorrowingBaseAt
   }
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default BorrowingBase;</span>
+export default BorrowingBase;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >i</span>nitBorrowingBase(</span>sequelize: Sequelize): typeof BorrowingBase {
+export function <span class="fstat-no" title="function not covered" >initBorrowingBase(</span>sequelize: Sequelize): typeof BorrowingBase {
 <span class="cstat-no" title="statement not covered" >  BorrowingBase.init(</span>
     {
       id: {
@@ -1396,7 +1396,7 @@ export interface BorrowingBaseCreationAttributes extends Omit&lt;BorrowingBaseAt
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.617Z
+                at 2025-07-17T15:31:22.409Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

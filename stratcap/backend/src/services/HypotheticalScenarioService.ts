@@ -1,12 +1,7 @@
-import { Op } from 'sequelize';
 import { 
   Fund,
-  Commitment,
-  Transaction,
-  Investment
+  Commitment
 } from '../models';
-import PerformanceAnalyticsService from './PerformanceAnalyticsService';
-import CashFlowAnalyticsService from './CashFlowAnalyticsService';
 
 interface ScenarioAssumptions {
   deploymentSchedule?: {
@@ -140,7 +135,7 @@ export class HypotheticalScenarioService {
     );
 
     // Perform sensitivity analysis
-    const sensitivityAnalysis = this.performSensitivityAnalysis(
+    const sensitivityAnalysis = await this.performSensitivityAnalysis(
       fundId,
       assumptions,
       projectedMetrics
@@ -394,7 +389,7 @@ export class HypotheticalScenarioService {
    * Project cash flows based on scenario assumptions
    */
   private async projectCashFlows(
-    fundId: string,
+    _fundId: string,
     totalCommitments: number,
     assumptions: ScenarioAssumptions
   ): Promise<Array<{
@@ -588,11 +583,11 @@ export class HypotheticalScenarioService {
   }
 
   private calculateMonthlyDistribution(
-    totalCommitments: number,
-    cumulativeCalls: number,
+    _totalCommitments: number,
+    _cumulativeCalls: number,
     month: number,
     exitAssumptions?: ScenarioAssumptions['exitAssumptions'],
-    marketConditions?: ScenarioAssumptions['marketConditions']
+    _marketConditions?: ScenarioAssumptions['marketConditions']
   ): number {
     if (!exitAssumptions || month < 24) return 0; // No distributions in first 2 years
 
@@ -601,19 +596,19 @@ export class HypotheticalScenarioService {
 
     if (month < distributionStartMonth) return 0;
 
-    const exitMultiple = exitAssumptions.exitMultiples.percentile50;
-    const totalDistributions = cumulativeCalls * exitMultiple;
+    const _exitMultiple = exitAssumptions.exitMultiples.percentile50;
+    // const _totalDistributions = cumulativeCalls * exitMultiple;
     
     // Apply market conditions
     let marketAdjustment = 1;
-    if (marketConditions) {
-      marketAdjustment = 1 + (Math.random() - 0.5) * marketConditions.volatility;
+    if (_marketConditions) {
+      marketAdjustment = 1 + (Math.random() - 0.5) * _marketConditions.volatility;
     }
 
-    const distributionPeriodMonths = holdingPeriodMonths * 0.8; // Distribute over 80% of holding period
-    const monthlyDistribution = totalDistributions / distributionPeriodMonths * marketAdjustment;
+    // const distributionPeriodMonths = holdingPeriodMonths * 0.8; // Distribute over 80% of holding period
+    // const monthlyDistribution = totalDistributions / distributionPeriodMonths * marketAdjustment;
 
-    return Math.max(0, monthlyDistribution * 0.1); // 10% per month during distribution period
+    return Math.max(0, _cumulativeCalls * _exitMultiple * marketAdjustment * 0.1); // 10% per month during distribution period
   }
 
   private calculateNAV(
@@ -621,7 +616,7 @@ export class HypotheticalScenarioService {
     cumulativeDistributions: number,
     month: number,
     exitAssumptions?: ScenarioAssumptions['exitAssumptions'],
-    marketConditions?: ScenarioAssumptions['marketConditions']
+    _marketConditions?: ScenarioAssumptions['marketConditions']
   ): number {
     if (!exitAssumptions) return 0;
 
@@ -764,7 +759,7 @@ export class HypotheticalScenarioService {
     };
   }
 
-  private calculatePortfolioMetrics(funds: any[], correlationMatrix?: number[][]): any {
+  private calculatePortfolioMetrics(funds: any[], _correlationMatrix?: number[][]): any {
     const weightedIRR = funds.reduce((sum, fund) => 
       sum + fund.scenario.projectedMetrics.irr * fund.allocation, 0
     );
@@ -841,18 +836,32 @@ export class HypotheticalScenarioService {
       ...base,
       ...adjustments,
       deploymentSchedule: {
+        totalDeploymentMonths: 60,
+        deploymentCurve: 'linear' as const,
+        finalDeploymentRate: 0.8,
         ...base.deploymentSchedule,
         ...adjustments.deploymentSchedule
       },
       exitAssumptions: {
+        averageHoldingPeriod: 5,
+        exitMultiples: { percentile25: 1.5, percentile50: 2.5, percentile75: 4.0 },
+        exitTiming: 'linear' as const,
         ...base.exitAssumptions,
         ...adjustments.exitAssumptions
       },
       marketConditions: {
+        baseIRR: 0.15,
+        volatility: 0.2,
+        marketCorrectionProbability: 0.3,
+        marketCorrectionImpact: -0.25,
         ...base.marketConditions,
         ...adjustments.marketConditions
       },
       feeAssumptions: {
+        managementFeeRate: 0.02,
+        carriedInterestRate: 0.2,
+        preferredReturnRate: 0.08,
+        catchupPercentage: 1.0,
         ...base.feeAssumptions,
         ...adjustments.feeAssumptions
       }

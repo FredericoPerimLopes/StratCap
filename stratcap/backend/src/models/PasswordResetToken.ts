@@ -3,7 +3,7 @@ import { User } from './User';
 
 export interface PasswordResetTokenAttributes {
   id: string;
-  userId: string;
+  userId: number;
   token: string; // Hashed token
   expiresAt: Date;
   used: boolean;
@@ -18,7 +18,7 @@ export interface PasswordResetTokenCreationAttributes extends Omit<PasswordReset
 
 export class PasswordResetToken extends Model<PasswordResetTokenAttributes, PasswordResetTokenCreationAttributes> implements PasswordResetTokenAttributes {
   public id!: string;
-  public userId!: string;
+  public userId!: number;
   public token!: string;
   public expiresAt!: Date;
   public used!: boolean;
@@ -72,7 +72,7 @@ export function initPasswordResetToken(sequelize: Sequelize): typeof PasswordRes
         primaryKey: true,
       },
       userId: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: 'Users',

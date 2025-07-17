@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.53% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/130</span>
+                <span class='fraction'>15/130</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">2.85% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>1/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.62% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/129</span>
+                <span class='fraction'>15/129</span>
             </div>
         
             
@@ -660,17 +660,17 @@
 <a name='L595'></a><a href='#L595'>595</a>
 <a name='L596'></a><a href='#L596'>596</a>
 <a name='L597'></a><a href='#L597'>597</a>
-<a name='L598'></a><a href='#L598'>598</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L598'></a><a href='#L598'>598</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -725,10 +725,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1255,19 +1255,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Decimal } from 'decimal.js';</span>
-<span class="cstat-no" title="statement not covered" >import WaterfallCalculation from '../models/WaterfallCalculation';</span>
-<span class="cstat-no" title="statement not covered" >import WaterfallTier from '../models/WaterfallTier';</span>
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">import { Decimal } from 'decimal.js';
+import WaterfallCalculation from '../models/WaterfallCalculation';
+import WaterfallTier from '../models/WaterfallTier';
 import DistributionEvent from '../models/DistributionEvent';
 import TierAudit from '../models/TierAudit';
-<span class="cstat-no" title="statement not covered" >import Fund from '../models/Fund';</span>
-<span class="cstat-no" title="statement not covered" >import Commitment from '../models/Commitment';</span>
-<span class="cstat-no" title="statement not covered" >import PreferredReturnService from './PreferredReturnService';</span>
-<span class="cstat-no" title="statement not covered" >import CarriedInterestService from './CarriedInterestService';</span>
-<span class="cstat-no" title="statement not covered" >import TierAuditService from './TierAuditService';</span>
-<span class="cstat-no" title="statement not covered" >import DistributionAllocationService from './DistributionAllocationService';</span>
+import Fund from '../models/Fund';
+import Commitment from '../models/Commitment';
+import PreferredReturnService from './PreferredReturnService';
+import CarriedInterestService from './CarriedInterestService';
+import TierAuditService from './TierAuditService';
+import DistributionAllocationService from './DistributionAllocationService';
 &nbsp;
 interface WaterfallConfig {
   tiers: Array&lt;{
@@ -1321,11 +1321,11 @@ class WaterfallCalculationService {
   private tierAuditService: TierAuditService;
   private distributionAllocationService: DistributionAllocationService;
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor() {</span>
-<span class="cstat-no" title="statement not covered" >    this.preferredReturnService = new PreferredReturnService();</span>
-<span class="cstat-no" title="statement not covered" >    this.carriedInterestService = new CarriedInterestService();</span>
-<span class="cstat-no" title="statement not covered" >    this.tierAuditService = new TierAuditService();</span>
-<span class="cstat-no" title="statement not covered" >    this.distributionAllocationService = new DistributionAllocationService();</span>
+  constructor() {
+    this.preferredReturnService = new PreferredReturnService();
+    this.carriedInterestService = new CarriedInterestService();
+    this.tierAuditService = new TierAuditService();
+    this.distributionAllocationService = new DistributionAllocationService();
   }
 &nbsp;
   /**
@@ -1852,16 +1852,16 @@ class WaterfallCalculationService {
 }
 &nbsp;
 // Import Op for Sequelize operators
-const { Op } = <span class="cstat-no" title="statement not covered" >require('sequelize');</span>
+const { Op } = require('sequelize');
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default WaterfallCalculationService;</span></pre></td></tr></table></pre>
+export default WaterfallCalculationService;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.617Z
+                at 2025-07-17T15:31:22.409Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -12,14 +12,16 @@ interface UserAttributes {
   isActive: boolean;
   mfaSecret?: string;
   mfaEnabled: boolean;
+  mfaBackupCodes?: string;
   lastLogin?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  passwordChangedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'isActive' | 'mfaEnabled' | 'createdAt' | 'updatedAt'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'isActive' | 'mfaEnabled' | 'mfaSecret' | 'mfaBackupCodes' | 'passwordChangedAt' | 'createdAt' | 'updatedAt'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
@@ -31,9 +33,11 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public isActive!: boolean;
   public mfaSecret?: string;
   public mfaEnabled!: boolean;
+  public mfaBackupCodes?: string;
   public lastLogin?: Date;
   public passwordResetToken?: string;
   public passwordResetExpires?: Date;
+  public passwordChangedAt?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -111,6 +115,14 @@ User.init(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    mfaBackupCodes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    passwordChangedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     sequelize,
@@ -134,4 +146,4 @@ User.init(
 );
 
 export default User;
-export { User };
+export { User, UserAttributes, UserCreationAttributes };

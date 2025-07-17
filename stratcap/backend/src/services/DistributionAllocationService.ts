@@ -2,7 +2,6 @@ import { Decimal } from 'decimal.js';
 import DistributionEvent from '../models/DistributionEvent';
 import WaterfallCalculation from '../models/WaterfallCalculation';
 import WaterfallTier from '../models/WaterfallTier';
-import Commitment from '../models/Commitment';
 import InvestorEntity from '../models/InvestorEntity';
 
 interface InvestorAllocation {
@@ -13,12 +12,6 @@ interface InvestorAllocation {
   allocationBasis: 'commitment' | 'contributed_capital' | 'pro_rata' | 'custom';
 }
 
-interface TierDistribution {
-  tier: WaterfallTier;
-  lpAmount: Decimal;
-  gpAmount: Decimal;
-  investorAllocations: InvestorAllocation[];
-}
 
 class DistributionAllocationService {
   /**
@@ -31,8 +24,8 @@ class DistributionAllocationService {
   ): Promise<DistributionEvent[]> {
     const allDistributionEvents: DistributionEvent[] = [];
 
-    for (const tier of tiers) {
-      const tierEvents = await this.allocateTierToInvestors(calculation, tier, commitments);
+    for (const _tier of tiers) {
+      const tierEvents = await this.allocateTierToInvestors(calculation, _tier, commitments);
       allDistributionEvents.push(...tierEvents);
     }
 
@@ -192,7 +185,7 @@ class DistributionAllocationService {
    */
   private async createGPDistributionEvents(
     calculation: WaterfallCalculation,
-    tier: WaterfallTier,
+    _tier: WaterfallTier,
     gpAmount: Decimal,
     eventType: 'return_of_capital' | 'preferred_return' | 'catch_up' | 'carried_interest' | 'capital_gains'
   ): Promise<DistributionEvent[]> {
@@ -254,7 +247,7 @@ class DistributionAllocationService {
    */
   private determineTaxClassification(
     eventType: string,
-    tierType: string
+    _tierType: string
   ): 'return_of_capital' | 'capital_gains' | 'ordinary_income' | 'mixed' {
     switch (eventType) {
       case 'return_of_capital':
@@ -391,7 +384,7 @@ class DistributionAllocationService {
   /**
    * Calculate allocation for investor class
    */
-  private calculateClassAllocation(tier: WaterfallTier, investorClass: any): Decimal {
+  private calculateClassAllocation(tier: WaterfallTier, _investorClass: any): Decimal {
     // Simplified - in production this would consider class-specific rights
     const tierDistribution = tier.distributedAmountDecimal;
     const lpAmount = tierDistribution.mul(tier.lpAllocationDecimal).div(100);
@@ -498,7 +491,7 @@ class DistributionAllocationService {
       if (!groups[investorId]) {
         groups[investorId] = {
           investorId,
-          investorName: event.investor?.name || 'Unknown',
+          investorName: (event as any).investor?.name || 'Unknown',
           events: [],
         };
       }
@@ -526,7 +519,7 @@ class DistributionAllocationService {
     });
 
     // Create tier summary
-    const tiers = distributionEvents[0]?.waterfallCalculation?.tiers || [];
+    const tiers = (distributionEvents[0] as any)?.waterfallCalculation?.tiers || [];
     const tierSummary = tiers.map((tier: any) => ({
       tierName: tier.tierName,
       tierType: tier.tierType,

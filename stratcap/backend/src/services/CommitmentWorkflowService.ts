@@ -1,10 +1,7 @@
 import Commitment from '../models/Commitment';
 import Fund from '../models/Fund';
 import InvestorEntity from '../models/InvestorEntity';
-import InvestorClass from '../models/InvestorClass';
 import Transaction from '../models/Transaction';
-import CapitalActivity from '../models/CapitalActivity';
-import NotificationService from './NotificationService';
 import { Op } from 'sequelize';
 
 export interface CommitmentAnalytics {
@@ -105,10 +102,8 @@ export interface CommitmentWorkflowStep {
 }
 
 class CommitmentWorkflowService {
-  private notificationService: NotificationService;
-
   constructor() {
-    this.notificationService = new NotificationService();
+    // Empty constructor for now
   }
 
   /**
@@ -502,7 +497,7 @@ class CommitmentWorkflowService {
   /**
    * Calculate projected metrics
    */
-  private async calculateProjectedMetrics(commitment: any, fund: any): Promise<CommitmentAnalytics['projectedMetrics']> {
+  private async calculateProjectedMetrics(commitment: any, _fund: any): Promise<CommitmentAnalytics['projectedMetrics']> {
     // These would typically be based on fund business plan and projections
     const unfundedCommitment = parseFloat(commitment.unfundedCommitment);
     const projectedCallRate = 0.8; // 80% of unfunded commitment

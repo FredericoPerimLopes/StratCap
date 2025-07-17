@@ -53,7 +53,7 @@ export interface PasswordResetResult {
 
 export interface SessionInfo {
   id: string;
-  userId: string;
+  userId: number;
   deviceInfo: any;
   ipAddress: string;
   lastActivity: Date;
@@ -181,7 +181,7 @@ export class EnhancedAuthService {
   /**
    * Setup MFA for a user
    */
-  async setupMFA(userId: string, transaction?: Transaction): Promise<MFASetupResult> {
+  async setupMFA(userId: number, transaction?: Transaction): Promise<MFASetupResult> {
     const user = await User.findByPk(userId);
     if (!user) {
       throw new AppError('User not found', 404);
@@ -221,7 +221,7 @@ export class EnhancedAuthService {
   /**
    * Verify and enable MFA
    */
-  async enableMFA(userId: string, token: string, transaction?: Transaction): Promise<void> {
+  async enableMFA(userId: number, token: string, transaction?: Transaction): Promise<void> {
     const user = await User.findByPk(userId);
     if (!user || !user.mfaSecret) {
       throw new AppError('MFA setup not found', 400);
@@ -257,7 +257,7 @@ export class EnhancedAuthService {
   /**
    * Disable MFA
    */
-  async disableMFA(userId: string, password: string, transaction?: Transaction): Promise<void> {
+  async disableMFA(userId: number, password: string, transaction?: Transaction): Promise<void> {
     const user = await User.findByPk(userId);
     if (!user) {
       throw new AppError('User not found', 404);
@@ -272,8 +272,8 @@ export class EnhancedAuthService {
     // Disable MFA
     await user.update({
       mfaEnabled: false,
-      mfaSecret: null,
-      mfaBackupCodes: null,
+      mfaSecret: undefined,
+      mfaBackupCodes: undefined,
     }, { transaction });
 
     // Send notification
@@ -378,6 +378,9 @@ export class EnhancedAuthService {
     }
 
     const user = resetToken.user;
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
 
     // Update password
     const hashedPassword = await bcrypt.hash(newPassword, 12);
@@ -411,7 +414,7 @@ export class EnhancedAuthService {
    * Change password (when user is logged in)
    */
   async changePassword(
-    userId: string,
+    userId: number,
     currentPassword: string,
     newPassword: string,
     transaction?: Transaction
@@ -459,7 +462,7 @@ export class EnhancedAuthService {
       include: [{ model: User, as: 'user' }],
     });
 
-    if (!session || !session.user.isActive) {
+    if (!session || !session.user || !session.user.isActive) {
       throw new AppError('Invalid refresh token', 401);
     }
 
@@ -491,7 +494,7 @@ export class EnhancedAuthService {
   /**
    * Logout from all devices
    */
-  async logoutAll(userId: string, transaction?: Transaction): Promise<void> {
+  async logoutAll(userId: number, transaction?: Transaction): Promise<void> {
     await UserSession.update(
       { isActive: false },
       { where: { userId }, transaction }
@@ -501,7 +504,7 @@ export class EnhancedAuthService {
   /**
    * Get user sessions
    */
-  async getUserSessions(userId: string, currentSessionToken?: string): Promise<SessionInfo[]> {
+  async getUserSessions(userId: number, currentSessionToken?: string): Promise<SessionInfo[]> {
     const sessions = await UserSession.findAll({
       where: {
         userId,
@@ -526,7 +529,7 @@ export class EnhancedAuthService {
   /**
    * Revoke specific session
    */
-  async revokeSession(sessionId: string, userId: string, transaction?: Transaction): Promise<void> {
+  async revokeSession(sessionId: string, userId: number, transaction?: Transaction): Promise<void> {
     await UserSession.update(
       { isActive: false },
       { 
@@ -542,7 +545,7 @@ export class EnhancedAuthService {
   /**
    * Get security settings for user
    */
-  async getSecuritySettings(userId: string): Promise<SecuritySettings> {
+  async getSecuritySettings(userId: number): Promise<SecuritySettings> {
     const user = await User.findByPk(userId);
     if (!user) {
       throw new AppError('User not found', 404);
@@ -662,7 +665,6 @@ export class EnhancedAuthService {
       email,
       ipAddress: ipAddress || 'unknown',
       success: false,
-      createdAt: new Date(),
     });
   }
 
@@ -697,9 +699,9 @@ export class EnhancedAuthService {
    */
   private sanitizeUser(user: User): User {
     const userObj = user.toJSON();
-    delete userObj.password;
-    delete userObj.mfaSecret;
-    delete userObj.mfaBackupCodes;
+    delete (userObj as any).password;
+    delete (userObj as any).mfaSecret;
+    delete (userObj as any).mfaBackupCodes;
     return userObj as User;
   }
 }

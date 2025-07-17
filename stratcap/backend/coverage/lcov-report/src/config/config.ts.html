@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">54% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/50</span>
+                <span class='fraction'>27/50</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -129,14 +129,12 @@
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
 <a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -195,80 +193,82 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import dotenv from 'dotenv';</span>
-<span class="cstat-no" title="statement not covered" >import path from 'path';</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span></td><td class="text"><pre class="prettyprint lang-js">import dotenv from 'dotenv';
+import path from 'path';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >dotenv.config({ path: path.join(__dirname, '../../.env') });</span>
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >config = {</span>
-  env: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '5000', 10),
+export const config = {
+  env: process.env.NODE_ENV || <span class="branch-1 cbranch-no" title="branch not covered" >'development',</span>
+  port: parseInt(process.env.PORT || <span class="branch-1 cbranch-no" title="branch not covered" >'5000',</span> 10),
   
   database: {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432', 10),
-    name: process.env.DB_NAME || 'stratcap_db',
-    user: process.env.DB_USER || 'stratcap_user',
-    password: process.env.DB_PASSWORD || '',
+    host: process.env.DB_HOST || <span class="branch-1 cbranch-no" title="branch not covered" >'localhost',</span>
+    port: parseInt(process.env.DB_PORT || <span class="branch-1 cbranch-no" title="branch not covered" >'5432',</span> 10),
+    name: process.env.DB_NAME || <span class="branch-1 cbranch-no" title="branch not covered" >'stratcap_db',</span>
+    user: process.env.DB_USER || <span class="branch-1 cbranch-no" title="branch not covered" >'stratcap_user',</span>
+    password: process.env.DB_PASSWORD || <span class="branch-1 cbranch-no" title="branch not covered" >'',</span>
   },
   
   jwt: {
-    secret: process.env.JWT_SECRET || 'your-secret-key',
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret',
-    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
+    secret: process.env.JWT_SECRET || <span class="branch-1 cbranch-no" title="branch not covered" >'your-secret-key',</span>
+    expiresIn: process.env.JWT_EXPIRES_IN || <span class="branch-1 cbranch-no" title="branch not covered" >'7d',</span>
+    refreshSecret: process.env.JWT_REFRESH_SECRET || <span class="branch-1 cbranch-no" title="branch not covered" >'your-refresh-secret',</span>
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || <span class="branch-1 cbranch-no" title="branch not covered" >'30d',</span>
   },
   
   session: {
-    secret: process.env.SESSION_SECRET || 'your-session-secret',
+    secret: process.env.SESSION_SECRET || <span class="branch-1 cbranch-no" title="branch not covered" >'your-session-secret',</span>
   },
   
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL || <span class="branch-1 cbranch-no" title="branch not covered" >'http://localhost:5173',</span>
     credentials: true,
   },
   
   email: {
     smtp: {
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587', 10),
+      host: process.env.SMTP_HOST || <span class="branch-1 cbranch-no" title="branch not covered" >'smtp.gmail.com',</span>
+      port: parseInt(process.env.SMTP_PORT || <span class="branch-1 cbranch-no" title="branch not covered" >'587',</span> 10),
       secure: false,
       auth: {
         user: process.env.SMTP_USER || '',
         pass: process.env.SMTP_PASS || '',
       },
     },
-    from: process.env.EMAIL_FROM || 'noreply@stratcap.com',
+    from: process.env.EMAIL_FROM || <span class="branch-1 cbranch-no" title="branch not covered" >'noreply@stratcap.com',</span>
   },
   
   upload: {
-    maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10), // 10MB
-    uploadDir: process.env.UPLOAD_DIR || 'uploads',
+    maxFileSize: parseInt(process.env.MAX_FILE_SIZE || <span class="branch-1 cbranch-no" title="branch not covered" >'10485760',</span> 10), // 10MB
+    uploadDir: process.env.UPLOAD_DIR || <span class="branch-1 cbranch-no" title="branch not covered" >'uploads',</span>
   },
   
   rateLimit: {
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || <span class="branch-1 cbranch-no" title="branch not covered" >'900000',</span> 10), // 15 minutes
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || <span class="branch-1 cbranch-no" title="branch not covered" >'100',</span> 10),
   },
   
   logging: {
-    level: process.env.LOG_LEVEL || 'info',
-    dir: process.env.LOG_DIR || 'logs',
+    level: process.env.LOG_LEVEL || <span class="branch-1 cbranch-no" title="branch not covered" >'info',</span>
+    dir: process.env.LOG_DIR || <span class="branch-1 cbranch-no" title="branch not covered" >'logs',</span>
   },
   
   mfa: {
-    appName: process.env.MFA_APP_NAME || 'StratCap',
+    appName: process.env.MFA_APP_NAME || <span class="branch-1 cbranch-no" title="branch not covered" >'StratCap',</span>
   },
 };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default config;</span></pre></td></tr></table></pre>
+export default config;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.617Z
+                at 2025-07-17T15:31:22.409Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

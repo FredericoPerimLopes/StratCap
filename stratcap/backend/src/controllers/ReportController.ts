@@ -879,7 +879,7 @@ export class ReportController {
       }
 
       const fundReports = [];
-      let consolidatedMetrics = {
+      const consolidatedMetrics = {
         totalCommitments: 0,
         totalCalled: 0,
         totalDistributed: 0,
@@ -993,7 +993,7 @@ export class ReportController {
       });
 
       const positionReports = [];
-      let portfolioMetrics = {
+      const portfolioMetrics = {
         totalCommitments: 0,
         totalCalled: 0,
         totalDistributed: 0,

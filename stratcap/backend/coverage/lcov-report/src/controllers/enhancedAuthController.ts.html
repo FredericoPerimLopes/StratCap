@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/161</span>
+                <span class='fraction'>0/166</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/80</span>
+                <span class='fraction'>0/67</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/161</span>
+                <span class='fraction'>0/166</span>
             </div>
         
             
@@ -572,7 +572,20 @@
 <a name='L507'></a><a href='#L507'>507</a>
 <a name='L508'></a><a href='#L508'>508</a>
 <a name='L509'></a><a href='#L509'>509</a>
-<a name='L510'></a><a href='#L510'>510</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L510'></a><a href='#L510'>510</a>
+<a name='L511'></a><a href='#L511'>511</a>
+<a name='L512'></a><a href='#L512'>512</a>
+<a name='L513'></a><a href='#L513'>513</a>
+<a name='L514'></a><a href='#L514'>514</a>
+<a name='L515'></a><a href='#L515'>515</a>
+<a name='L516'></a><a href='#L516'>516</a>
+<a name='L517'></a><a href='#L517'>517</a>
+<a name='L518'></a><a href='#L518'>518</a>
+<a name='L519'></a><a href='#L519'>519</a>
+<a name='L520'></a><a href='#L520'>520</a>
+<a name='L521'></a><a href='#L521'>521</a>
+<a name='L522'></a><a href='#L522'>522</a>
+<a name='L523'></a><a href='#L523'>523</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -580,7 +593,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1086,12 +1112,25 @@ import { Transaction } from 'sequelize';
 <span class="cstat-no" title="statement not covered" >import { EnhancedAuthService, LoginRequest, PasswordResetRequest } from '../services/EnhancedAuthService';</span>
 <span class="cstat-no" title="statement not covered" >import sequelize from '../db/database';</span>
 <span class="cstat-no" title="statement not covered" >import { AppError } from '../middleware/errorHandler';</span>
+import { User } from '../models/User';
+<span class="cstat-no" title="statement not covered" >import '../types/express';</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export class E</span>nhancedAuthController {
   private authService: EnhancedAuthService;
 &nbsp;
 <span class="fstat-no" title="function not covered" >  constructor() {</span>
 <span class="cstat-no" title="statement not covered" >    this.authService = new EnhancedAuthService();</span>
+  }
+&nbsp;
+  /**
+   * Helper method to ensure user ID is available
+   */
+  private <span class="fstat-no" title="function not covered" >getUserId(</span>req: Request): number {
+    const user = <span class="cstat-no" title="statement not covered" >req.user as User;</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!user || !user.id) {</span>
+<span class="cstat-no" title="statement not covered" >      throw new AppError('User ID is required', 400);</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return user.id;</span>
   }
 &nbsp;
   /**
@@ -1160,7 +1199,7 @@ import { Transaction } from 'sequelize';
     const transaction: Transaction = <span class="cstat-no" title="statement not covered" >await sequelize.transaction();</span>
     
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const userId = <span class="cstat-no" title="statement not covered" >req.user?.id?.toString() || '';</span>
+      const userId = <span class="cstat-no" title="statement not covered" >this.getUserId(req);</span>
       const mfaSetup = <span class="cstat-no" title="statement not covered" >await this.authService.setupMFA(userId, transaction);</span>
       
 <span class="cstat-no" title="statement not covered" >      await transaction.commit();</span>
@@ -1194,7 +1233,7 @@ import { Transaction } from 'sequelize';
     const transaction: Transaction = <span class="cstat-no" title="statement not covered" >await sequelize.transaction();</span>
     
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const userId = <span class="cstat-no" title="statement not covered" >req.user?.id?.toString() || '';</span>
+      const userId = <span class="cstat-no" title="statement not covered" >this.getUserId(req);</span>
       const { token } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!token) {</span>
@@ -1233,7 +1272,7 @@ import { Transaction } from 'sequelize';
     const transaction: Transaction = <span class="cstat-no" title="statement not covered" >await sequelize.transaction();</span>
     
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const userId = <span class="cstat-no" title="statement not covered" >req.user?.id?.toString() || '';</span>
+      const userId = <span class="cstat-no" title="statement not covered" >this.getUserId(req);</span>
       const { password } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!password) {</span>
@@ -1347,7 +1386,7 @@ import { Transaction } from 'sequelize';
     const transaction: Transaction = <span class="cstat-no" title="statement not covered" >await sequelize.transaction();</span>
     
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const userId = <span class="cstat-no" title="statement not covered" >req.user?.id?.toString() || '';</span>
+      const userId = <span class="cstat-no" title="statement not covered" >this.getUserId(req);</span>
       const { currentPassword, newPassword } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!currentPassword || !newPassword) {</span>
@@ -1460,7 +1499,7 @@ import { Transaction } from 'sequelize';
     const transaction: Transaction = <span class="cstat-no" title="statement not covered" >await sequelize.transaction();</span>
     
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const userId = <span class="cstat-no" title="statement not covered" >req.user?.id?.toString() || '';</span>
+      const userId = <span class="cstat-no" title="statement not covered" >this.getUserId(req);</span>
 <span class="cstat-no" title="statement not covered" >      await this.authService.logoutAll(userId, transaction);</span>
       
 <span class="cstat-no" title="statement not covered" >      await transaction.commit();</span>
@@ -1487,7 +1526,7 @@ import { Transaction } from 'sequelize';
    */
   getSessions = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const userId = <span class="cstat-no" title="statement not covered" >req.user?.id?.toString() || '';</span>
+      const userId = <span class="cstat-no" title="statement not covered" >this.getUserId(req);</span>
       const currentSessionToken = <span class="cstat-no" title="statement not covered" >req.cookies.refreshToken;</span>
       
       const sessions = <span class="cstat-no" title="statement not covered" >await this.authService.getUserSessions(userId, currentSessionToken);</span>
@@ -1511,7 +1550,7 @@ import { Transaction } from 'sequelize';
     const transaction: Transaction = <span class="cstat-no" title="statement not covered" >await sequelize.transaction();</span>
     
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const userId = <span class="cstat-no" title="statement not covered" >req.user?.id?.toString() || '';</span>
+      const userId = <span class="cstat-no" title="statement not covered" >this.getUserId(req);</span>
       const sessionId = <span class="cstat-no" title="statement not covered" >req.params.sessionId;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!sessionId) {</span>
@@ -1548,7 +1587,7 @@ import { Transaction } from 'sequelize';
    */
   getSecuritySettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const userId = <span class="cstat-no" title="statement not covered" >req.user?.id?.toString() || '';</span>
+      const userId = <span class="cstat-no" title="statement not covered" >this.getUserId(req);</span>
       const settings = <span class="cstat-no" title="statement not covered" >await this.authService.getSecuritySettings(userId);</span>
       
 <span class="cstat-no" title="statement not covered" >      res.json({</span>
@@ -1597,7 +1636,7 @@ import { Transaction } from 'sequelize';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.617Z
+                at 2025-07-17T15:31:22.409Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

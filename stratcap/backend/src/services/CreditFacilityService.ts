@@ -1,8 +1,7 @@
 import { Transaction } from 'sequelize';
-import { CreditFacility, CreditFacilityAttributes, CreditFacilityCreationAttributes } from '../models/CreditFacility';
+import { CreditFacility, CreditFacilityCreationAttributes } from '../models/CreditFacility';
 import { CreditDrawdown } from '../models/CreditDrawdown';
 import { CreditPaydown } from '../models/CreditPaydown';
-import { BorrowingBase } from '../models/BorrowingBase';
 import { Decimal } from 'decimal.js';
 import NotificationService from './NotificationService';
 
@@ -31,6 +30,7 @@ export interface CreditFacilityUpdateRequest {
   facilityName?: string;
   lender?: string;
   totalCommitment?: string;
+  availableAmount?: string;
   interestRate?: string;
   rateType?: 'fixed' | 'floating';
   benchmarkRate?: string;

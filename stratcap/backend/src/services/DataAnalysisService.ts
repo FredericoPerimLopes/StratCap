@@ -1,11 +1,5 @@
-import { QueryTypes, Op } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 import sequelize from '../db/database';
-import { Decimal } from 'decimal.js';
-import { Fund } from '../models/Fund';
-import { InvestorEntity } from '../models/InvestorEntity';
-import { Investment } from '../models/Investment';
-import { Commitment } from '../models/Commitment';
-import { CapitalActivity } from '../models/CapitalActivity';
 
 export interface PivotTableConfig {
   id: string;
@@ -385,7 +379,8 @@ export class DataAnalysisService {
     size: number;
   }> {
     // Get data based on source and filters
-    const data = await this.getExportData(dataSource, filters, options);
+    const exportDataResult = await this.getExportData(dataSource, filters || [], options);
+    const data: any[] = exportDataResult ? exportDataResult : [];
     
     // Generate filename
     const timestamp = new Date().toISOString().split('T')[0];
@@ -639,22 +634,22 @@ export class DataAnalysisService {
     return 'string';
   }
 
-  private async getCustomReport(reportId: string): Promise<CustomReport> {
+  private async getCustomReport(_reportId: string): Promise<CustomReport> {
     // Mock implementation - would normally load from database
     throw new Error('Custom report not implemented yet');
   }
 
-  private async executeReportSection(section: ReportSection, parameters: Record<string, any>): Promise<any> {
+  private async executeReportSection(_section: ReportSection, _parameters: Record<string, any>): Promise<any> {
     // Mock implementation for executing report sections
     return { message: 'Section data placeholder' };
   }
 
-  private generateChartConfig(section: ReportSection, data: any): any {
+  private generateChartConfig(_section: ReportSection, _data: any): any {
     // Generate chart configuration based on section and data
     return { type: 'bar', data: [] };
   }
 
-  private async getExportData(dataSource: string, filters: any[], options: ExportOptions): Promise<any[]> {
+  private async getExportData(dataSource: string, _filters: any[], _options: ExportOptions): Promise<any[] | undefined> {
     // Get data for export based on source and filters
     let query = '';
     
@@ -672,7 +667,8 @@ export class DataAnalysisService {
         throw new Error(`Unsupported data source: ${dataSource}`);
     }
 
-    return await sequelize.query(query, { type: QueryTypes.SELECT });
+    const result = await sequelize.query(query, { type: QueryTypes.SELECT }) as any[];
+    return result || [];
   }
 
   private generateCSV(data: any[], options: ExportOptions): Buffer {
@@ -708,7 +704,7 @@ export class DataAnalysisService {
     return this.generateCSV(data, options);
   }
 
-  private async generatePDF(data: any[], options: ExportOptions): Promise<Buffer> {
+  private async generatePDF(_data: any[], _options: ExportOptions): Promise<Buffer> {
     // Would use a library like PDFKit to generate PDF files
     // For now, return placeholder
     return Buffer.from('PDF placeholder');

@@ -6,8 +6,8 @@ import FundFamily from '../models/FundFamily';
 import InvestorEntity from '../models/InvestorEntity';
 import Commitment from '../models/Commitment';
 import Investment from '../models/Investment';
+import { InvestorClass } from '../models/InvestorClass';
 import { generateTestToken } from '../utils/testHelpers';
-import { Decimal } from 'decimal.js';
 
 describe('Global Entity Management API', () => {
   let authToken: string;
@@ -18,6 +18,8 @@ describe('Global Entity Management API', () => {
   let testInvestor1: InvestorEntity;
   let testInvestor2: InvestorEntity;
   let testInvestment1: Investment;
+  let testInvestorClass1: InvestorClass;
+  let testInvestorClass2: InvestorClass;
 
   beforeAll(async () => {
     // Create test user
@@ -25,16 +27,21 @@ describe('Global Entity Management API', () => {
       email: 'test@example.com',
       firstName: 'Test',
       lastName: 'User',
-      role: 'fund_manager',
-      status: 'active',
+      role: 'manager',
+      password: 'password123',
+      isActive: true,
     });
 
-    authToken = generateTestToken(testUser.id, testUser.role);
+    authToken = generateTestToken({ id: testUser.id, role: testUser.role });
 
     // Create test fund family
     testFundFamily = await FundFamily.create({
       name: 'Test Fund Family',
+      code: 'TFF001',
       description: 'Test fund family for global entity tests',
+      managementCompany: 'Test Management Co',
+      primaryCurrency: 'USD',
+      fiscalYearEnd: '12-31',
     });
 
     // Create test funds
@@ -66,67 +73,113 @@ describe('Global Entity Management API', () => {
       status: 'investing',
     });
 
+    // Create test investor classes
+    testInvestorClass1 = await InvestorClass.create({
+      fundId: testFund1.id,
+      name: 'Class A',
+      code: 'A',
+      managementFeeRate: '2.0',
+      carriedInterestRate: '20.0',
+      preferredReturnRate: '8.0',
+      isDefault: true,
+      priority: 1,
+    });
+
+    testInvestorClass2 = await InvestorClass.create({
+      fundId: testFund2.id,
+      name: 'Class A',
+      code: 'A',
+      managementFeeRate: '2.0',
+      carriedInterestRate: '20.0',
+      preferredReturnRate: '8.0',
+      isDefault: true,
+      priority: 1,
+    });
+
     // Create test investors
     testInvestor1 = await InvestorEntity.create({
       name: 'Pension Fund Alpha',
+      legalName: 'Pension Fund Alpha Inc.',
+      type: 'institution',
       entityType: 'pension_fund',
-      geography: 'North America',
-      sector: 'Public Pension',
-      riskProfile: 'Conservative',
-      status: 'active',
+      domicile: 'US',
+      accreditedInvestor: true,
+      qualifiedPurchaser: true,
+      kycStatus: 'approved',
+      amlStatus: 'approved',
     });
 
     testInvestor2 = await InvestorEntity.create({
       name: 'Sovereign Wealth Beta',
+      legalName: 'Sovereign Wealth Beta Fund',
+      type: 'institution',
       entityType: 'sovereign_wealth',
-      geography: 'Europe',
-      sector: 'Sovereign',
-      riskProfile: 'Aggressive',
-      status: 'active',
+      domicile: 'DE',
+      accreditedInvestor: true,
+      qualifiedPurchaser: true,
+      kycStatus: 'approved',
+      amlStatus: 'approved',
     });
 
     // Create test commitments
     await Commitment.create({
       fundId: testFund1.id,
-      investorId: testInvestor1.id,
+      investorEntityId: testInvestor1.id,
+      investorClassId: testInvestorClass1.id,
       commitmentAmount: '25000000',
-      contributedAmount: '15000000',
-      distributedAmount: '5000000',
-      currentNav: '18000000',
+      commitmentDate: new Date('2020-01-01'),
+      capitalCalled: '15000000',
+      capitalReturned: '5000000',
+      unfundedCommitment: '10000000',
+      preferredReturn: '1200000',
+      carriedInterest: '0',
       status: 'active',
     });
 
     await Commitment.create({
       fundId: testFund1.id,
-      investorId: testInvestor2.id,
+      investorEntityId: testInvestor2.id,
+      investorClassId: testInvestorClass1.id,
       commitmentAmount: '50000000',
-      contributedAmount: '30000000',
-      distributedAmount: '8000000',
-      currentNav: '35000000',
+      commitmentDate: new Date('2020-01-01'),
+      capitalCalled: '30000000',
+      capitalReturned: '8000000',
+      unfundedCommitment: '20000000',
+      preferredReturn: '2400000',
+      carriedInterest: '0',
       status: 'active',
     });
 
     await Commitment.create({
       fundId: testFund2.id,
-      investorId: testInvestor1.id,
+      investorEntityId: testInvestor1.id,
+      investorClassId: testInvestorClass2.id,
       commitmentAmount: '30000000',
-      contributedAmount: '10000000',
-      distributedAmount: '0',
-      currentNav: '12000000',
+      commitmentDate: new Date('2022-01-01'),
+      capitalCalled: '10000000',
+      capitalReturned: '0',
+      unfundedCommitment: '20000000',
+      preferredReturn: '800000',
+      carriedInterest: '0',
       status: 'active',
     });
 
     // Create test investment
     testInvestment1 = await Investment.create({
       fundId: testFund1.id,
-      portfolioCompany: 'TechCorp Inc',
+      name: 'TechCorp Inc',
+      code: 'TECH001',
+      investmentType: 'equity',
       sector: 'Technology',
       geography: 'North America',
       investmentDate: new Date('2021-06-01'),
+      initialCost: '15000000',
       currentValue: '25000000',
-      totalInvested: '15000000',
+      realizedValue: '0',
+      unrealizedValue: '25000000',
+      totalValue: '25000000',
+      multiple: '1.667',
       status: 'active',
-      valuationMethod: 'Market Multiple',
     });
   });
 
@@ -134,6 +187,7 @@ describe('Global Entity Management API', () => {
     // Clean up test data
     await Commitment.destroy({ where: {} });
     await Investment.destroy({ where: {} });
+    await InvestorClass.destroy({ where: {} });
     await InvestorEntity.destroy({ where: {} });
     await Fund.destroy({ where: {} });
     await FundFamily.destroy({ where: {} });
@@ -212,7 +266,7 @@ describe('Global Entity Management API', () => {
 
       expect(response.body.success).toBe(true);
       expect(response.body.data.investmentId).toBe(testInvestment1.id);
-      expect(response.body.data.portfolioCompany).toBe(testInvestment1.portfolioCompany);
+      expect(response.body.data.name).toBe(testInvestment1.name);
       expect(response.body.data.sector).toBe(testInvestment1.sector);
       expect(response.body.data).toHaveProperty('totalInvested');
       expect(response.body.data).toHaveProperty('currentValue');
@@ -397,7 +451,7 @@ describe('Global Entity Management API', () => {
     });
 
     it('should allow viewer access to summary endpoints', async () => {
-      const viewerToken = generateTestToken('viewer-id', 'viewer');
+      const viewerToken = generateTestToken({ id: 'viewer-id', role: 'viewer' });
       
       const response = await request(app)
         .get('/api/global-entities/metrics')

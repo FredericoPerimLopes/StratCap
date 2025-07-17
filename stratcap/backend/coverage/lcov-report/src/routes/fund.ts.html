@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -84,56 +84,56 @@
 <a name='L19'></a><a href='#L19'>19</a>
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a>
-<a name='L22'></a><a href='#L22'>22</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L22'></a><a href='#L22'>22</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Router } from 'express';</span>
-<span class="cstat-no" title="statement not covered" >import fundController from '../controllers/FundController';</span>
-<span class="cstat-no" title="statement not covered" >import { protect } from '../middleware/auth';</span>
-<span class="cstat-no" title="statement not covered" >import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">import { Router } from 'express';
+import fundController from '../controllers/FundController';
+import { protect } from '../middleware/auth';
+import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';
 &nbsp;
-const router = <span class="cstat-no" title="statement not covered" >Router();</span>
+const router = Router();
 &nbsp;
 // All routes require authentication
-<span class="cstat-no" title="statement not covered" >router.use(protect);</span>
+router.use(protect);
 &nbsp;
 // Fund CRUD operations
-<span class="cstat-no" title="statement not covered" >router.post('/', validate(schemas.createFund), fundController.createFund);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/', validateQuery(schemas.pagination), fundController.getFunds);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/:id', validateParams(schemas.id), fundController.getFundById);</span>
-<span class="cstat-no" title="statement not covered" >router.patch('/:id', validateParams(schemas.id), fundController.updateFund);</span>
-<span class="cstat-no" title="statement not covered" >router.delete('/:id', validateParams(schemas.id), fundController.deleteFund);</span>
+router.post('/', validate(schemas.createFund), fundController.createFund);
+router.get('/', validateQuery(schemas.pagination), fundController.getFunds);
+router.get('/:id', validateParams(schemas.id), fundController.getFundById);
+router.patch('/:id', validateParams(schemas.id), fundController.updateFund);
+router.delete('/:id', validateParams(schemas.id), fundController.deleteFund);
 &nbsp;
 // Fund-specific operations
-<span class="cstat-no" title="statement not covered" >router.get('/:id/metrics', validateParams(schemas.id), fundController.getFundMetrics);</span>
-<span class="cstat-no" title="statement not covered" >router.patch('/:id/status', validateParams(schemas.id), fundController.updateFundStatus);</span>
+router.get('/:id/metrics', validateParams(schemas.id), fundController.getFundMetrics);
+router.patch('/:id/status', validateParams(schemas.id), fundController.updateFundStatus);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default router;</span></pre></td></tr></table></pre>
+export default router;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.617Z
+                at 2025-07-17T15:31:22.409Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

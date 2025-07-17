@@ -3,12 +3,25 @@ import { Transaction } from 'sequelize';
 import { EnhancedAuthService, LoginRequest, PasswordResetRequest } from '../services/EnhancedAuthService';
 import sequelize from '../db/database';
 import { AppError } from '../middleware/errorHandler';
+import { User } from '../models/User';
+import '../types/express';
 
 export class EnhancedAuthController {
   private authService: EnhancedAuthService;
 
   constructor() {
     this.authService = new EnhancedAuthService();
+  }
+
+  /**
+   * Helper method to ensure user ID is available
+   */
+  private getUserId(req: Request): number {
+    const user = req.user as User;
+    if (!user || !user.id) {
+      throw new AppError('User ID is required', 400);
+    }
+    return user.id;
   }
 
   /**
@@ -77,7 +90,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user?.id?.toString() || '';
+      const userId = this.getUserId(req);
       const mfaSetup = await this.authService.setupMFA(userId, transaction);
       
       await transaction.commit();
@@ -111,7 +124,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user?.id?.toString() || '';
+      const userId = this.getUserId(req);
       const { token } = req.body;
 
       if (!token) {
@@ -150,7 +163,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user?.id?.toString() || '';
+      const userId = this.getUserId(req);
       const { password } = req.body;
 
       if (!password) {
@@ -264,7 +277,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user?.id?.toString() || '';
+      const userId = this.getUserId(req);
       const { currentPassword, newPassword } = req.body;
 
       if (!currentPassword || !newPassword) {
@@ -377,7 +390,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user?.id?.toString() || '';
+      const userId = this.getUserId(req);
       await this.authService.logoutAll(userId, transaction);
       
       await transaction.commit();
@@ -404,7 +417,7 @@ export class EnhancedAuthController {
    */
   getSessions = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = req.user?.id?.toString() || '';
+      const userId = this.getUserId(req);
       const currentSessionToken = req.cookies.refreshToken;
       
       const sessions = await this.authService.getUserSessions(userId, currentSessionToken);
@@ -428,7 +441,7 @@ export class EnhancedAuthController {
     const transaction: Transaction = await sequelize.transaction();
     
     try {
-      const userId = req.user?.id?.toString() || '';
+      const userId = this.getUserId(req);
       const sessionId = req.params.sessionId;
 
       if (!sessionId) {
@@ -465,7 +478,7 @@ export class EnhancedAuthController {
    */
   getSecuritySettings = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = req.user?.id?.toString() || '';
+      const userId = this.getUserId(req);
       const settings = await this.authService.getSecuritySettings(userId);
       
       res.json({

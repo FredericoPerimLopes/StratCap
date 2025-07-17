@@ -1,7 +1,6 @@
 import { GeneralLedgerService, JournalEntryRequest, GLAccountRequest, TrialBalanceOptions } from '../services/GeneralLedgerService';
 import { GLAccount } from '../models/GLAccount';
-import { JournalEntry, JournalEntryLineItem } from '../models/JournalEntry';
-import { GLAccountMapping } from '../models/GLAccountMapping';
+import { JournalEntry } from '../models/JournalEntry';
 import { Decimal } from 'decimal.js';
 
 describe('GeneralLedgerService', () => {

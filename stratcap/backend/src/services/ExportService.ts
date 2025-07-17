@@ -1,5 +1,5 @@
 import * as xlsx from 'xlsx';
-import * as PDFDocument from 'pdfkit';
+import PDFDocument from 'pdfkit';
 import { createObjectCsvWriter } from 'csv-writer';
 import { Op } from 'sequelize';
 import fs from 'fs';
@@ -421,7 +421,7 @@ export class ExportService {
    */
   private async exportToJSON(data: any[], filePath: string, options: ExportOptions): Promise<void> {
     const formattedData = data.map(row => this.formatRowData(row, options));
-    const exportData = {
+    const exportData: any = {
       exportDate: new Date().toISOString(),
       recordCount: data.length,
       data: formattedData
@@ -452,18 +452,18 @@ export class ExportService {
       investorMap.get(investorId).transactions.push(transaction);
     });
 
-    const data = [];
+    const data: any[] = [];
     
-    investorMap.forEach((investorData, investorId) => {
+    investorMap.forEach((investorData, _investorId) => {
       const { transactions: investorTransactions } = investorData;
       
       const totalCalled = investorTransactions
-        .filter(t => t.transactionType === 'capital_call')
-        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+        .filter((t: any) => t.transactionType === 'capital_call')
+        .reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0);
         
       const totalDistributed = investorTransactions
-        .filter(t => t.transactionType === 'distribution')
-        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+        .filter((t: any) => t.transactionType === 'distribution')
+        .reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0);
 
       data.push({
         'Fund Code': fund.code,
@@ -485,7 +485,7 @@ export class ExportService {
    * Prepare investor portfolio data for export
    */
   private prepareInvestorPortfolioData(investor: any, commitments: any[], transactions: any[]): any[] {
-    const data = [];
+    const data: any[] = [];
     
     commitments.forEach(commitment => {
       const commitmentTransactions = transactions.filter(t => t.commitmentId === commitment.id);
@@ -520,7 +520,7 @@ export class ExportService {
    * Prepare capital activity data for export
    */
   private prepareCapitalActivityData(capitalActivities: any[]): any[] {
-    const data = [];
+    const data: any[] = [];
     
     capitalActivities.forEach(activity => {
       const transactionCount = activity.transactions?.length || 0;
@@ -549,7 +549,7 @@ export class ExportService {
    * Prepare fee calculations data for export
    */
   private prepareFeeCalculationsData(feeCalculations: any[]): any[] {
-    const data = [];
+    const data: any[] = [];
     
     feeCalculations.forEach(fee => {
       data.push({
@@ -610,7 +610,7 @@ export class ExportService {
   private generateSummaryData(data: any[]): any[] {
     if (data.length === 0) return [];
     
-    const summary = [];
+    const summary: any[] = [];
     const numericFields = Object.keys(data[0]).filter(key => 
       typeof data[0][key] === 'number'
     );
@@ -678,38 +678,38 @@ export class ExportService {
     }));
   }
 
-  private async getCommitmentsForPivot(filters?: Record<string, any>): Promise<any[]> {
+  private async getCommitmentsForPivot(_filters?: Record<string, any>): Promise<any[]> {
     // Similar implementation for commitments
     return [];
   }
 
-  private async getCapitalActivitiesForPivot(filters?: Record<string, any>): Promise<any[]> {
+  private async getCapitalActivitiesForPivot(_filters?: Record<string, any>): Promise<any[]> {
     // Similar implementation for capital activities
     return [];
   }
 
-  private generatePivotTable(data: any[], config: PivotTableConfig): any[] {
+  private generatePivotTable(_data: any[], _config: PivotTableConfig): any[] {
     // Simplified pivot table generation
     // In production, this would be a more sophisticated implementation
     const pivotMap = new Map();
     
-    data.forEach(row => {
-      const rowKey = config.rows.map(r => row[r]).join('|');
-      const colKey = config.columns.map(c => row[c]).join('|');
+    _data.forEach(row => {
+      const rowKey = _config.rows.map(r => row[r]).join('|');
+      const colKey = _config.columns.map(c => row[c]).join('|');
       const key = `${rowKey}:${colKey}`;
       
       if (!pivotMap.has(key)) {
         const pivotRow: any = {};
-        config.rows.forEach(r => pivotRow[r] = row[r]);
-        config.columns.forEach(c => pivotRow[c] = row[c]);
-        config.values.forEach(v => pivotRow[v] = 0);
+        _config.rows.forEach(r => pivotRow[r] = row[r]);
+        _config.columns.forEach(c => pivotRow[c] = row[c]);
+        _config.values.forEach(v => pivotRow[v] = 0);
         pivotMap.set(key, pivotRow);
       }
       
       const pivotRow = pivotMap.get(key);
-      config.values.forEach(valueField => {
+      _config.values.forEach(valueField => {
         const value = row[valueField] || 0;
-        switch (config.aggregation) {
+        switch (_config.aggregation) {
           case 'sum':
             pivotRow[valueField] += value;
             break;
@@ -728,7 +728,7 @@ export class ExportService {
     return Array.from(pivotMap.values());
   }
 
-  private async getDataForCustomReport(config: CustomReportConfig): Promise<any[]> {
+  private async getDataForCustomReport(_config: CustomReportConfig): Promise<any[]> {
     // Implementation would depend on data source specified in config
     return [];
   }

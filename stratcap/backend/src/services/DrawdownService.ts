@@ -7,7 +7,6 @@ import { Decimal } from 'decimal.js';
 import { CreditFacilityService } from './CreditFacilityService';
 import NotificationService from './NotificationService';
 import ApprovalWorkflowService from './ApprovalWorkflowService';
-import DocumentService from './DocumentService';
 
 export interface DrawdownRequest {
   facilityId: string;
@@ -60,13 +59,11 @@ export class DrawdownService {
   private creditFacilityService: CreditFacilityService;
   private notificationService: NotificationService;
   private approvalWorkflowService: ApprovalWorkflowService;
-  private documentService: DocumentService;
 
   constructor() {
     this.creditFacilityService = new CreditFacilityService();
     this.notificationService = new NotificationService();
     this.approvalWorkflowService = new ApprovalWorkflowService();
-    this.documentService = new DocumentService();
   }
 
   /**
@@ -476,7 +473,7 @@ export class DrawdownService {
       }
 
     } catch (error) {
-      errors.push(`Validation error: ${error.message}`);
+      errors.push(`Validation error: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     return {

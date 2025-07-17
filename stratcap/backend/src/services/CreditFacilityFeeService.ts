@@ -83,7 +83,7 @@ export class CreditFacilityFeeService {
     facilityId: string,
     periodStart: Date,
     periodEnd: Date,
-    transaction?: Transaction
+    _transaction?: Transaction
   ): Promise<CreditFacilityFeeCalculation> {
     const facility = await this.getFacilityById(facilityId);
     const calculationDate = new Date();
@@ -195,7 +195,7 @@ export class CreditFacilityFeeService {
   async calculateDailyAccruals(
     facilityId: string,
     accrualDate: Date = new Date(),
-    transaction?: Transaction
+    _transaction?: Transaction
   ): Promise<FeeAccrualEntry[]> {
     const facility = await this.getFacilityById(facilityId);
     const accruals: FeeAccrualEntry[] = [];
@@ -272,7 +272,6 @@ export class CreditFacilityFeeService {
     scheduleType: 'monthly' | 'quarterly' | 'annual' = 'quarterly',
     periodsAhead: number = 4
   ): Promise<CreditFacilityFeeSchedule> {
-    const facility = await this.getFacilityById(facilityId);
     const paymentDates = this.generatePaymentDates(scheduleType, periodsAhead);
     const feeBreakdown: any[] = [];
 

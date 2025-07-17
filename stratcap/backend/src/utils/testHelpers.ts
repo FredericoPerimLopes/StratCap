@@ -3,7 +3,7 @@ import { config } from '../config/config';
 import { User } from '../models';
 
 export const createJWT = (payload: any): string => {
-  return jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
+  return jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiresIn } as jwt.SignOptions);
 };
 
 export const createTestUser = async (userData: any = {}) => {

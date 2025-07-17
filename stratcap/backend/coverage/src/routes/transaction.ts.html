@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -138,21 +138,19 @@
 <a name='L73'></a><a href='#L73'>73</a>
 <a name='L74'></a><a href='#L74'>74</a>
 <a name='L75'></a><a href='#L75'>75</a>
-<a name='L76'></a><a href='#L76'>76</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L76'></a><a href='#L76'>76</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -203,29 +201,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Router } from 'express';</span>
-<span class="cstat-no" title="statement not covered" >import transactionController from '../controllers/TransactionController';</span>
-<span class="cstat-no" title="statement not covered" >import { protect } from '../middleware/auth';</span>
-<span class="cstat-no" title="statement not covered" >import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';</span>
-<span class="cstat-no" title="statement not covered" >import Joi from 'joi';</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">import { Router } from 'express';
+import transactionController from '../controllers/TransactionController';
+import { protect } from '../middleware/auth';
+import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';
+import Joi from 'joi';
 &nbsp;
-const router = <span class="cstat-no" title="statement not covered" >Router();</span>
+const router = Router();
 &nbsp;
 // All routes require authentication
-<span class="cstat-no" title="statement not covered" >router.use(protect);</span>
+router.use(protect);
 &nbsp;
 // Additional validation schemas for transactions
-const transactionSchemas = <span class="cstat-no" title="statement not covered" >{</span>
+const transactionSchemas = {
   createTransaction: Joi.object({
     fundId: Joi.number().integer().positive().required(),
     commitmentId: Joi.number().integer().positive().required(),
@@ -278,24 +278,24 @@ const transactionSchemas = <span class="cstat-no" title="statement not covered" 
 };
 &nbsp;
 // Transaction CRUD operations
-<span class="cstat-no" title="statement not covered" >router.post('/', validate(transactionSchemas.createTransaction), transactionController.createTransaction);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/', validateQuery(transactionSchemas.transactionQuery), transactionController.getTransactions);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/summary', validateQuery(transactionSchemas.summaryQuery), transactionController.getTransactionSummary);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/batch/:batchId', transactionController.getBatchTransactions);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/:id', validateParams(schemas.id), transactionController.getTransactionById);</span>
-<span class="cstat-no" title="statement not covered" >router.patch('/:id', validateParams(schemas.id), transactionController.updateTransaction);</span>
+router.post('/', validate(transactionSchemas.createTransaction), transactionController.createTransaction);
+router.get('/', validateQuery(transactionSchemas.transactionQuery), transactionController.getTransactions);
+router.get('/summary', validateQuery(transactionSchemas.summaryQuery), transactionController.getTransactionSummary);
+router.get('/batch/:batchId', transactionController.getBatchTransactions);
+router.get('/:id', validateParams(schemas.id), transactionController.getTransactionById);
+router.patch('/:id', validateParams(schemas.id), transactionController.updateTransaction);
 &nbsp;
 // Transaction-specific operations
-<span class="cstat-no" title="statement not covered" >router.post('/:id/reverse', validateParams(schemas.id), validate(transactionSchemas.reverseTransaction), transactionController.reverseTransaction);</span>
+router.post('/:id/reverse', validateParams(schemas.id), validate(transactionSchemas.reverseTransaction), transactionController.reverseTransaction);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default router;</span></pre></td></tr></table></pre>
+export default router;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T13:39:41.882Z
+                at 2025-07-17T15:31:22.820Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

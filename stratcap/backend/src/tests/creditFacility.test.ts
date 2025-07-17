@@ -7,7 +7,6 @@ import { BorrowingBase } from '../models/BorrowingBase';
 import User from '../models/User';
 import Fund from '../models/Fund';
 import { generateTestToken } from '../utils/testHelpers';
-import { Decimal } from 'decimal.js';
 
 describe('Credit Facility Management API', () => {
   let authToken: string;
@@ -21,8 +20,9 @@ describe('Credit Facility Management API', () => {
       email: 'test@example.com',
       firstName: 'Test',
       lastName: 'User',
-      role: 'fund_manager',
-      status: 'active',
+      role: 'manager',
+      password: 'password123',
+      isActive: true,
     });
 
     // Create test fund
@@ -40,7 +40,7 @@ describe('Credit Facility Management API', () => {
       status: 'investing',
     });
 
-    authToken = generateTestToken(testUser.id, testUser.role);
+    authToken = generateTestToken({ id: testUser.id, role: testUser.role });
   });
 
   beforeEach(async () => {
@@ -59,7 +59,7 @@ describe('Credit Facility Management API', () => {
   describe('POST /api/credit-facilities', () => {
     it('should create a new credit facility', async () => {
       const facilityData = {
-        fundId: testFund.id,
+        fundId: testFund.id.toString(),
         facilityName: 'Test Credit Facility',
         lender: 'Test Bank',
         facilityType: 'revolving',
@@ -103,7 +103,7 @@ describe('Credit Facility Management API', () => {
   describe('GET /api/credit-facilities/:id', () => {
     beforeEach(async () => {
       testFacility = await CreditFacility.create({
-        fundId: testFund.id,
+        fundId: testFund.id.toString(),
         facilityName: 'Test Facility',
         lender: 'Test Bank',
         facilityType: 'revolving',
@@ -147,7 +147,7 @@ describe('Credit Facility Management API', () => {
   describe('POST /api/credit-facilities/drawdowns', () => {
     beforeEach(async () => {
       testFacility = await CreditFacility.create({
-        fundId: testFund.id,
+        fundId: testFund.id.toString(),
         facilityName: 'Test Facility',
         lender: 'Test Bank',
         facilityType: 'revolving',
@@ -207,11 +207,11 @@ describe('Credit Facility Management API', () => {
   });
 
   describe('POST /api/credit-facilities/paydowns', () => {
-    let testDrawdown: CreditDrawdown;
+    // let _testDrawdown: CreditDrawdown;
 
     beforeEach(async () => {
       testFacility = await CreditFacility.create({
-        fundId: testFund.id,
+        fundId: testFund.id.toString(),
         facilityName: 'Test Facility',
         lender: 'Test Bank',
         facilityType: 'revolving',
@@ -276,7 +276,7 @@ describe('Credit Facility Management API', () => {
   describe('GET /api/credit-facilities/:id/utilization', () => {
     beforeEach(async () => {
       testFacility = await CreditFacility.create({
-        fundId: testFund.id,
+        fundId: testFund.id.toString(),
         facilityName: 'Test Facility',
         lender: 'Test Bank',
         facilityType: 'revolving',
@@ -313,7 +313,7 @@ describe('Credit Facility Management API', () => {
   describe('GET /api/credit-facilities/:id/fees/calculate', () => {
     beforeEach(async () => {
       testFacility = await CreditFacility.create({
-        fundId: testFund.id,
+        fundId: testFund.id.toString(),
         facilityName: 'Test Facility',
         lender: 'Test Bank',
         facilityType: 'revolving',
@@ -355,7 +355,7 @@ describe('Credit Facility Management API', () => {
   describe('POST /api/credit-facilities/borrowing-base', () => {
     beforeEach(async () => {
       testFacility = await CreditFacility.create({
-        fundId: testFund.id,
+        fundId: testFund.id.toString(),
         facilityName: 'Test Facility',
         lender: 'Test Bank',
         facilityType: 'revolving',
@@ -429,7 +429,7 @@ describe('Credit Facility Management API', () => {
   describe('PUT /api/credit-facilities/:id', () => {
     beforeEach(async () => {
       testFacility = await CreditFacility.create({
-        fundId: testFund.id,
+        fundId: testFund.id.toString(),
         facilityName: 'Test Facility',
         lender: 'Test Bank',
         facilityType: 'revolving',
@@ -473,7 +473,7 @@ describe('Credit Facility Management API', () => {
       // Create multiple facilities for comprehensive metrics
       await CreditFacility.bulkCreate([
         {
-          fundId: testFund.id,
+          fundId: testFund.id.toString(),
           facilityName: 'Facility 1',
           lender: 'Bank 1',
           facilityType: 'revolving',
@@ -492,7 +492,7 @@ describe('Credit Facility Management API', () => {
           keyTerms: {},
         },
         {
-          fundId: testFund.id,
+          fundId: testFund.id.toString(),
           facilityName: 'Facility 2',
           lender: 'Bank 2',
           facilityType: 'term_loan',

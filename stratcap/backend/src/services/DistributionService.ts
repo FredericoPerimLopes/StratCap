@@ -213,17 +213,17 @@ class DistributionService {
 
       // Calculate gain distribution (after preferred return)
       let gainDistribution = new Decimal(0);
-      let catchUp = new Decimal(0);
+      const catchUp = new Decimal(0);
+      const carriedInterestRate = new Decimal(fund.carriedInterestRate || 0);
 
       if (totalGain.greaterThan(0)) {
-        // First, satisfy remaining preferred return
-        const remainingPreferredReturn = Decimal.max(
-          preferredReturn.sub(returnOfCapital),
-          new Decimal(0)
-        );
+        // First, satisfy remaining preferred return (calculated but not used in this simplified version)
+        // const _remainingPreferredReturn = Decimal.max(
+        //   preferredReturn.sub(returnOfCapital),
+        //   new Decimal(0)
+        // );
 
         // Then distribute catch-up to GP (if applicable)
-        const carriedInterestRate = new Decimal(fund.carriedInterestRate);
         
         // Distribute remaining gain pro-rata
         gainDistribution = totalGain.mul(commitmentShare);

@@ -87,7 +87,7 @@ class FeeOffsetService {
       offsetDate: transaction.transactionDate,
       metadata: {
         transactionId,
-        transactionType: transaction.type,
+        transactionType: transaction.transactionType,
         automaticallyCreated: true,
       },
     });

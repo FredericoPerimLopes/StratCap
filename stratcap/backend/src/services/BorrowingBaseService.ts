@@ -1,5 +1,5 @@
 import { Transaction } from 'sequelize';
-import { BorrowingBase, BorrowingBaseAttributes, BorrowingBaseCreationAttributes } from '../models/BorrowingBase';
+import { BorrowingBase, BorrowingBaseCreationAttributes } from '../models/BorrowingBase';
 import { CreditFacility } from '../models/CreditFacility';
 import { User } from '../models/User';
 import { Decimal } from 'decimal.js';
@@ -426,7 +426,7 @@ export class BorrowingBaseService {
       utilizationPercentage,
       availableCapacity,
       expirationDate: borrowingBase.nextReviewDate,
-      daysUntilExpiry: borrowingBase.getDaysUntilExpiry(),
+      daysUntilExpiry: borrowingBase.getDaysUntilExpiry() ?? undefined,
       testResults: {
         eligibilityPassed: borrowingBase.passesEligibilityTests(),
         concentrationPassed: borrowingBase.passesConcentrationTests(),

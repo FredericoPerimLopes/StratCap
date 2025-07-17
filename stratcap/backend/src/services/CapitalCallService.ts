@@ -5,7 +5,6 @@ import Commitment from '../models/Commitment';
 import Fund from '../models/Fund';
 import InvestorEntity from '../models/InvestorEntity';
 import InvestorClass from '../models/InvestorClass';
-import AllocationService from './AllocationService';
 import NotificationService from './NotificationService';
 
 export interface CapitalCallRequest {
@@ -40,11 +39,9 @@ export interface CapitalCallAllocationResult {
 }
 
 class CapitalCallService {
-  private allocationService: AllocationService;
   private notificationService: NotificationService;
 
   constructor() {
-    this.allocationService = new AllocationService();
     this.notificationService = new NotificationService();
   }
 
@@ -388,7 +385,7 @@ class CapitalCallService {
     const numberOfClasses = commitmentsByClass.size;
     const amountPerClass = totalAmount.div(numberOfClasses);
 
-    for (const [classId, classCommitments] of commitmentsByClass) {
+    for (const [_classId, classCommitments] of commitmentsByClass) {
       try {
         const proRataResult = await this.generateProRataAllocations(
           capitalActivity,

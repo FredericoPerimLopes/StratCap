@@ -41,6 +41,47 @@ class FeeService {
   }
 
   /**
+   * Create a new fee entry
+   */
+  async createFee(feeData: {
+    entityType: string;
+    entityId: string;
+    feeType: string;
+    amount: string;
+    description?: string;
+    dueDate?: Date;
+    status?: string;
+    calculationBasis?: {
+      rate?: string;
+      principal?: string;
+      period?: string;
+      [key: string]: any;
+    };
+    metadata?: Record<string, any>;
+  }, transaction?: any): Promise<void> {
+    // This would typically create a fee entry in the database
+    // For now, we'll log the fee creation
+    console.log('Creating fee entry:', {
+      entityType: feeData.entityType,
+      entityId: feeData.entityId,
+      feeType: feeData.feeType,
+      amount: feeData.amount,
+      description: feeData.description,
+      dueDate: feeData.dueDate,
+      status: feeData.status || 'pending',
+      calculationBasis: feeData.calculationBasis,
+      metadata: feeData.metadata,
+      transaction: transaction ? 'provided' : 'none',
+    });
+
+    // In a real implementation, this would:
+    // 1. Validate the fee data
+    // 2. Create a fee record in the database (using the transaction if provided)
+    // 3. Potentially trigger accounting entries
+    // 4. Send notifications if required
+  }
+
+  /**
    * Health check for all fee services
    */
   async healthCheck(): Promise<{

@@ -77,7 +77,7 @@ class CarriedInterestService {
         calculations,
       };
     } catch (error) {
-      throw new Error(`Carried interest calculation failed: ${error.message}`);
+      throw new Error(`Carried interest calculation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

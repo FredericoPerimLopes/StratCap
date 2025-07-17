@@ -1,12 +1,9 @@
-import { QueryInterface } from 'sequelize';
 import sequelize from '../db/database';
 import logger from '../utils/logger';
 
 export class DatabaseService {
-  private _queryInterface: QueryInterface;
-
   constructor() {
-    this._queryInterface = sequelize.getQueryInterface();
+    // Database service initialization
   }
 
   async runMigration(migrationFile: string): Promise<void> {

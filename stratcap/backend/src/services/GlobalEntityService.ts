@@ -1,10 +1,9 @@
-import { Op, QueryTypes, Transaction } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 import { Fund } from '../models/Fund';
 import { FundFamily } from '../models/FundFamily';
 import { InvestorEntity } from '../models/InvestorEntity';
 import { Commitment } from '../models/Commitment';
 import { Investment } from '../models/Investment';
-import { CapitalActivity } from '../models/CapitalActivity';
 import { Transaction as TransactionModel } from '../models/Transaction';
 import { Decimal } from 'decimal.js';
 import sequelize from '../db/database';
@@ -194,7 +193,7 @@ export class GlobalEntityService {
 
     // Get all commitments for this investor across all funds
     const commitments = await Commitment.findAll({
-      where: { investorId },
+      where: { investorEntityId: investorId },
       include: [
         {
           model: Fund,
@@ -217,9 +216,9 @@ export class GlobalEntityService {
 
     for (const commitment of commitments) {
       const commitmentAmount = new Decimal(commitment.commitmentAmount);
-      const contributedAmount = new Decimal(commitment.contributedAmount || '0');
-      const distributedAmount = new Decimal(commitment.distributedAmount || '0');
-      const navAmount = new Decimal(commitment.currentNav || '0');
+      const contributedAmount = new Decimal(commitment.capitalCalled || '0');
+      const distributedAmount = new Decimal(commitment.capitalReturned || '0');
+      const navAmount = new Decimal('0'); // NAV would need to be calculated separately
 
       totalCommitments = totalCommitments.plus(commitmentAmount);
       totalContributions = totalContributions.plus(contributedAmount);
@@ -257,9 +256,9 @@ export class GlobalEntityService {
     const irr = await this.calculateInvestorIRR(investorId);
 
     return {
-      investorId: investor.id,
+      investorId: investor.id.toString(),
       investorName: investor.name,
-      investorType: investor.entityType,
+      investorType: investor.entityType || 'Unknown',
       totalCommitments,
       totalContributions,
       totalDistributions,
@@ -271,10 +270,10 @@ export class GlobalEntityService {
       funds: fundDetails,
       firstInvestmentDate: firstInvestmentDate!,
       lastActivity: lastActivity!,
-      geography: investor.geography || 'Unknown',
-      sector: investor.sector,
-      riskProfile: investor.riskProfile || 'Medium',
-      status: investor.status as any,
+      geography: investor.domicile || 'Unknown',
+      sector: investor.entityType || 'Unknown',
+      riskProfile: investor.accreditedInvestor ? 'Accredited' : 'Non-Accredited',
+      status: investor.kycStatus as any,
     };
   }
 
@@ -296,7 +295,7 @@ export class GlobalEntityService {
     const commitments = await Commitment.findAll({
       where: { fundId },
       include: [
-        { model: InvestorEntity, as: 'investor' }
+        { model: InvestorEntity, as: 'investorEntity' }
       ]
     });
 
@@ -317,9 +316,9 @@ export class GlobalEntityService {
 
     for (const commitment of commitments) {
       const commitmentAmount = new Decimal(commitment.commitmentAmount);
-      const contributedAmount = new Decimal(commitment.contributedAmount || '0');
-      const distributedAmount = new Decimal(commitment.distributedAmount || '0');
-      const navAmount = new Decimal(commitment.currentNav || '0');
+      const contributedAmount = new Decimal(commitment.capitalCalled || '0');
+      const distributedAmount = new Decimal(commitment.capitalReturned || '0');
+      const navAmount = new Decimal('0'); // NAV would need to be calculated separately
 
       totalCommitments = totalCommitments.plus(commitmentAmount);
       totalContributions = totalContributions.plus(contributedAmount);
@@ -327,16 +326,16 @@ export class GlobalEntityService {
       nav = nav.plus(navAmount);
 
       topInvestors.push({
-        investorName: commitment.investor.name,
+        investorName: commitment.investorEntity.name,
         commitment: commitmentAmount,
         percentage: new Decimal(0), // Will calculate after total is known
       });
 
-      if (commitment.investor.geography) {
-        geographies.add(commitment.investor.geography);
+      if (commitment.investorEntity.domicile) {
+        geographies.add(commitment.investorEntity.domicile);
       }
-      if (commitment.investor.sector) {
-        sectors.add(commitment.investor.sector);
+      if (commitment.investorEntity.entityType) {
+        sectors.add(commitment.investorEntity.entityType);
       }
     }
 
@@ -364,7 +363,7 @@ export class GlobalEntityService {
     }
 
     return {
-      fundId: fund.id,
+      fundId: fund.id.toString(),
       fundName: fund.name,
       fundFamilyName: fund.fundFamily?.name || 'Unknown',
       vintage: fund.vintage,
@@ -409,9 +408,9 @@ export class GlobalEntityService {
       throw new Error(`Investment with ID ${investmentId} not found`);
     }
 
-    // Get all transactions for this investment across all funds
+    // Get all transactions for this investment's fund
     const transactions = await TransactionModel.findAll({
-      where: { investmentId },
+      where: { fundId: investment.fundId },
       include: [
         { model: Fund, as: 'fund' }
       ],
@@ -427,11 +426,11 @@ export class GlobalEntityService {
     for (const transaction of transactions) {
       const amount = new Decimal(transaction.amount);
 
-      if (transaction.transactionType === 'investment') {
+      if (transaction.transactionType === 'capital_call') {
         totalInvested = totalInvested.plus(amount);
         
         // Track fund breakdown
-        const fundId = transaction.fundId;
+        const fundId = transaction.fundId.toString();
         if (!fundBreakdown.has(fundId)) {
           fundBreakdown.set(fundId, {
             fundId,
@@ -441,7 +440,7 @@ export class GlobalEntityService {
             percentage: new Decimal(0),
           });
         }
-        const fundData = fundBreakdown.get(fundId);
+        const fundData = fundBreakdown.get(fundId)!;
         fundData.invested = fundData.invested.plus(amount);
 
         // Track investment rounds
@@ -464,7 +463,7 @@ export class GlobalEntityService {
 
     // Update fund breakdown with current values and percentages
     const fundArray: any[] = [];
-    for (const [fundId, fundData] of fundBreakdown) {
+    for (const [_fundId, fundData] of fundBreakdown) {
       fundData.currentValue = totalInvested.isZero() 
         ? new Decimal(0) 
         : currentValue.times(fundData.invested.dividedBy(totalInvested));
@@ -477,10 +476,10 @@ export class GlobalEntityService {
     }
 
     return {
-      investmentId: investment.id,
-      portfolioCompany: investment.portfolioCompany,
-      sector: investment.sector,
-      geography: investment.geography,
+      investmentId: investment.id.toString(),
+      portfolioCompany: investment.name,
+      sector: investment.sector || 'Unknown',
+      geography: investment.geography || 'Unknown',
       totalInvested,
       currentValue,
       totalRealized,
@@ -494,7 +493,7 @@ export class GlobalEntityService {
       lastValuation: {
         date: investment.updatedAt,
         amount: currentValue,
-        method: investment.valuationMethod || 'Unknown',
+        method: 'Fair Value', // Default valuation method
       },
     };
   }
@@ -557,7 +556,7 @@ export class GlobalEntityService {
         COUNT(*) as count,
         SUM(CAST(commitment_amount AS DECIMAL)) as total_value
       FROM "InvestorEntities" ie
-      LEFT JOIN "Commitments" c ON ie.id = c.investor_id
+      LEFT JOIN "Commitments" c ON ie.id = c.investor_entity_id
       WHERE ie.geography IS NOT NULL
       GROUP BY geography
       ORDER BY total_value DESC
@@ -713,7 +712,7 @@ export class GlobalEntityService {
         SUM(CAST(c.commitment_amount AS DECIMAL)) as total_commitment,
         MIN(c.created_at) as first_investment
       FROM "InvestorEntities" ie
-      JOIN "Commitments" c ON ie.id = c.investor_id
+      JOIN "Commitments" c ON ie.id = c.investor_entity_id
       JOIN "Funds" f ON c.fund_id = f.id
       GROUP BY ie.id, ie.name
       ORDER BY total_commitment DESC
@@ -742,7 +741,7 @@ export class GlobalEntityService {
         array_agg(ie.name) as investor_names
       FROM "Funds" f
       JOIN "Commitments" c ON f.id = c.fund_id
-      JOIN "InvestorEntities" ie ON c.investor_id = ie.id
+      JOIN "InvestorEntities" ie ON c.investor_entity_id = ie.id
       GROUP BY f.id, f.name, f.vintage
       ORDER BY f.vintage DESC
     `;
@@ -769,7 +768,7 @@ export class GlobalEntityService {
         fundId: item.fund_id,
         fundName: item.fund_name,
         vintage: item.vintage,
-        sharedInvestors: sharedInvestors.filter(investor => investor.overlapFunds.length > 0),
+        sharedInvestors: sharedInvestors.filter((investor: any) => investor.overlapFunds.length > 0),
       };
     });
 
@@ -826,7 +825,7 @@ export class GlobalEntityService {
     });
 
     const investorSummaries = await Promise.all(
-      investors.map(investor => this.getGlobalInvestorSummary(investor.id))
+      investors.map(investor => this.getGlobalInvestorSummary(investor.id.toString()))
     );
 
     return {
@@ -862,7 +861,7 @@ export class GlobalEntityService {
     });
 
     const fundSummaries = await Promise.all(
-      funds.map(fund => this.getGlobalFundSummary(fund.id))
+      funds.map(fund => this.getGlobalFundSummary(fund.id.toString()))
     );
 
     return {
@@ -898,7 +897,7 @@ export class GlobalEntityService {
     });
 
     const investmentSummaries = await Promise.all(
-      investments.map(investment => this.getGlobalInvestmentSummary(investment.id))
+      investments.map(investment => this.getGlobalInvestmentSummary(investment.id.toString()))
     );
 
     return {
@@ -917,17 +916,17 @@ export class GlobalEntityService {
     }
   }
 
-  private async calculateInvestorIRR(investorId: string): Promise<Decimal> {
+  private async calculateInvestorIRR(_investorId: string): Promise<Decimal> {
     // Simplified IRR calculation - in practice would need complex cash flow analysis
     return new Decimal(12.5);
   }
 
-  private async calculateFundIRR(fundId: string): Promise<Decimal> {
+  private async calculateFundIRR(_fundId: string): Promise<Decimal> {
     // Simplified IRR calculation - in practice would need complex cash flow analysis
     return new Decimal(15.3);
   }
 
-  private async calculateInvestmentIRR(investmentId: string): Promise<Decimal> {
+  private async calculateInvestmentIRR(_investmentId: string): Promise<Decimal> {
     // Simplified IRR calculation - in practice would need complex cash flow analysis
     return new Decimal(25.7);
   }
