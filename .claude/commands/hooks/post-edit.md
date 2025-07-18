@@ -19,21 +19,37 @@ npx claude-flow hook post-edit [options]
 ## Examples
 
 ### Basic post-edit hook
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook post-edit --file "src/components/Button.jsx"
 ```
 
 ### With memory storage
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook post-edit -f "api/auth.js" --memory-key "auth/login-implementation"
 ```
 
 ### Format and validate
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook post-edit -f "config/webpack.js" --auto-format --validate-output
 ```
 
 ### Neural training
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook post-edit -f "utils/helpers.ts" --train-patterns --memory-key "utils/refactor"
 ```
@@ -41,6 +57,10 @@ npx claude-flow hook post-edit -f "utils/helpers.ts" --train-patterns --memory-k
 ## Features
 
 ### Auto Formatting
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Language-specific formatters
 - Prettier for JS/TS/JSON
 - Black for Python
@@ -48,18 +68,30 @@ npx claude-flow hook post-edit -f "utils/helpers.ts" --train-patterns --memory-k
 - Maintains consistency
 
 ### Memory Storage
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Saves edit context
 - Records decisions made
 - Tracks implementation details
 - Enables knowledge sharing
 
 ### Pattern Training
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Learns from successful edits
 - Improves future suggestions
 - Adapts to coding style
 - Enhances coordination
 
 ### Output Validation
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Checks syntax correctness
 - Runs linting rules
 - Validates formatting
@@ -68,12 +100,20 @@ npx claude-flow hook post-edit -f "utils/helpers.ts" --train-patterns --memory-k
 ## Integration
 
 This hook is automatically called by Claude Code when:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - After Edit tool completes
 - Following MultiEdit operations
 - During file saves
 - After code generation
 
 Manual usage in agents:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 # After editing files
 npx claude-flow hook post-edit --file "path/to/edited.js" --memory-key "feature/step1"
@@ -82,6 +122,10 @@ npx claude-flow hook post-edit --file "path/to/edited.js" --memory-key "feature/
 ## Output
 
 Returns JSON with:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```json
 {
   "file": "src/components/Button.jsx",
@@ -103,4 +147,8 @@ Returns JSON with:
 - `hook pre-edit` - Pre-edit preparation
 - `Edit` - File editing tool
 - `memory usage` - Memory management
+<<<<<<< HEAD
 - `neural train` - Pattern training
+=======
+- `neural train` - Pattern training
+>>>>>>> 000b3fd (updates)

@@ -19,21 +19,37 @@ npx claude-flow hook pre-edit [options]
 ## Examples
 
 ### Basic pre-edit hook
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook pre-edit --file "src/auth/login.js"
 ```
 
 ### With validation
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook pre-edit -f "config/database.js" --validate-syntax
 ```
 
 ### Manual agent assignment
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook pre-edit -f "api/users.ts" --auto-assign-agent false
 ```
 
 ### Safe editing with backup
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook pre-edit -f "production.env" --backup-file --check-conflicts
 ```
@@ -41,6 +57,10 @@ npx claude-flow hook pre-edit -f "production.env" --backup-file --check-conflict
 ## Features
 
 ### Auto Agent Assignment
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Analyzes file type and content
 - Assigns specialist agents
 - TypeScript → TypeScript expert
@@ -48,18 +68,30 @@ npx claude-flow hook pre-edit -f "production.env" --backup-file --check-conflict
 - Tests → QA engineer
 
 ### Syntax Validation
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Pre-checks syntax validity
 - Identifies potential errors
 - Suggests corrections
 - Prevents broken code
 
 ### Conflict Detection
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Checks for git conflicts
 - Identifies concurrent edits
 - Warns about stale files
 - Suggests merge strategies
 
 ### File Backup
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Creates safety backups
 - Enables quick rollback
 - Tracks edit history
@@ -68,12 +100,20 @@ npx claude-flow hook pre-edit -f "production.env" --backup-file --check-conflict
 ## Integration
 
 This hook is automatically called by Claude Code when:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Using Edit or MultiEdit tools
 - Before file modifications
 - During refactoring operations
 - When updating critical files
 
 Manual usage in agents:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 # Before editing files
 npx claude-flow hook pre-edit --file "path/to/file.js" --validate-syntax
@@ -82,6 +122,10 @@ npx claude-flow hook pre-edit --file "path/to/file.js" --validate-syntax
 ## Output
 
 Returns JSON with:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```json
 {
   "continue": true,
@@ -99,4 +143,8 @@ Returns JSON with:
 - `hook post-edit` - Post-edit processing
 - `Edit` - File editing tool
 - `MultiEdit` - Multiple edits tool
+<<<<<<< HEAD
 - `agent spawn` - Manual agent creation
+=======
+- `agent spawn` - Manual agent creation
+>>>>>>> 000b3fd (updates)

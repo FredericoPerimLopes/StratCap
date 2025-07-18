@@ -19,21 +19,37 @@ npx claude-flow hook pre-task [options]
 ## Examples
 
 ### Basic pre-task hook
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook pre-task --description "Implement user authentication"
 ```
 
 ### With memory loading
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook pre-task -d "Continue API development" --load-memory
 ```
 
 ### Manual agent control
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook pre-task -d "Debug issue #123" --auto-spawn-agents false
 ```
 
 ### Full optimization
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook pre-task -d "Refactor codebase" --optimize-topology --estimate-complexity
 ```
@@ -41,24 +57,40 @@ npx claude-flow hook pre-task -d "Refactor codebase" --optimize-topology --estim
 ## Features
 
 ### Auto Agent Assignment
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Analyzes task requirements
 - Determines needed agent types
 - Spawns agents automatically
 - Configures agent parameters
 
 ### Memory Loading
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Retrieves relevant past decisions
 - Loads previous task contexts
 - Restores agent configurations
 - Maintains continuity
 
 ### Topology Optimization
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Analyzes task structure
 - Selects best swarm topology
 - Configures communication patterns
 - Optimizes for performance
 
 ### Complexity Estimation
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Evaluates task difficulty
 - Estimates time requirements
 - Suggests agent count
@@ -67,12 +99,20 @@ npx claude-flow hook pre-task -d "Refactor codebase" --optimize-topology --estim
 ## Integration
 
 This hook is automatically called by Claude Code when:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Starting a new task
 - Resuming work after a break
 - Switching between projects
 - Beginning complex operations
 
 Manual usage in agents:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 # In agent coordination
 npx claude-flow hook pre-task --description "Your task here"
@@ -81,6 +121,10 @@ npx claude-flow hook pre-task --description "Your task here"
 ## Output
 
 Returns JSON with:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```json
 {
   "continue": true,
@@ -97,4 +141,8 @@ Returns JSON with:
 - `hook post-task` - Post-task cleanup
 - `agent spawn` - Manual agent creation
 - `memory usage` - Memory management
+<<<<<<< HEAD
 - `swarm init` - Swarm initialization
+=======
+- `swarm init` - Swarm initialization
+>>>>>>> 000b3fd (updates)

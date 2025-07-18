@@ -1,0 +1,93 @@
+{
+	"meta": {
+		"generatedAt": "2025-07-10T11:45:33.479Z",
+		"tasksAnalyzed": 10,
+		"totalTasks": 10,
+		"analysisCount": 10,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Setup Project Infrastructure and Authentication System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the project infrastructure setup and authentication system into logical components: project structure initialization, database setup, core authentication implementation, MFA integration, security middleware, and testing framework setup.",
+			"reasoning": "High complexity due to multiple technologies (database, authentication, MFA, middleware) and foundational nature affecting entire system. Requires careful planning and proper security implementation."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Implement Core Database Schema and Entity Models",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide the database schema implementation into logical entity groups: core entities (fund families, funds, investors), financial entities (commitments, capital events, distributions), waterfall and fee structures, audit and versioning systems, and ORM model implementation with relationships.",
+			"reasoning": "Complex database design with many interrelated entities, foreign key relationships, and performance considerations. Requires careful normalization and indexing strategy."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Build Fund Family Management Core Backend APIs",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Organize the API development into functional areas: fund family CRUD operations, entity management APIs, user access control and RBAC implementation, and API documentation and testing setup.",
+			"reasoning": "Moderate complexity with standard CRUD operations but requires proper validation, error handling, and role-based access control implementation."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement Capital Activity Management System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down capital activity management into workflow components: capital call processing and allocation logic, distribution calculations and processing, equalization event handling, reallocation workflows, calculation engine for complex rules, audit trail and state management, and rollback capabilities.",
+			"reasoning": "Very high complexity due to sophisticated business logic, multi-step workflows, complex calculations, and need for state management and rollback capabilities. Critical for fund operations."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Develop Waterfall Calculation Engine",
+			"complexityScore": 10,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Segment the waterfall calculation engine into specialized components: preferred return calculation logic, catch-up provision implementation, carried interest calculations, hybrid waterfall support, tier-level audit trail system, fund and investor-level breakdown calculations, required and accelerated paydown handling, and expense allocation mechanisms.",
+			"reasoning": "Maximum complexity due to sophisticated financial calculations, multiple waterfall types, tier-level auditing requirements, and need for precise calculation accuracy. Most complex business logic in the system."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Build Fee Management and Calculation System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Organize fee management into calculation and workflow components: management fee calculation engine, performance and administrative fee calculations, fee posting and approval workflows, offset and waiver application system, true-up calculations and historical adjustments, and investor-specific fee arrangement handling.",
+			"reasoning": "High complexity due to multiple fee types, complex calculation logic, approval workflows, and need for historical adjustments and true-up calculations."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Implement Commitment and Investor Management",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide commitment and investor management into functional areas: investor commitment tracking and management, closing workflow implementation with equalization, investor transfer workflows and documentation, performance tracking and activity history, and entity relationship management with consolidated views.",
+			"reasoning": "Complex due to multi-step workflows, relationship management, and need for accurate tracking across multiple funds and time periods."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Develop Credit Facility Management System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down credit facility management into operational components: facility setup and configuration, drawdown and paydown workflow implementation, borrowing base calculation engine, facility-specific fee and expense management, principal and interest tracking systems, and reallocation capabilities.",
+			"reasoning": "High complexity due to financial calculations, multi-step approval workflows, real-time borrowing base calculations, and integration with existing capital activity systems."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Build Financial Reporting and Analytics System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Organize reporting system into functional components: hypothetical waterfall scenario engine, financial statement generation and IRR calculations, custom pivot table and data analysis tools, report scheduling and export capabilities, and interactive dashboard and analytics implementation.",
+			"reasoning": "Complex due to multiple report types, calculation engines, export functionality, and need for both real-time and batch processing capabilities."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Develop Frontend Application with Complete User Interface",
+			"complexityScore": 9,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Segment the frontend development into UI and workflow components: authentication and user management interfaces, fund family and entity management dashboards, capital activity workflow screens, waterfall review and analysis interfaces, fee management and reporting tools, administrative and configuration interfaces, responsive design and accessibility implementation, and real-time updates and error handling systems.",
+			"reasoning": "Very high complexity due to comprehensive UI requirements, multiple complex workflows, real-time updates, accessibility compliance, and need for role-based interface rendering across all system functionality."
+		}
+	]
+}

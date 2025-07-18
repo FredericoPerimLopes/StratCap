@@ -19,21 +19,37 @@ npx claude-flow hook session-end [options]
 ## Examples
 
 ### Basic session end
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook session-end --session-id "dev-session-2024"
 ```
 
 ### With full export
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook session-end -s "feature-auth" --export-metrics --generate-summary
 ```
 
 ### Quick close
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook session-end -s "quick-fix" --save-state false --cleanup-temp
 ```
 
 ### Complete persistence
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow hook session-end -s "major-refactor" --save-state --export-metrics --generate-summary
 ```
@@ -41,12 +57,20 @@ npx claude-flow hook session-end -s "major-refactor" --save-state --export-metri
 ## Features
 
 ### State Persistence
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Saves current context
 - Stores open files
 - Preserves task progress
 - Maintains decisions
 
 ### Metric Export
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Session duration
 - Commands executed
 - Files modified
@@ -54,12 +78,20 @@ npx claude-flow hook session-end -s "major-refactor" --save-state --export-metri
 - Performance data
 
 ### Summary Generation
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Work accomplished
 - Key decisions made
 - Problems solved
 - Next steps identified
 
 ### Cleanup Operations
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Removes temp files
 - Clears caches
 - Frees resources
@@ -68,12 +100,20 @@ npx claude-flow hook session-end -s "major-refactor" --save-state --export-metri
 ## Integration
 
 This hook is automatically called by Claude Code when:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 - Ending a conversation
 - Closing work session
 - Before shutdown
 - Switching contexts
 
 Manual usage in agents:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```bash
 # At session end
 npx claude-flow hook session-end --session-id "your-session" --generate-summary
@@ -82,6 +122,10 @@ npx claude-flow hook session-end --session-id "your-session" --generate-summary
 ## Output
 
 Returns JSON with:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 000b3fd (updates)
 ```json
 {
   "sessionId": "dev-session-2024",
@@ -104,4 +148,8 @@ Returns JSON with:
 - `hook session-start` - Session initialization
 - `hook session-restore` - Session restoration
 - `performance report` - Detailed metrics
+<<<<<<< HEAD
 - `memory backup` - State backup
+=======
+- `memory backup` - State backup
+>>>>>>> 000b3fd (updates)
