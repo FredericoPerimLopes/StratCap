@@ -15,11 +15,18 @@ export interface FundFamily {
   updatedAt?: string;
   funds?: any[];
   users?: any[];
+  // Additional properties used in FundFamilyList component
+  totalAUM?: number;
+  fundCount?: number;
+  investorCount?: number;
+  averageIRR?: number;
 }
 
 interface FundFamilyState {
   fundFamilies: FundFamily[];
   currentFundFamily: FundFamily | null;
+  summary: any | null;
+  loading: boolean;
   isLoading: boolean;
   error: string | null;
   pagination: {
@@ -33,6 +40,8 @@ interface FundFamilyState {
 const initialState: FundFamilyState = {
   fundFamilies: [],
   currentFundFamily: null,
+  summary: null,
+  loading: false,
   isLoading: false,
   error: null,
   pagination: null,
@@ -76,6 +85,14 @@ export const deleteFundFamily = createAsyncThunk(
   async (id: number) => {
     await fundFamilyAPI.delete(id);
     return id;
+  }
+);
+
+export const fetchFundFamilySummary = createAsyncThunk(
+  'fundFamily/fetchFundFamilySummary',
+  async (id: number) => {
+    const response = await fundFamilyAPI.getSummary(id);
+    return response.data;
   }
 );
 
@@ -174,6 +191,20 @@ const fundFamilySlice = createSlice({
       .addCase(deleteFundFamily.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Failed to delete fund family';
+      })
+      
+      // Fetch Fund Family Summary
+      .addCase(fetchFundFamilySummary.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchFundFamilySummary.fulfilled, (state, action) => {
+        state.loading = false;
+        state.summary = action.payload;
+      })
+      .addCase(fetchFundFamilySummary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch fund family summary';
       });
   },
 });

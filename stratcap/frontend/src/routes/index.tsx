@@ -7,6 +7,10 @@ import DashboardLayout from '../components/Layout/DashboardLayout';
 
 // Auth Components
 import Login from '../components/Auth/Login';
+import SimpleLogin from '../components/Auth/SimpleLogin';
+import UserRegistration from '../components/Auth/UserRegistration';
+import RegistrationSuccess from '../components/Auth/RegistrationSuccess';
+import SetupPassword from '../components/Auth/SetupPassword';
 import MFALogin from '../components/Auth/MFALogin';
 import ForgotPassword from '../components/Auth/ForgotPassword';
 import ResetPassword from '../components/Auth/ResetPassword';
@@ -20,10 +24,22 @@ import FundList from '../components/Funds/FundList';
 import FundForm from '../components/Funds/FundForm';
 import FundDetails from '../components/Funds/FundDetails';
 
+// Fund Family Management
+import { FundFamilyList, FundFamilyForm, FundFamilyDetails } from '../components/FundFamilies';
+
+// Fee Management
+import { FeeManagementDashboard, FeeCalculationForm } from '../components/FeeManagement';
+
+// Fund Configuration
+import { FundConfigurationWizard, FundConfigurationList } from '../components/FundConfiguration';
+
 // Investor Management
 import InvestorList from '../components/Investors/InvestorList';
 import InvestorForm from '../components/Investors/InvestorForm';
 import InvestorDetails from '../components/Investors/InvestorDetails';
+
+// Investor Transfer
+import { InvestorTransferWizard } from '../components/InvestorTransfer';
 
 // Capital Activities
 import CapitalActivityList from '../components/CapitalActivities/CapitalActivityList';
@@ -38,6 +54,7 @@ import WaterfallHistory from '../components/Waterfall/WaterfallHistory';
 import ReportsList from '../components/Reports/ReportsList';
 import ReportBuilder from '../components/Reports/ReportBuilder';
 import ReportViewer from '../components/Reports/ReportViewer';
+import ReportPreview from '../components/Reports/ReportPreview';
 
 // Credit Facilities
 import CreditFacilityList from '../components/CreditFacility/CreditFacilityList';
@@ -98,7 +115,11 @@ const AppRoutes: React.FC = () => {
         
         {/* Auth Routes */}
         <Route path="/auth" element={<AuthLayoutWrapper />}>
-          <Route path="login" element={<Login />} />
+          <Route path="login" element={<SimpleLogin />} />
+          <Route path="login-legacy" element={<Login />} />
+          <Route path="register" element={<UserRegistration />} />
+          <Route path="registration-success" element={<RegistrationSuccess />} />
+          <Route path="setup-password" element={<SetupPassword />} />
           <Route path="mfa" element={<MFALogin email="" tempToken="" onSuccess={() => {}} onBack={() => {}} />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
@@ -110,6 +131,14 @@ const AppRoutes: React.FC = () => {
           {/* Dashboard - Default route */}
           <Route index element={<Dashboard />} />
           
+          {/* Fund Family Management */}
+          <Route path="fund-families">
+            <Route index element={<FundFamilyList />} />
+            <Route path="new" element={<FundFamilyForm />} />
+            <Route path=":id" element={<FundFamilyDetails />} />
+            <Route path=":id/edit" element={<FundFamilyForm />} />
+          </Route>
+
           {/* Fund Management */}
           <Route path="funds">
             <Route index element={<FundList />} />
@@ -124,6 +153,8 @@ const AppRoutes: React.FC = () => {
             <Route path="new" element={<InvestorForm />} />
             <Route path=":id" element={<InvestorDetails />} />
             <Route path=":id/edit" element={<InvestorForm />} />
+            <Route path="transfer/new" element={<InvestorTransferWizard />} />
+            <Route path="transfer/:id/edit" element={<InvestorTransferWizard />} />
           </Route>
 
           {/* Capital Activities */}
@@ -138,6 +169,20 @@ const AppRoutes: React.FC = () => {
           <Route path="waterfall">
             <Route index element={<WaterfallCalculation />} />
             <Route path="history" element={<WaterfallHistory />} />
+          </Route>
+
+          {/* Fee Management */}
+          <Route path="fee-management">
+            <Route index element={<FeeManagementDashboard />} />
+            <Route path="calculations/new" element={<FeeCalculationForm />} />
+            <Route path="calculations/:id/edit" element={<FeeCalculationForm />} />
+          </Route>
+
+          {/* Fund Configuration */}
+          <Route path="fund-configuration">
+            <Route index element={<FundConfigurationList />} />
+            <Route path="wizard" element={<FundConfigurationWizard />} />
+            <Route path=":id/edit" element={<FundConfigurationWizard />} />
           </Route>
 
           {/* Credit Facilities */}
@@ -172,6 +217,7 @@ const AppRoutes: React.FC = () => {
           <Route path="reports">
             <Route index element={<ReportsList />} />
             <Route path="builder" element={<ReportBuilder />} />
+            <Route path="preview" element={<ReportPreview />} />
             <Route path=":id" element={<ReportViewer />} />
           </Route>
 

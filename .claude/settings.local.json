@@ -2,7 +2,22 @@
   "permissions": {
     "allow": [
       "mcp__ruv-swarm",
-      "mcp__claude-flow"
+      "mcp__claude-flow",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx:*)",
+      "Bash(npx:*)",
+      "Bash(npx:*)",
+      "Bash(npx:*)",
+      "Bash(npx claude-flow@alpha hooks pre-task:*)",
+      "Bash(npx:*)",
+      "Bash(npm run build:*)",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run lint)"
     ],
     "deny": []
   }
