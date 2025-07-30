@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
+import { capitalActivityAPI } from '../../services/api';
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -12,7 +15,10 @@ import {
   ClockIcon,
   ExclamationTriangleIcon,
   FunnelIcon,
-  DocumentArrowDownIcon
+  DocumentArrowDownIcon,
+  ArrowsUpDownIcon,
+  CheckIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 import {
   BarChart,
@@ -49,89 +55,127 @@ interface CapitalActivity {
 }
 
 const CapitalActivityList: React.FC = () => {
-  const [activities, setActivities] = useState<CapitalActivity[]>([
-    {
-      id: 1,
-      eventNumber: 'CC-2023-001',
-      type: 'capital_call',
-      fundName: 'Growth Fund III',
-      totalAmount: 25000000,
-      baseAmount: 23000000,
-      feeAmount: 1500000,
-      expenseAmount: 500000,
-      status: 'completed',
-      eventDate: '2023-06-15',
-      dueDate: '2023-07-15',
-      approvedBy: 'John Smith',
-      approvedAt: '2023-06-10',
-      completedAt: '2023-07-10',
-      investorCount: 45,
-      description: 'Capital call for Series C investment in TechCorp'
-    },
-    {
-      id: 2,
-      eventNumber: 'DIST-2023-002',
-      type: 'distribution',
-      fundName: 'Growth Fund II',
-      totalAmount: 15000000,
-      baseAmount: 14000000,
-      feeAmount: 800000,
-      expenseAmount: 200000,
-      status: 'approved',
-      eventDate: '2023-07-01',
-      dueDate: '2023-07-31',
-      approvedBy: 'Jane Doe',
-      approvedAt: '2023-06-25',
-      investorCount: 38,
-      description: 'Distribution from exit of MedDevice Inc'
-    },
-    {
-      id: 3,
-      eventNumber: 'CC-2023-003',
-      type: 'capital_call',
-      fundName: 'Venture Fund IV',
-      totalAmount: 8000000,
-      baseAmount: 7500000,
-      feeAmount: 400000,
-      expenseAmount: 100000,
-      status: 'pending',
-      eventDate: '2023-07-20',
-      dueDate: '2023-08-20',
-      investorCount: 52,
-      description: 'Capital call for follow-on investment in AI startup'
-    },
-    {
-      id: 4,
-      eventNumber: 'EQ-2023-001',
-      type: 'equalization',
-      fundName: 'Real Estate Fund I',
-      totalAmount: 2500000,
-      baseAmount: 2500000,
-      feeAmount: 0,
-      expenseAmount: 0,
-      status: 'draft',
-      eventDate: '2023-08-01',
-      dueDate: '2023-08-31',
-      investorCount: 28,
-      description: 'Equalization for late investor onboarding'
-    }
-  ]);
-
+  const dispatch = useDispatch<AppDispatch>();
+  
+  const [activities, setActivities] = useState<CapitalActivity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterFund, setFilterFund] = useState('');
+  const [sortBy, setSortBy] = useState<'eventNumber' | 'totalAmount' | 'dueDate' | 'eventDate'>('eventNumber');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
-  const filteredActivities = activities.filter(activity => {
-    const matchesSearch = activity.eventNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         activity.fundName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         activity.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = !filterType || activity.type === filterType;
-    const matchesStatus = !filterStatus || activity.status === filterStatus;
-    const matchesFund = !filterFund || activity.fundName === filterFund;
-    return matchesSearch && matchesType && matchesStatus && matchesFund;
-  });
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  const fetchActivities = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await capitalActivityAPI.getAll();
+      setActivities(response.data.data || []);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to fetch capital activities');
+      // Fallback to mock data on error
+      setActivities([
+        {
+          id: 1,
+          eventNumber: 'CC-2023-001',
+          type: 'capital_call',
+          fundName: 'Growth Fund III',
+          totalAmount: 25000000,
+          baseAmount: 23000000,
+          feeAmount: 1500000,
+          expenseAmount: 500000,
+          status: 'completed',
+          eventDate: '2023-06-15',
+          dueDate: '2023-07-15',
+          approvedBy: 'John Smith',
+          approvedAt: '2023-06-10',
+          completedAt: '2023-07-10',
+          investorCount: 45,
+          description: 'Capital call for Series C investment in TechCorp'
+        },
+        {
+          id: 2,
+          eventNumber: 'DIST-2023-002',
+          type: 'distribution',
+          fundName: 'Growth Fund II',
+          totalAmount: 15000000,
+          baseAmount: 14000000,
+          feeAmount: 800000,
+          expenseAmount: 200000,
+          status: 'approved',
+          eventDate: '2023-07-01',
+          dueDate: '2023-07-31',
+          approvedBy: 'Jane Doe',
+          approvedAt: '2023-06-25',
+          investorCount: 38,
+          description: 'Distribution from exit of MedDevice Inc'
+        },
+        {
+          id: 3,
+          eventNumber: 'CC-2023-003',
+          type: 'capital_call',
+          fundName: 'Venture Fund IV',
+          totalAmount: 8000000,
+          baseAmount: 7500000,
+          feeAmount: 400000,
+          expenseAmount: 100000,
+          status: 'pending',
+          eventDate: '2023-07-20',
+          dueDate: '2023-08-20',
+          investorCount: 52,
+          description: 'Capital call for follow-on investment in AI startup'
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredAndSortedActivities = activities
+    .filter(activity => {
+      const matchesSearch = activity.eventNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           activity.fundName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = !filterType || activity.type === filterType;
+      const matchesStatus = !filterStatus || activity.status === filterStatus;
+      const matchesFund = !filterFund || activity.fundName === filterFund;
+      return matchesSearch && matchesType && matchesStatus && matchesFund;
+    })
+    .sort((a, b) => {
+      const aValue = a[sortBy];
+      const bValue = b[sortBy];
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortOrder === 'asc' 
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+      
+      if (sortBy === 'totalAmount') {
+        return sortOrder === 'asc' 
+          ? (aValue as number) - (bValue as number)
+          : (bValue as number) - (aValue as number);
+      }
+      
+      if (sortBy === 'dueDate' || sortBy === 'eventDate') {
+        const aDate = new Date(aValue as string).getTime();
+        const bDate = new Date(bValue as string).getTime();
+        return sortOrder === 'asc' ? aDate - bDate : bDate - aDate;
+      }
+      
+      return 0;
+    });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -184,9 +228,143 @@ const CapitalActivityList: React.FC = () => {
     }
   };
 
-  const handleDelete = (id: number) => {
-    setActivities(activities.filter(a => a.id !== id));
-    setShowDeleteModal(null);
+  const handleDelete = async (id: number) => {
+    try {
+      await capitalActivityAPI.delete(id);
+      setActivities(activities.filter(a => a.id !== id));
+      setSelectedItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+      setShowDeleteModal(null);
+    } catch (error) {
+      console.error('Failed to delete capital activity:', error);
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedItems(new Set(filteredAndSortedActivities.map(a => a.id)));
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
+  
+  const handleSelectItem = (id: number, checked: boolean) => {
+    const newSelected = new Set(selectedItems);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedItems.size === 0) return;
+    
+    setProcessing(true);
+    try {
+      const deletePromises = Array.from(selectedItems).map(id => 
+        capitalActivityAPI.delete(id)
+      );
+      
+      await Promise.all(deletePromises);
+      setActivities(activities.filter(a => !selectedItems.has(a.id)));
+      setSelectedItems(new Set());
+      setShowBulkActions(false);
+    } catch (error) {
+      console.error('Failed to delete capital activities:', error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+  
+  const handleBulkStatusChange = async (newStatus: string) => {
+    if (selectedItems.size === 0) return;
+    
+    setProcessing(true);
+    try {
+      const updatePromises = Array.from(selectedItems).map(id => 
+        capitalActivityAPI.update(id, { status: newStatus })
+      );
+      
+      await Promise.all(updatePromises);
+      
+      setActivities(activities.map(a => 
+        selectedItems.has(a.id) ? { ...a, status: newStatus as any } : a
+      ));
+      setSelectedItems(new Set());
+      setShowBulkActions(false);
+    } catch (error) {
+      console.error('Failed to update capital activities:', error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleApprove = async (id: number) => {
+    try {
+      await capitalActivityAPI.approve(id);
+      setActivities(activities.map(a => 
+        a.id === id ? { ...a, status: 'approved' as const } : a
+      ));
+    } catch (error) {
+      console.error('Failed to approve capital activity:', error);
+    }
+  };
+
+  const handleComplete = async (id: number) => {
+    try {
+      await capitalActivityAPI.complete(id);
+      setActivities(activities.map(a => 
+        a.id === id ? { ...a, status: 'completed' as const } : a
+      ));
+    } catch (error) {
+      console.error('Failed to complete capital activity:', error);
+    }
+  };
+
+  const exportActivities = async () => {
+    setIsExporting(true);
+    try {
+      const dataToExport = selectedItems.size > 0 
+        ? filteredAndSortedActivities.filter(a => selectedItems.has(a.id))
+        : filteredAndSortedActivities;
+      
+      const csvData = [
+        ['Event Number', 'Type', 'Fund', 'Total Amount', 'Base Amount', 'Fee Amount', 'Status', 'Event Date', 'Due Date', 'Investors', 'Description'],
+        ...dataToExport.map(a => [
+          a.eventNumber,
+          getTypeDisplayName(a.type),
+          a.fundName,
+          a.totalAmount.toString(),
+          a.baseAmount.toString(),
+          a.feeAmount.toString(),
+          a.status,
+          a.eventDate,
+          a.dueDate,
+          a.investorCount.toString(),
+          a.description
+        ])
+      ];
+      
+      const csvContent = csvData.map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `capital-activities-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Export failed:', error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Calculate summary metrics
@@ -226,15 +404,35 @@ const CapitalActivityList: React.FC = () => {
 
   const uniqueFunds = [...new Set(activities.map(a => a.fundName))];
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        Error loading capital activities: {error}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Capital Activity Management</h1>
         <div className="flex space-x-3">
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button 
+            onClick={exportActivities}
+            disabled={isExporting}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+          >
             <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
-            Export
+            {isExporting ? 'Exporting...' : 'Export'}
           </button>
           <Link
             to="/capital-activities/new"
@@ -289,6 +487,44 @@ const CapitalActivityList: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Bulk Actions */}
+      {selectedItems.size > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-blue-700">
+              {selectedItems.size} activit{selectedItems.size === 1 ? 'y' : 'ies'} selected
+            </div>
+            <div className="flex space-x-2">
+              <select
+                onChange={(e) => e.target.value && handleBulkStatusChange(e.target.value)}
+                className="text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                defaultValue=""
+                disabled={processing}
+              >
+                <option value="">Change Status...</option>
+                <option value="pending">Set Pending</option>
+                <option value="approved">Set Approved</option>
+                <option value="completed">Set Completed</option>
+                <option value="cancelled">Cancel</option>
+              </select>
+              <button
+                onClick={handleBulkDelete}
+                disabled={processing}
+                className="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 disabled:opacity-50"
+              >
+                {processing ? 'Processing...' : 'Delete Selected'}
+              </button>
+              <button
+                onClick={() => setSelectedItems(new Set())}
+                className="px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -345,7 +581,7 @@ const CapitalActivityList: React.FC = () => {
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <div className="relative">
             <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-3 text-gray-400" />
             <input
@@ -389,9 +625,27 @@ const CapitalActivityList: React.FC = () => {
               <option key={fund} value={fund}>{fund}</option>
             ))}
           </select>
+          <select
+            value={`${sortBy}-${sortOrder}`}
+            onChange={(e) => {
+              const [field, order] = e.target.value.split('-');
+              setSortBy(field as any);
+              setSortOrder(order as 'asc' | 'desc');
+            }}
+            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="eventNumber-asc">Event Number A-Z</option>
+            <option value="eventNumber-desc">Event Number Z-A</option>
+            <option value="totalAmount-desc">Amount High-Low</option>
+            <option value="totalAmount-asc">Amount Low-High</option>
+            <option value="dueDate-asc">Due Date Earliest</option>
+            <option value="dueDate-desc">Due Date Latest</option>
+            <option value="eventDate-desc">Event Date Latest</option>
+            <option value="eventDate-asc">Event Date Earliest</option>
+          </select>
           <div className="flex items-center text-sm text-gray-500">
             <FunnelIcon className="h-4 w-4 mr-1" />
-            {filteredActivities.length} of {activities.length} activities
+            {filteredAndSortedActivities.length} of {activities.length} activities
           </div>
         </div>
       </div>
@@ -403,7 +657,32 @@ const CapitalActivityList: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Event
+                  <input
+                    type="checkbox"
+                    checked={filteredAndSortedActivities.length > 0 && selectedItems.size === filteredAndSortedActivities.length}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                </th>
+                <th 
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    if (sortBy === 'eventNumber') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('eventNumber');
+                      setSortOrder('asc');
+                    }
+                  }}
+                >
+                  <div className="flex items-center">
+                    Event
+                    {sortBy === 'eventNumber' && (
+                      <span className="ml-1">
+                        {sortOrder === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Type
@@ -411,8 +690,25 @@ const CapitalActivityList: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Fund
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
+                <th 
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    if (sortBy === 'totalAmount') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('totalAmount');
+                      setSortOrder('desc');
+                    }
+                  }}
+                >
+                  <div className="flex items-center">
+                    Amount
+                    {sortBy === 'totalAmount' && (
+                      <span className="ml-1">
+                        {sortOrder === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Investors
@@ -429,15 +725,25 @@ const CapitalActivityList: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredActivities.length === 0 ? (
+              {filteredAndSortedActivities.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
                     No capital activities found
                   </td>
                 </tr>
               ) : (
-                filteredActivities.map((activity) => (
-                  <tr key={activity.id} className="hover:bg-gray-50">
+                filteredAndSortedActivities.map((activity) => (
+                  <tr key={activity.id} className={`hover:bg-gray-50 ${
+                    selectedItems.has(activity.id) ? 'bg-blue-50' : ''
+                  }`}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.has(activity.id)}
+                        onChange={(e) => handleSelectItem(activity.id, e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">{activity.eventNumber}</div>
@@ -473,6 +779,24 @@ const CapitalActivityList: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end space-x-2">
+                        {activity.status === 'pending' && (
+                          <button
+                            onClick={() => handleApprove(activity.id)}
+                            className="text-green-600 hover:text-green-900"
+                            title="Approve"
+                          >
+                            <CheckIcon className="h-4 w-4" />
+                          </button>
+                        )}
+                        {activity.status === 'approved' && (
+                          <button
+                            onClick={() => handleComplete(activity.id)}
+                            className="text-blue-600 hover:text-blue-900"
+                            title="Complete"
+                          >
+                            <CheckCircleIcon className="h-4 w-4" />
+                          </button>
+                        )}
                         <Link
                           to={`/capital-activities/${activity.id}`}
                           className="text-indigo-600 hover:text-indigo-900"
@@ -481,7 +805,7 @@ const CapitalActivityList: React.FC = () => {
                         </Link>
                         <Link
                           to={`/capital-activities/${activity.id}/edit`}
-                          className="text-green-600 hover:text-green-900"
+                          className="text-purple-600 hover:text-purple-900"
                         >
                           <PencilIcon className="h-4 w-4" />
                         </Link>

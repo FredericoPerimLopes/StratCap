@@ -146,8 +146,7 @@ const UserRegistration: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

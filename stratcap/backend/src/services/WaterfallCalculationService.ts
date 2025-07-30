@@ -1,4 +1,5 @@
 import { Decimal } from 'decimal.js';
+import { Op } from 'sequelize';
 import WaterfallCalculation from '../models/WaterfallCalculation';
 import WaterfallTier from '../models/WaterfallTier';
 import DistributionEvent from '../models/DistributionEvent';
@@ -389,7 +390,38 @@ class WaterfallCalculationService {
       distributionFrequency: 'as_needed',
     };
 
-    // TODO: Load from fund.settings.waterfallStructure if customized
+    // Check if fund has custom waterfall structure in settings
+    if (fund.settings?.waterfallStructure) {
+      const customStructure = fund.settings.waterfallStructure;
+      
+      // Override default values with custom settings
+      if (customStructure.tiers) {
+        defaultConfig.tiers = customStructure.tiers.map((tier: any) => ({
+          order: tier.order,
+          name: tier.name,
+          type: tier.type,
+          lpAllocation: new Decimal(tier.lpAllocation || 100),
+          gpAllocation: new Decimal(tier.gpAllocation || 0),
+        }));
+      }
+      
+      if (customStructure.preferredReturnRate !== undefined) {
+        defaultConfig.preferredReturnRate = new Decimal(customStructure.preferredReturnRate);
+      }
+      
+      if (customStructure.carriedInterestRate !== undefined) {
+        defaultConfig.carriedInterestRate = new Decimal(customStructure.carriedInterestRate);
+      }
+      
+      if (customStructure.catchUpPercentage !== undefined) {
+        defaultConfig.catchUpPercentage = new Decimal(customStructure.catchUpPercentage);
+      }
+      
+      if (customStructure.distributionFrequency) {
+        defaultConfig.distributionFrequency = customStructure.distributionFrequency;
+      }
+    }
+
     return defaultConfig;
   }
 
@@ -445,7 +477,7 @@ class WaterfallCalculationService {
       preferredReturnRate,
       carriedInterestRate,
       daysSinceFirstContribution,
-      previousPreferredPaid: new Decimal(0), // TODO: Calculate from previous distributions
+      previousPreferredPaid: await this.calculatePreviousPreferredPaid(fundId, asOfDate),
       totalReturned: cumulativeDistributions,
     };
   }
@@ -526,6 +558,41 @@ class WaterfallCalculationService {
       },
       allocationResults: summary,
     });
+  }
+
+  /**
+   * Calculate previous preferred return paid
+   */
+  private async calculatePreviousPreferredPaid(fundId: number, asOfDate: Date): Promise<Decimal> {
+    // Get all previous distribution events for this fund
+    const previousCalculations = await WaterfallCalculation.findAll({
+      where: {
+        fundId,
+        calculationDate: { [Op.lt]: asOfDate },
+        status: 'distributed',
+      },
+      include: [{
+        model: DistributionEvent,
+        as: 'distributionEvents',
+        where: {
+          eventType: 'preferred_return'
+        },
+        required: false
+      }]
+    });
+
+    // Sum up all previous preferred return payments
+    let totalPreferredPaid = new Decimal(0);
+    
+    for (const calculation of previousCalculations) {
+      if (calculation.distributionEvents && calculation.distributionEvents.length > 0) {
+        for (const event of calculation.distributionEvents) {
+          totalPreferredPaid = totalPreferredPaid.plus(new Decimal(event.distributionAmount));
+        }
+      }
+    }
+
+    return totalPreferredPaid;
   }
 
   /**

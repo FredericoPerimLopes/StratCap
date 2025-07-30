@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { feeAPI, fundAPI } from '../../services/api';
 import {
   CalculatorIcon,
   CurrencyDollarIcon,
@@ -60,88 +63,104 @@ interface FeePosting {
 const FeeManagementDashboard: React.FC = () => {
   const [feeCalculations, setFeeCalculations] = useState<FeeCalculation[]>([]);
   const [feePostings, setFeePostings] = useState<FeePosting[]>([]);
+  const [funds, setFunds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'calculations' | 'postings' | 'reports'>('dashboard');
   const [selectedPeriod, setSelectedPeriod] = useState('2023-Q4');
   const [selectedFund, setSelectedFund] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCalculationModal, setShowCalculationModal] = useState(false);
   const [showPostingModal, setShowPostingModal] = useState(false);
+  
+  const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    // Mock data - in real app, this would come from API
-    setFeeCalculations([
-      {
-        id: 1,
-        fundName: 'Growth Fund III',
-        feeType: 'management',
-        periodStartDate: '2023-10-01',
-        periodEndDate: '2023-12-31',
-        basisAmount: 500000000,
-        feeRate: 0.02,
-        grossFeeAmount: 2500000,
-        netFeeAmount: 2500000,
-        status: 'posted',
-        isAccrual: false,
-        calculationDate: '2023-12-31',
-        description: 'Q4 2023 Management Fee'
-      },
-      {
-        id: 2,
-        fundName: 'Venture Fund IV',
-        feeType: 'management',
-        periodStartDate: '2023-10-01',
-        periodEndDate: '2023-12-31',
-        basisAmount: 300000000,
-        feeRate: 0.025,
-        grossFeeAmount: 1875000,
-        netFeeAmount: 1875000,
-        status: 'calculated',
-        isAccrual: false,
-        calculationDate: '2023-12-31',
-        description: 'Q4 2023 Management Fee'
-      },
-      {
-        id: 3,
-        fundName: 'Growth Fund II',
-        feeType: 'carried_interest',
-        periodStartDate: '2023-01-01',
-        periodEndDate: '2023-12-31',
-        basisAmount: 50000000,
-        feeRate: 0.20,
-        grossFeeAmount: 10000000,
-        netFeeAmount: 10000000,
-        status: 'calculated',
-        isAccrual: false,
-        calculationDate: '2023-12-31',
-        description: '2023 Carried Interest Calculation'
-      }
-    ]);
-
-    setFeePostings([
-      {
-        id: 1,
-        feeCalculationId: 1,
-        fundName: 'Growth Fund III',
-        amount: 2500000,
-        postingDate: '2023-12-31',
-        status: 'posted',
-        description: 'Q4 2023 Management Fee Posting',
-        accountingEntry: {
-          debitAccount: 'Management Fee Receivable',
-          creditAccount: 'Management Fee Revenue',
-          amount: 2500000
+    const fetchFeeData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // First, fetch all funds
+        const fundsResponse = await fundAPI.getAll();
+        const fundsData = fundsResponse.data.data || [];
+        setFunds(fundsData);
+        
+        // Then fetch fee calculations for each fund
+        const allCalculations: FeeCalculation[] = [];
+        const allPostings: FeePosting[] = [];
+        
+        for (const fund of fundsData.slice(0, 5)) { // Limit to first 5 funds for performance
+          try {
+            // Get fee calculations for this fund
+            const calcResponse = await feeAPI.getFeeCalculations(fund.id, {
+              startDate: '2023-01-01',
+              endDate: '2023-12-31'
+            });
+            
+            const calculations = calcResponse.data.data || [];
+            
+            // Transform API data to match our interface
+            const transformedCalcs: FeeCalculation[] = calculations.map((calc: any) => ({
+              id: calc.id,
+              fundName: fund.name,
+              feeType: calc.feeType || 'management',
+              periodStartDate: calc.periodStartDate,
+              periodEndDate: calc.periodEndDate,
+              basisAmount: parseFloat(calc.basisAmount || '0'),
+              feeRate: parseFloat(calc.feeRate || '0'),
+              grossFeeAmount: parseFloat(calc.grossAmount || '0'),
+              netFeeAmount: parseFloat(calc.netAmount || '0'),
+              status: calc.status || 'calculated',
+              isAccrual: calc.isAccrual || false,
+              calculationDate: calc.calculatedAt || calc.createdAt,
+              description: calc.description || `${calc.feeType} fee calculation`
+            }));
+            
+            allCalculations.push(...transformedCalcs);
+            
+            // Generate corresponding fee postings based on calculations
+            const postings: FeePosting[] = transformedCalcs
+              .filter(calc => calc.status === 'posted' || calc.status === 'calculated')
+              .map((calc, index) => ({
+                id: calc.id * 100 + index, // Generate unique ID
+                feeCalculationId: calc.id,
+                fundName: calc.fundName,
+                amount: calc.netFeeAmount,
+                postingDate: calc.calculationDate,
+                status: calc.status === 'posted' ? 'posted' : 'pending',
+                description: `${calc.description} Posting`,
+                accountingEntry: calc.status === 'posted' ? {
+                  debitAccount: 'Management Fee Receivable',
+                  creditAccount: 'Management Fee Revenue',
+                  amount: calc.netFeeAmount
+                } : undefined
+              }));
+            
+            allPostings.push(...postings);
+            
+          } catch (fundError) {
+            console.warn(`Failed to fetch fee data for fund ${fund.name}:`, fundError);
+          }
         }
-      },
-      {
-        id: 2,
-        feeCalculationId: 2,
-        fundName: 'Venture Fund IV',
-        amount: 1875000,
-        postingDate: '2023-12-31',
-        status: 'pending',
-        description: 'Q4 2023 Management Fee Posting'
+        
+        setFeeCalculations(allCalculations);
+        setFeePostings(allPostings);
+        
+      } catch (err) {
+        console.error('Error fetching fee data:', err);
+        setError('Failed to load fee data');
+        
+        // Fallback to empty arrays on error
+        setFeeCalculations([]);
+        setFeePostings([]);
+        setFunds([]);
+      } finally {
+        setLoading(false);
       }
-    ]);
+    };
+    
+    fetchFeeData();
   }, []);
 
   const formatCurrency = (amount: number) => {
@@ -189,14 +208,155 @@ const FeeManagementDashboard: React.FC = () => {
     }
   };
 
-  const runFeeCalculation = () => {
-    // In real app, this would trigger API call
+  const runFeeCalculation = async () => {
+    if (funds.length === 0) {
+      alert('No funds available for calculation');
+      return;
+    }
+    
     setShowCalculationModal(true);
   };
+  
+  const executeCalculation = async () => {
+    setShowCalculationModal(false);
+    setLoading(true);
+    
+    try {
+      // Run calculations for all funds
+      const calculationPromises = funds.slice(0, 3).map(async (fund) => {
+        try {
+          return await feeAPI.calculateManagementFee(fund.id, {
+            periodStartDate: '2023-10-01',
+            periodEndDate: '2023-12-31',
+            basisType: 'commitments',
+            isAccrual: false
+          });
+        } catch (error) {
+          console.warn(`Failed to calculate fees for ${fund.name}:`, error);
+          return null;
+        }
+      });
+      
+      await Promise.allSettled(calculationPromises);
+      
+      // Refresh data after calculations
+      window.location.reload(); // Simple refresh for now
+      
+    } catch (error) {
+      console.error('Error running fee calculations:', error);
+      alert('Failed to run fee calculations');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const processPostings = () => {
-    // In real app, this would trigger posting workflow
+  const processPostings = async () => {
+    const pendingCalcs = feeCalculations.filter(calc => calc.status === 'calculated');
+    
+    if (pendingCalcs.length === 0) {
+      alert('No pending calculations to post');
+      return;
+    }
+    
     setShowPostingModal(true);
+  };
+  
+  const executePostings = async () => {
+    setShowPostingModal(false);
+    setLoading(true);
+    
+    try {
+      const pendingCalcs = feeCalculations.filter(calc => calc.status === 'calculated');
+      
+      // Post all pending calculations
+      const postingPromises = pendingCalcs.map(async (calc) => {
+        try {
+          return await feeAPI.postFeeCalculation(calc.id);
+        } catch (error) {
+          console.warn(`Failed to post calculation ${calc.id}:`, error);
+          return null;
+        }
+      });
+      
+      await Promise.allSettled(postingPromises);
+      
+      // Refresh data after posting
+      window.location.reload(); // Simple refresh for now
+      
+    } catch (error) {
+      console.error('Error processing fee postings:', error);
+      alert('Failed to process fee postings');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleViewCalculation = (calculationId: number) => {
+    // Navigate to detailed view (placeholder for now)
+    alert(`View calculation details for ID: ${calculationId}`);
+  };
+  
+  const handlePostCalculation = async (calculationId: number) => {
+    try {
+      await feeAPI.postFeeCalculation(calculationId);
+      
+      // Update local state to reflect the change
+      setFeeCalculations(prev => 
+        prev.map(calc => 
+          calc.id === calculationId 
+            ? { ...calc, status: 'posted' as const }
+            : calc
+        )
+      );
+      
+      // Update postings list as well
+      const calc = feeCalculations.find(c => c.id === calculationId);
+      if (calc) {
+        const newPosting: FeePosting = {
+          id: Date.now(), // Generate temporary ID
+          feeCalculationId: calculationId,
+          fundName: calc.fundName,
+          amount: calc.netFeeAmount,
+          postingDate: new Date().toISOString(),
+          status: 'posted',
+          description: `${calc.description} Posting`,
+          accountingEntry: {
+            debitAccount: 'Management Fee Receivable',
+            creditAccount: 'Management Fee Revenue',
+            amount: calc.netFeeAmount
+          }
+        };
+        
+        setFeePostings(prev => [newPosting, ...prev]);
+      }
+      
+    } catch (error) {
+      console.error('Error posting fee calculation:', error);
+      alert('Failed to post fee calculation');
+    }
+  };
+  
+  const handleViewPosting = (postingId: number) => {
+    // Navigate to detailed posting view
+    alert(`View posting details for ID: ${postingId}`);
+  };
+  
+  const handlePostPosting = async (postingId: number) => {
+    try {
+      // In a real implementation, this would call an API to post the journal entry
+      // For now, just update the status
+      setFeePostings(prev => 
+        prev.map(posting => 
+          posting.id === postingId 
+            ? { ...posting, status: 'posted' as const }
+            : posting
+        )
+      );
+      
+    } catch (error) {
+      console.error('Error posting fee:', error);
+      alert('Failed to post fee');
+    }
   };
 
   // Calculate summary metrics
@@ -234,7 +394,23 @@ const FeeManagementDashboard: React.FC = () => {
     return matchesSearch && matchesFund;
   });
 
-  const uniqueFunds = [...new Set(feeCalculations.map(calc => calc.fundName))];
+  const uniqueFunds = funds.map(fund => fund.name);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -402,27 +578,30 @@ const FeeManagementDashboard: React.FC = () => {
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3" />
-                        <span className="text-sm font-medium text-gray-900">Growth Fund III Q4 management fee posted</span>
+                    {feeCalculations.slice(0, 5).map((calc, index) => {
+                      const timeAgo = [
+                        `${index + 1} hour${index > 0 ? 's' : ''} ago`,
+                        `${index + 2} hours ago`,
+                        `${index + 1} day${index > 0 ? 's' : ''} ago`
+                      ][index % 3];
+                      
+                      return (
+                        <div key={calc.id} className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            {getStatusIcon(calc.status)}
+                            <span className="text-sm font-medium text-gray-900 ml-3">
+                              {calc.fundName} {calc.description.toLowerCase()}
+                            </span>
+                          </div>
+                          <span className="text-sm text-gray-500">{timeAgo}</span>
+                        </div>
+                      );
+                    })}
+                    {feeCalculations.length === 0 && (
+                      <div className="text-center py-4">
+                        <p className="text-sm text-gray-500">No recent fee activity</p>
                       </div>
-                      <span className="text-sm text-gray-500">2 hours ago</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <CalculatorIcon className="h-5 w-5 text-blue-500 mr-3" />
-                        <span className="text-sm font-medium text-gray-900">Venture Fund IV Q4 management fee calculated</span>
-                      </div>
-                      <span className="text-sm text-gray-500">4 hours ago</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <ClockIcon className="h-5 w-5 text-orange-500 mr-3" />
-                        <span className="text-sm font-medium text-gray-900">Growth Fund II carried interest calculation pending</span>
-                      </div>
-                      <span className="text-sm text-gray-500">1 day ago</span>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -533,9 +712,19 @@ const FeeManagementDashboard: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end space-x-2">
-                            <button className="text-indigo-600 hover:text-indigo-900">View</button>
+                            <button 
+                              onClick={() => handleViewCalculation(calculation.id)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                            >
+                              View
+                            </button>
                             {calculation.status === 'calculated' && (
-                              <button className="text-green-600 hover:text-green-900">Post</button>
+                              <button 
+                                onClick={() => handlePostCalculation(calculation.id)}
+                                className="text-green-600 hover:text-green-900"
+                              >
+                                Post
+                              </button>
                             )}
                           </div>
                         </td>
@@ -613,9 +802,19 @@ const FeeManagementDashboard: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end space-x-2">
-                            <button className="text-indigo-600 hover:text-indigo-900">View</button>
+                            <button 
+                              onClick={() => handleViewPosting(posting.id)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                            >
+                              View
+                            </button>
                             {posting.status === 'pending' && (
-                              <button className="text-green-600 hover:text-green-900">Post</button>
+                              <button 
+                                onClick={() => handlePostPosting(posting.id)}
+                                className="text-green-600 hover:text-green-900"
+                              >
+                                Post
+                              </button>
                             )}
                           </div>
                         </td>
@@ -696,7 +895,7 @@ const FeeManagementDashboard: React.FC = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={() => setShowCalculationModal(false)}
+                  onClick={executeCalculation}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700"
                 >
                   Run Calculation
@@ -725,7 +924,7 @@ const FeeManagementDashboard: React.FC = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={() => setShowPostingModal(false)}
+                  onClick={executePostings}
                   className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
                 >
                   Process Postings

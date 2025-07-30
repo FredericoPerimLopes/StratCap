@@ -3,6 +3,9 @@ import DistributionEvent from '../models/DistributionEvent';
 import WaterfallCalculation from '../models/WaterfallCalculation';
 import WaterfallTier from '../models/WaterfallTier';
 import InvestorEntity from '../models/InvestorEntity';
+import Fund from '../models/Fund';
+import FundFamily from '../models/FundFamily';
+import Commitment from '../models/Commitment';
 
 interface InvestorAllocation {
   investorEntityId: number;
@@ -189,15 +192,90 @@ class DistributionAllocationService {
     gpAmount: Decimal,
     eventType: 'return_of_capital' | 'preferred_return' | 'catch_up' | 'carried_interest' | 'capital_gains'
   ): Promise<DistributionEvent[]> {
-    // For now, create a single GP event - in production this would allocate to GP entities
+    // Get the fund and its management company
+    const fund = await Fund.findByPk(calculation.fundId, {
+      include: [{
+        model: FundFamily,
+        as: 'fundFamily'
+      }]
+    });
+
+    if (!fund || !fund.fundFamily) {
+      throw new Error('Fund or FundFamily not found');
+    }
+
+    // Find the GP entity based on the management company name
+    let gpEntity = await InvestorEntity.findOne({
+      where: {
+        name: fund.fundFamily.managementCompany,
+        type: 'institution'
+      }
+    });
+
+    // If GP entity doesn't exist, create it
+    if (!gpEntity) {
+      gpEntity = await InvestorEntity.create({
+        name: fund.fundFamily.managementCompany,
+        legalName: fund.fundFamily.managementCompany,
+        type: 'institution',
+        entityType: 'general_partner',
+        domicile: 'US', // Default, should be configurable
+        accreditedInvestor: true,
+        qualifiedPurchaser: true,
+        kycStatus: 'approved',
+        amlStatus: 'approved',
+        metadata: {
+          isGP: true,
+          fundFamilyId: fund.fundFamilyId
+        }
+      });
+    }
+
+    // Find or create GP commitment for this fund
+    let gpCommitment = await Commitment.findOne({
+      where: {
+        fundId: calculation.fundId,
+        investorEntityId: gpEntity.id
+      }
+    });
+
+    if (!gpCommitment) {
+      // Create a minimal GP commitment
+      gpCommitment = await Commitment.create({
+        fundId: calculation.fundId,
+        investorEntityId: gpEntity.id,
+        amount: '0', // GP typically doesn't have capital commitment
+        status: 'active',
+        commitmentDate: new Date(),
+        metadata: {
+          isGPCommitment: true
+        }
+      });
+    }
+
+    // Calculate cumulative amount for this GP and event type
+    const previousDistributions = await DistributionEvent.findAll({
+      where: {
+        investorEntityId: gpEntity.id,
+        eventType: eventType
+      }
+    });
+
+    const previousTotal = previousDistributions.reduce(
+      (sum, dist) => sum.plus(new Decimal(dist.distributionAmount)),
+      new Decimal(0)
+    );
+
+    const cumulativeAmount = previousTotal.plus(gpAmount);
+
     const gpEvent = await DistributionEvent.create({
       waterfallCalculationId: calculation.id,
-      investorEntityId: 1, // TODO: Get actual GP entity ID
-      commitmentId: 1, // TODO: Get actual GP commitment ID
+      investorEntityId: gpEntity.id,
+      commitmentId: gpCommitment.id,
       eventType,
       distributionAmount: gpAmount.toString(),
       percentageOfTotal: '100.0000', // 100% of GP allocation
-      cumulativeAmount: gpAmount.toString(), // TODO: Calculate actual cumulative
+      cumulativeAmount: cumulativeAmount.toString(),
       allocationBasis: 'custom',
       allocationPercentage: '100.0000',
       taxClassification: eventType === 'carried_interest' ? 'ordinary_income' : 'capital_gains',

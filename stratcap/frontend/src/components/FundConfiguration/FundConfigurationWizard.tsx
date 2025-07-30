@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { fundAPI } from '../../services/api';
 import {
   CheckIcon,
   ChevronLeftIcon,
@@ -37,7 +38,7 @@ interface FundConfigurationData {
     carriedInterestRate: number;
     preferredReturnRate: number;
     catchUpPercentage: number;
-    distribitionWaterfall: 'american' | 'european' | 'custom';
+    distributionWaterfall: 'american' | 'european' | 'custom';
     feeFrequency: 'monthly' | 'quarterly' | 'annually';
   };
   
@@ -95,6 +96,7 @@ const FundConfigurationWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isCompleting, setIsCompleting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState<FundConfigurationData>({
     basicInfo: {
@@ -115,7 +117,7 @@ const FundConfigurationWizard: React.FC = () => {
       carriedInterestRate: 0.20,
       preferredReturnRate: 0.08,
       catchUpPercentage: 100,
-      distribitionWaterfall: 'american',
+      distributionWaterfall: 'american',
       feeFrequency: 'quarterly'
     },
     investorSettings: {
@@ -192,11 +194,37 @@ const FundConfigurationWizard: React.FC = () => {
 
   useEffect(() => {
     if (isEdit && id) {
-      // Load existing fund configuration
-      // In real app, this would be an API call
-      console.log('Loading fund configuration for edit:', id);
+      loadFundConfiguration();
     }
   }, [isEdit, id]);
+
+  const loadFundConfiguration = async () => {
+    setLoading(true);
+    try {
+      const response = await fundAPI.getById(Number(id));
+      const fund = response.data;
+      
+      // Map fund data to form structure
+      setFormData(prev => ({
+        ...prev,
+        basicInfo: {
+          fundName: fund.name || '',
+          fundCode: fund.code || '',
+          vintage: fund.vintage || new Date().getFullYear(),
+          targetSize: fund.targetSize || 0,
+          currency: fund.currency || 'USD',
+          fiscalYearEnd: fund.fiscalYearEnd || '12-31',
+          jurisdiction: fund.jurisdiction || 'Delaware',
+          fundType: fund.fundType || 'private_equity',
+          investmentStrategy: fund.investmentStrategy || ''
+        }
+      }));
+    } catch (error) {
+      console.error('Failed to load fund configuration:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const updateData = (section: keyof FundConfigurationData, updates: any) => {
     setFormData(prev => ({
@@ -221,6 +249,7 @@ const FundConfigurationWizard: React.FC = () => {
         if (!formData.basicInfo.fundName) newErrors['basicInfo.fundName'] = 'Fund name is required';
         if (!formData.basicInfo.fundCode) newErrors['basicInfo.fundCode'] = 'Fund code is required';
         if (formData.basicInfo.targetSize <= 0) newErrors['basicInfo.targetSize'] = 'Target size must be greater than 0';
+        if (!formData.basicInfo.investmentStrategy) newErrors['basicInfo.investmentStrategy'] = 'Investment strategy is required';
         break;
       case 'fees':
         if (formData.feeStructure.managementFeeRate < 0 || formData.feeStructure.managementFeeRate > 1) {
@@ -229,11 +258,29 @@ const FundConfigurationWizard: React.FC = () => {
         if (formData.feeStructure.carriedInterestRate < 0 || formData.feeStructure.carriedInterestRate > 1) {
           newErrors['feeStructure.carriedInterestRate'] = 'Carried interest rate must be between 0 and 1';
         }
+        if (formData.feeStructure.preferredReturnRate < 0 || formData.feeStructure.preferredReturnRate > 1) {
+          newErrors['feeStructure.preferredReturnRate'] = 'Preferred return rate must be between 0 and 1';
+        }
         break;
       case 'investors':
         if (formData.investorSettings.minimumCommitment <= 0) {
           newErrors['investorSettings.minimumCommitment'] = 'Minimum commitment must be greater than 0';
         }
+        if (formData.investorSettings.maxInvestors <= 0) {
+          newErrors['investorSettings.maxInvestors'] = 'Maximum investors must be greater than 0';
+        }
+        break;
+      case 'operations':
+        if (formData.operationalSettings.capitalCallNotice <= 0) {
+          newErrors['operationalSettings.capitalCallNotice'] = 'Capital call notice period must be greater than 0';
+        }
+        if (formData.operationalSettings.distributionNotice <= 0) {
+          newErrors['operationalSettings.distributionNotice'] = 'Distribution notice period must be greater than 0';
+        }
+        break;
+      case 'compliance':
+        if (!formData.compliance.auditFirm) newErrors['compliance.auditFirm'] = 'Audit firm is required';
+        if (!formData.compliance.administrator) newErrors['compliance.administrator'] = 'Administrator is required';
         break;
     }
 
@@ -262,13 +309,28 @@ const FundConfigurationWizard: React.FC = () => {
 
     setIsCompleting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const submitData = {
+        ...formData.basicInfo,
+        configuration: {
+          feeStructure: formData.feeStructure,
+          investorSettings: formData.investorSettings,
+          operationalSettings: formData.operationalSettings,
+          compliance: formData.compliance
+        }
+      };
+
+      if (isEdit) {
+        await fundAPI.update(Number(id), submitData);
+      } else {
+        await fundAPI.create(submitData);
+      }
       
-      console.log('Fund configuration completed:', formData);
-      navigate('/funds');
+      navigate('/funds', {
+        state: { message: `Fund configuration ${isEdit ? 'updated' : 'created'} successfully` }
+      });
     } catch (error) {
       console.error('Failed to save configuration:', error);
+      setErrors({ general: 'Failed to save configuration. Please try again.' });
     } finally {
       setIsCompleting(false);
     }
@@ -289,6 +351,14 @@ const FundConfigurationWizard: React.FC = () => {
   };
 
   const CurrentStepComponent = steps[currentStep].component;
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -448,6 +518,12 @@ const FundConfigurationWizard: React.FC = () => {
             </div>
           </div>
         )}
+
+        {errors.general && (
+          <div className="mt-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            {errors.general}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -503,10 +579,10 @@ const BasicInfoStep: React.FC<StepProps> = ({ data, updateData, errors }) => {
           <input
             type="number"
             value={data.basicInfo.vintage}
-            onChange={(e) => updateData('basicInfo', { vintage: parseInt(e.target.value) })}
+            onChange={(e) => updateData('basicInfo', { vintage: Number(e.target.value) })}
             className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
             min="2000"
-            max="2030"
+            max="2050"
           />
         </div>
 
@@ -517,11 +593,12 @@ const BasicInfoStep: React.FC<StepProps> = ({ data, updateData, errors }) => {
           <input
             type="number"
             value={data.basicInfo.targetSize}
-            onChange={(e) => updateData('basicInfo', { targetSize: parseFloat(e.target.value) })}
+            onChange={(e) => updateData('basicInfo', { targetSize: Number(e.target.value) })}
             className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
               getError('targetSize') ? 'border-red-300' : ''
             }`}
-            placeholder="100000000"
+            min="0"
+            step="1000000"
           />
           {getError('targetSize') && (
             <p className="mt-1 text-sm text-red-600">{getError('targetSize')}</p>
@@ -537,27 +614,10 @@ const BasicInfoStep: React.FC<StepProps> = ({ data, updateData, errors }) => {
             onChange={(e) => updateData('basicInfo', { currency: e.target.value })}
             className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option value="USD">USD - US Dollar</option>
-            <option value="EUR">EUR - Euro</option>
-            <option value="GBP">GBP - British Pound</option>
-            <option value="JPY">JPY - Japanese Yen</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Jurisdiction
-          </label>
-          <select
-            value={data.basicInfo.jurisdiction}
-            onChange={(e) => updateData('basicInfo', { jurisdiction: e.target.value })}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="Delaware">Delaware</option>
-            <option value="Cayman Islands">Cayman Islands</option>
-            <option value="Luxembourg">Luxembourg</option>
-            <option value="Singapore">Singapore</option>
-            <option value="Other">Other</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
           </select>
         </div>
 
@@ -580,6 +640,23 @@ const BasicInfoStep: React.FC<StepProps> = ({ data, updateData, errors }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
+            Jurisdiction
+          </label>
+          <select
+            value={data.basicInfo.jurisdiction}
+            onChange={(e) => updateData('basicInfo', { jurisdiction: e.target.value })}
+            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="Delaware">Delaware</option>
+            <option value="Cayman Islands">Cayman Islands</option>
+            <option value="Luxembourg">Luxembourg</option>
+            <option value="Ireland">Ireland</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Fiscal Year End
           </label>
           <input
@@ -587,22 +664,27 @@ const BasicInfoStep: React.FC<StepProps> = ({ data, updateData, errors }) => {
             value={data.basicInfo.fiscalYearEnd}
             onChange={(e) => updateData('basicInfo', { fiscalYearEnd: e.target.value })}
             className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="12-31"
+            placeholder="MM-DD (e.g., 12-31)"
           />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Investment Strategy
+          Investment Strategy *
         </label>
         <textarea
-          rows={3}
+          rows={4}
           value={data.basicInfo.investmentStrategy}
           onChange={(e) => updateData('basicInfo', { investmentStrategy: e.target.value })}
-          className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          placeholder="Describe the fund's investment strategy and focus areas..."
+          className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
+            getError('investmentStrategy') ? 'border-red-300' : ''
+          }`}
+          placeholder="Describe the fund's investment strategy and focus..."
         />
+        {getError('investmentStrategy') && (
+          <p className="mt-1 text-sm text-red-600">{getError('investmentStrategy')}</p>
+        )}
       </div>
     </div>
   );
@@ -616,21 +698,19 @@ const FeeStructureStep: React.FC<StepProps> = ({ data, updateData, errors }) => 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Management Fee Rate (decimal) *
+            Management Fee Rate (%) *
           </label>
           <input
             type="number"
-            step="0.001"
-            min="0"
-            max="1"
-            value={data.feeStructure.managementFeeRate}
-            onChange={(e) => updateData('feeStructure', { managementFeeRate: parseFloat(e.target.value) })}
+            value={data.feeStructure.managementFeeRate * 100}
+            onChange={(e) => updateData('feeStructure', { managementFeeRate: Number(e.target.value) / 100 })}
             className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
               getError('managementFeeRate') ? 'border-red-300' : ''
             }`}
-            placeholder="0.02"
+            min="0"
+            max="100"
+            step="0.1"
           />
-          <p className="mt-1 text-xs text-gray-500">Enter as decimal (e.g., 0.02 for 2%)</p>
           {getError('managementFeeRate') && (
             <p className="mt-1 text-sm text-red-600">{getError('managementFeeRate')}</p>
           )}
@@ -645,7 +725,7 @@ const FeeStructureStep: React.FC<StepProps> = ({ data, updateData, errors }) => 
             onChange={(e) => updateData('feeStructure', { managementFeeBasis: e.target.value as any })}
             className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option value="commitments">Committed Capital</option>
+            <option value="commitments">Commitments</option>
             <option value="nav">Net Asset Value</option>
             <option value="invested_capital">Invested Capital</option>
           </select>
@@ -653,21 +733,19 @@ const FeeStructureStep: React.FC<StepProps> = ({ data, updateData, errors }) => 
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Carried Interest Rate (decimal) *
+            Carried Interest Rate (%) *
           </label>
           <input
             type="number"
-            step="0.001"
-            min="0"
-            max="1"
-            value={data.feeStructure.carriedInterestRate}
-            onChange={(e) => updateData('feeStructure', { carriedInterestRate: parseFloat(e.target.value) })}
+            value={data.feeStructure.carriedInterestRate * 100}
+            onChange={(e) => updateData('feeStructure', { carriedInterestRate: Number(e.target.value) / 100 })}
             className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
               getError('carriedInterestRate') ? 'border-red-300' : ''
             }`}
-            placeholder="0.20"
+            min="0"
+            max="100"
+            step="0.1"
           />
-          <p className="mt-1 text-xs text-gray-500">Enter as decimal (e.g., 0.20 for 20%)</p>
           {getError('carriedInterestRate') && (
             <p className="mt-1 text-sm text-red-600">{getError('carriedInterestRate')}</p>
           )}
@@ -675,35 +753,36 @@ const FeeStructureStep: React.FC<StepProps> = ({ data, updateData, errors }) => 
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Preferred Return Rate (decimal)
+            Preferred Return Rate (%) *
           </label>
           <input
             type="number"
-            step="0.001"
+            value={data.feeStructure.preferredReturnRate * 100}
+            onChange={(e) => updateData('feeStructure', { preferredReturnRate: Number(e.target.value) / 100 })}
+            className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
+              getError('preferredReturnRate') ? 'border-red-300' : ''
+            }`}
             min="0"
-            max="1"
-            value={data.feeStructure.preferredReturnRate}
-            onChange={(e) => updateData('feeStructure', { preferredReturnRate: parseFloat(e.target.value) })}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="0.08"
+            max="100"
+            step="0.1"
           />
-          <p className="mt-1 text-xs text-gray-500">Enter as decimal (e.g., 0.08 for 8%)</p>
+          {getError('preferredReturnRate') && (
+            <p className="mt-1 text-sm text-red-600">{getError('preferredReturnRate')}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            GP Catch-up Percentage
+            Catch-Up Percentage (%)
           </label>
           <input
             type="number"
+            value={data.feeStructure.catchUpPercentage}
+            onChange={(e) => updateData('feeStructure', { catchUpPercentage: Number(e.target.value) })}
+            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
             min="0"
             max="100"
-            value={data.feeStructure.catchUpPercentage}
-            onChange={(e) => updateData('feeStructure', { catchUpPercentage: parseInt(e.target.value) })}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="100"
           />
-          <p className="mt-1 text-xs text-gray-500">Percentage of excess returns for GP catch-up</p>
         </div>
 
         <div>
@@ -711,19 +790,19 @@ const FeeStructureStep: React.FC<StepProps> = ({ data, updateData, errors }) => 
             Distribution Waterfall
           </label>
           <select
-            value={data.feeStructure.distribitionWaterfall}
-            onChange={(e) => updateData('feeStructure', { distribitionWaterfall: e.target.value as any })}
+            value={data.feeStructure.distributionWaterfall}
+            onChange={(e) => updateData('feeStructure', { distributionWaterfall: e.target.value as any })}
             className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option value="american">American (Deal-by-Deal)</option>
-            <option value="european">European (Whole Fund)</option>
+            <option value="american">American Waterfall</option>
+            <option value="european">European Waterfall</option>
             <option value="custom">Custom</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Fee Calculation Frequency
+            Fee Frequency
           </label>
           <select
             value={data.feeStructure.feeFrequency}
@@ -737,52 +816,49 @@ const FeeStructureStep: React.FC<StepProps> = ({ data, updateData, errors }) => 
         </div>
       </div>
 
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          id="managementFeeStep"
-          checked={data.feeStructure.managementFeeStep}
-          onChange={(e) => updateData('feeStructure', { managementFeeStep: e.target.checked })}
-          className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-        />
-        <label htmlFor="managementFeeStep" className="ml-2 text-sm font-medium text-gray-700">
-          Enable management fee step-down
+      <div className="space-y-4">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            checked={data.feeStructure.managementFeeStep}
+            onChange={(e) => updateData('feeStructure', { managementFeeStep: e.target.checked })}
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          />
+          <span className="ml-2 text-sm text-gray-700">Enable management fee step-down</span>
         </label>
-      </div>
 
-      {data.feeStructure.managementFeeStep && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-6 border-l-2 border-indigo-200">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Step-down Rate (decimal)
-            </label>
-            <input
-              type="number"
-              step="0.001"
-              min="0"
-              max="1"
-              value={data.feeStructure.managementFeeStepRate || 0}
-              onChange={(e) => updateData('feeStructure', { managementFeeStepRate: parseFloat(e.target.value) })}
-              className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="0.015"
-            />
+        {data.feeStructure.managementFeeStep && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Step-down Rate (%)
+              </label>
+              <input
+                type="number"
+                value={data.feeStructure.managementFeeStepRate || 0}
+                onChange={(e) => updateData('feeStructure', { managementFeeStepRate: Number(e.target.value) / 100 })}
+                className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                min="0"
+                max="100"
+                step="0.1"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Threshold (Years)
+              </label>
+              <input
+                type="number"
+                value={data.feeStructure.managementFeeStepThreshold || 0}
+                onChange={(e) => updateData('feeStructure', { managementFeeStepThreshold: Number(e.target.value) })}
+                className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                min="0"
+                max="20"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Step-down Threshold (years)
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="20"
-              value={data.feeStructure.managementFeeStepThreshold || 5}
-              onChange={(e) => updateData('feeStructure', { managementFeeStepThreshold: parseInt(e.target.value) })}
-              className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="5"
-            />
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
@@ -790,21 +866,13 @@ const FeeStructureStep: React.FC<StepProps> = ({ data, updateData, errors }) => 
 const InvestorSettingsStep: React.FC<StepProps> = ({ data, updateData, errors }) => {
   const getError = (field: string) => errors[`investorSettings.${field}`];
 
-  const kycOptions = [
-    { value: 'bank_reference', label: 'Bank Reference' },
-    { value: 'financial_statements', label: 'Financial Statements' },
-    { value: 'tax_returns', label: 'Tax Returns' },
-    { value: 'aml_check', label: 'AML Check' },
-    { value: 'sanctions_check', label: 'Sanctions Check' },
-    { value: 'pep_check', label: 'PEP Check' }
-  ];
-
-  const toggleKycRequirement = (value: string) => {
-    const current = data.investorSettings.kycRequirements;
-    const updated = current.includes(value)
-      ? current.filter(item => item !== value)
-      : [...current, value];
-    updateData('investorSettings', { kycRequirements: updated });
+  const toggleKycRequirement = (requirement: string) => {
+    const currentRequirements = data.investorSettings.kycRequirements;
+    const updatedRequirements = currentRequirements.includes(requirement)
+      ? currentRequirements.filter(r => r !== requirement)
+      : [...currentRequirements, requirement];
+    
+    updateData('investorSettings', { kycRequirements: updatedRequirements });
   };
 
   return (
@@ -817,11 +885,12 @@ const InvestorSettingsStep: React.FC<StepProps> = ({ data, updateData, errors })
           <input
             type="number"
             value={data.investorSettings.minimumCommitment}
-            onChange={(e) => updateData('investorSettings', { minimumCommitment: parseFloat(e.target.value) })}
+            onChange={(e) => updateData('investorSettings', { minimumCommitment: Number(e.target.value) })}
             className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
               getError('minimumCommitment') ? 'border-red-300' : ''
             }`}
-            placeholder="1000000"
+            min="0"
+            step="100000"
           />
           {getError('minimumCommitment') && (
             <p className="mt-1 text-sm text-red-600">{getError('minimumCommitment')}</p>
@@ -830,16 +899,20 @@ const InvestorSettingsStep: React.FC<StepProps> = ({ data, updateData, errors })
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Maximum Investors
+            Maximum Investors *
           </label>
           <input
             type="number"
-            min="1"
             value={data.investorSettings.maxInvestors}
-            onChange={(e) => updateData('investorSettings', { maxInvestors: parseInt(e.target.value) })}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="100"
+            onChange={(e) => updateData('investorSettings', { maxInvestors: Number(e.target.value) })}
+            className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
+              getError('maxInvestors') ? 'border-red-300' : ''
+            }`}
+            min="1"
           />
+          {getError('maxInvestors') && (
+            <p className="mt-1 text-sm text-red-600">{getError('maxInvestors')}</p>
+          )}
         </div>
 
         <div>
@@ -861,75 +934,71 @@ const InvestorSettingsStep: React.FC<StepProps> = ({ data, updateData, errors })
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Transfer Restrictions
           </label>
-          <textarea
-            rows={2}
+          <input
+            type="text"
             value={data.investorSettings.transferRestrictions}
             onChange={(e) => updateData('investorSettings', { transferRestrictions: e.target.value })}
             className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Describe any transfer restrictions..."
+            placeholder="e.g., Board approval required"
           />
         </div>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center">
+        <h3 className="text-lg font-medium text-gray-900">Investor Access</h3>
+        
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="allowTransfers"
             checked={data.investorSettings.allowTransfers}
             onChange={(e) => updateData('investorSettings', { allowTransfers: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="allowTransfers" className="ml-2 text-sm font-medium text-gray-700">
-            Allow investor transfers
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">Allow investor transfers</span>
+        </label>
 
-        <div className="flex items-center">
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="investorPortalAccess"
             checked={data.investorSettings.investorPortalAccess}
             onChange={(e) => updateData('investorSettings', { investorPortalAccess: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="investorPortalAccess" className="ml-2 text-sm font-medium text-gray-700">
-            Enable investor portal access
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">Enable investor portal access</span>
+        </label>
 
-        <div className="flex items-center">
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="accreditationRequired"
             checked={data.investorSettings.accreditationRequired}
             onChange={(e) => updateData('investorSettings', { accreditationRequired: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="accreditationRequired" className="ml-2 text-sm font-medium text-gray-700">
-            Require investor accreditation
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">Require accredited investor status</span>
+        </label>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          KYC Requirements
-        </label>
-        <div className="space-y-2">
-          {kycOptions.map(option => (
-            <div key={option.value} className="flex items-center">
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-gray-900">KYC Requirements</h3>
+        
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { id: 'bank_reference', label: 'Bank Reference' },
+            { id: 'financial_statements', label: 'Financial Statements' },
+            { id: 'proof_of_identity', label: 'Proof of Identity' },
+            { id: 'proof_of_address', label: 'Proof of Address' },
+            { id: 'source_of_funds', label: 'Source of Funds' },
+            { id: 'compliance_certificate', label: 'Compliance Certificate' }
+          ].map(requirement => (
+            <label key={requirement.id} className="flex items-center">
               <input
                 type="checkbox"
-                id={option.value}
-                checked={data.investorSettings.kycRequirements.includes(option.value)}
-                onChange={() => toggleKycRequirement(option.value)}
-                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                checked={data.investorSettings.kycRequirements.includes(requirement.id)}
+                onChange={() => toggleKycRequirement(requirement.id)}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <label htmlFor={option.value} className="ml-2 text-sm text-gray-700">
-                {option.label}
-              </label>
-            </div>
+              <span className="ml-2 text-sm text-gray-700">{requirement.label}</span>
+            </label>
           ))}
         </div>
       </div>
@@ -937,7 +1006,9 @@ const InvestorSettingsStep: React.FC<StepProps> = ({ data, updateData, errors })
   );
 };
 
-const OperationalSettingsStep: React.FC<StepProps> = ({ data, updateData }) => {
+const OperationalSettingsStep: React.FC<StepProps> = ({ data, updateData, errors }) => {
+  const getError = (field: string) => errors[`operationalSettings.${field}`];
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -958,17 +1029,21 @@ const OperationalSettingsStep: React.FC<StepProps> = ({ data, updateData }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Capital Call Notice (days)
+            Capital Call Notice (Days) *
           </label>
           <input
             type="number"
-            min="1"
-            max="90"
             value={data.operationalSettings.capitalCallNotice}
-            onChange={(e) => updateData('operationalSettings', { capitalCallNotice: parseInt(e.target.value) })}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="30"
+            onChange={(e) => updateData('operationalSettings', { capitalCallNotice: Number(e.target.value) })}
+            className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
+              getError('capitalCallNotice') ? 'border-red-300' : ''
+            }`}
+            min="1"
+            max="365"
           />
+          {getError('capitalCallNotice') && (
+            <p className="mt-1 text-sm text-red-600">{getError('capitalCallNotice')}</p>
+          )}
         </div>
 
         <div>
@@ -988,17 +1063,21 @@ const OperationalSettingsStep: React.FC<StepProps> = ({ data, updateData }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Distribution Notice (days)
+            Distribution Notice (Days) *
           </label>
           <input
             type="number"
-            min="1"
-            max="90"
             value={data.operationalSettings.distributionNotice}
-            onChange={(e) => updateData('operationalSettings', { distributionNotice: parseInt(e.target.value) })}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="15"
+            onChange={(e) => updateData('operationalSettings', { distributionNotice: Number(e.target.value) })}
+            className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
+              getError('distributionNotice') ? 'border-red-300' : ''
+            }`}
+            min="1"
+            max="365"
           />
+          {getError('distributionNotice') && (
+            <p className="mt-1 text-sm text-red-600">{getError('distributionNotice')}</p>
+          )}
         </div>
 
         <div>
@@ -1010,74 +1089,61 @@ const OperationalSettingsStep: React.FC<StepProps> = ({ data, updateData }) => {
             onChange={(e) => updateData('operationalSettings', { reportingCurrency: e.target.value })}
             className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option value="USD">USD - US Dollar</option>
-            <option value="EUR">EUR - Euro</option>
-            <option value="GBP">GBP - British Pound</option>
-            <option value="JPY">JPY - Japanese Yen</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
           </select>
         </div>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center">
+        <h3 className="text-lg font-medium text-gray-900">Operational Features</h3>
+        
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="multiCurrencySupport"
             checked={data.operationalSettings.multiCurrencySupport}
             onChange={(e) => updateData('operationalSettings', { multiCurrencySupport: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="multiCurrencySupport" className="ml-2 text-sm font-medium text-gray-700">
-            Enable multi-currency support
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">Enable multi-currency support</span>
+        </label>
 
-        <div className="flex items-center">
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="enableEqualization"
             checked={data.operationalSettings.enableEqualization}
             onChange={(e) => updateData('operationalSettings', { enableEqualization: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="enableEqualization" className="ml-2 text-sm font-medium text-gray-700">
-            Enable equalization calculations
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">Enable equalization payments</span>
+        </label>
 
-        <div className="flex items-center">
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="enableSideLetters"
             checked={data.operationalSettings.enableSideLetters}
             onChange={(e) => updateData('operationalSettings', { enableSideLetters: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="enableSideLetters" className="ml-2 text-sm font-medium text-gray-700">
-            Enable side letter management
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">Enable side letter arrangements</span>
+        </label>
       </div>
     </div>
   );
 };
 
-const ComplianceStep: React.FC<StepProps> = ({ data, updateData }) => {
-  const jurisdictionOptions = [
-    'SEC (US)',
-    'FCA (UK)',
-    'ESMA (EU)',
-    'MAS (Singapore)',
-    'ASIC (Australia)',
-    'SFC (Hong Kong)'
-  ];
+const ComplianceStep: React.FC<StepProps> = ({ data, updateData, errors }) => {
+  const getError = (field: string) => errors[`compliance.${field}`];
 
   const toggleJurisdiction = (jurisdiction: string) => {
-    const current = data.compliance.regulatoryJurisdiction;
-    const updated = current.includes(jurisdiction)
-      ? current.filter(item => item !== jurisdiction)
-      : [...current, jurisdiction];
-    updateData('compliance', { regulatoryJurisdiction: updated });
+    const currentJurisdictions = data.compliance.regulatoryJurisdiction;
+    const updatedJurisdictions = currentJurisdictions.includes(jurisdiction)
+      ? currentJurisdictions.filter(j => j !== jurisdiction)
+      : [...currentJurisdictions, jurisdiction];
+    
+    updateData('compliance', { regulatoryJurisdiction: updatedJurisdictions });
   };
 
   return (
@@ -1085,15 +1151,20 @@ const ComplianceStep: React.FC<StepProps> = ({ data, updateData }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Audit Firm
+            Audit Firm *
           </label>
           <input
             type="text"
             value={data.compliance.auditFirm}
             onChange={(e) => updateData('compliance', { auditFirm: e.target.value })}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="e.g., Deloitte, PwC, KPMG, EY"
+            className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
+              getError('auditFirm') ? 'border-red-300' : ''
+            }`}
+            placeholder="e.g., Deloitte, PwC, KPMG"
           />
+          {getError('auditFirm') && (
+            <p className="mt-1 text-sm text-red-600">{getError('auditFirm')}</p>
+          )}
         </div>
 
         <div>
@@ -1105,9 +1176,9 @@ const ComplianceStep: React.FC<StepProps> = ({ data, updateData }) => {
             onChange={(e) => updateData('compliance', { auditFrequency: e.target.value as any })}
             className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option value="monthly">Monthly</option>
-            <option value="quarterly">Quarterly</option>
             <option value="annually">Annually</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="monthly">Monthly</option>
           </select>
         </div>
 
@@ -1139,15 +1210,20 @@ const ComplianceStep: React.FC<StepProps> = ({ data, updateData }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Administrator
+            Administrator *
           </label>
           <input
             type="text"
             value={data.compliance.administrator}
             onChange={(e) => updateData('compliance', { administrator: e.target.value })}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            className={`block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
+              getError('administrator') ? 'border-red-300' : ''
+            }`}
             placeholder="Fund administrator"
           />
+          {getError('administrator') && (
+            <p className="mt-1 text-sm text-red-600">{getError('administrator')}</p>
+          )}
         </div>
 
         <div>
@@ -1164,67 +1240,63 @@ const ComplianceStep: React.FC<StepProps> = ({ data, updateData }) => {
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Regulatory Jurisdictions
-        </label>
-        <div className="space-y-2">
-          {jurisdictionOptions.map(jurisdiction => (
-            <div key={jurisdiction} className="flex items-center">
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-gray-900">Regulatory Jurisdictions</h3>
+        
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { id: 'SEC', label: 'SEC (United States)' },
+            { id: 'FCA', label: 'FCA (United Kingdom)' },
+            { id: 'ESMA', label: 'ESMA (European Union)' },
+            { id: 'CIMA', label: 'CIMA (Cayman Islands)' },
+            { id: 'MAS', label: 'MAS (Singapore)' },
+            { id: 'CSSF', label: 'CSSF (Luxembourg)' }
+          ].map(jurisdiction => (
+            <label key={jurisdiction.id} className="flex items-center">
               <input
                 type="checkbox"
-                id={jurisdiction}
-                checked={data.compliance.regulatoryJurisdiction.includes(jurisdiction)}
-                onChange={() => toggleJurisdiction(jurisdiction)}
-                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                checked={data.compliance.regulatoryJurisdiction.includes(jurisdiction.id)}
+                onChange={() => toggleJurisdiction(jurisdiction.id)}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <label htmlFor={jurisdiction} className="ml-2 text-sm text-gray-700">
-                {jurisdiction}
-              </label>
-            </div>
+              <span className="ml-2 text-sm text-gray-700">{jurisdiction.label}</span>
+            </label>
           ))}
         </div>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center">
+        <h3 className="text-lg font-medium text-gray-900">Compliance Features</h3>
+        
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="enableRegulatoryReporting"
             checked={data.compliance.enableRegulatoryReporting}
             onChange={(e) => updateData('compliance', { enableRegulatoryReporting: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="enableRegulatoryReporting" className="ml-2 text-sm font-medium text-gray-700">
-            Enable regulatory reporting
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">Enable regulatory reporting</span>
+        </label>
 
-        <div className="flex items-center">
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="gdprCompliance"
             checked={data.compliance.gdprCompliance}
             onChange={(e) => updateData('compliance', { gdprCompliance: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="gdprCompliance" className="ml-2 text-sm font-medium text-gray-700">
-            GDPR compliance required
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">GDPR compliance required</span>
+        </label>
 
-        <div className="flex items-center">
+        <label className="flex items-center">
           <input
             type="checkbox"
-            id="socCompliance"
             checked={data.compliance.socCompliance}
             onChange={(e) => updateData('compliance', { socCompliance: e.target.checked })}
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
-          <label htmlFor="socCompliance" className="ml-2 text-sm font-medium text-gray-700">
-            SOC compliance required
-          </label>
-        </div>
+          <span className="ml-2 text-sm text-gray-700">SOC compliance required</span>
+        </label>
       </div>
     </div>
   );

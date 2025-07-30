@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { fetchFundFamilies, deleteFundFamily, FundFamily } from '../../store/slices/fundFamilySlice';
+import { fetchFundFamilies, deleteFundFamily, updateFundFamily, FundFamily } from '../../store/slices/fundFamilySlice';
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -53,7 +53,12 @@ const FundFamilyList: React.FC = () => {
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'totalAUM' | 'fundCount' | 'averageIRR'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [metrics, setMetrics] = useState<FundFamilyMetrics>({
     totalAUM: 0,
     totalFunds: 0,
@@ -86,18 +91,129 @@ const FundFamilyList: React.FC = () => {
     try {
       await dispatch(deleteFundFamily(Number(id))).unwrap();
       setShowDeleteModal(null);
+      setSelectedItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
     } catch (error) {
       console.error('Failed to delete fund family:', error);
     }
   };
+  
+  const exportFundFamilies = async () => {
+    setIsExporting(true);
+    try {
+      const dataToExport = selectedItems.size > 0 
+        ? filteredAndSortedFundFamilies.filter(ff => selectedItems.has(String(ff.id)))
+        : filteredAndSortedFundFamilies;
+      
+      const csvData = [
+        ['Name', 'Code', 'Management Company', 'Status', 'Total AUM', 'Fund Count', 'Investor Count', 'Average IRR'],
+        ...dataToExport.map(ff => [
+          ff.name,
+          ff.code,
+          ff.managementCompany || '',
+          ff.status,
+          (ff.totalAUM || 0).toString(),
+          (ff.fundCount || 0).toString(),
+          (ff.investorCount || 0).toString(),
+          (ff.averageIRR || 0).toString()
+        ])
+      ];
+      
+      const csvContent = csvData.map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `fund-families-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Export failed:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+  
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedItems(new Set(filteredAndSortedFundFamilies.map(ff => String(ff.id))));
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
+  
+  const handleSelectItem = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedItems);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedItems(newSelected);
+  };
+  
+  const handleBulkDelete = async () => {
+    if (selectedItems.size === 0) return;
+    
+    try {
+      const deletePromises = Array.from(selectedItems).map(id => 
+        dispatch(deleteFundFamily(Number(id))).unwrap()
+      );
+      
+      await Promise.all(deletePromises);
+      setSelectedItems(new Set());
+      setShowBulkActions(false);
+    } catch (error) {
+      console.error('Failed to delete fund families:', error);
+    }
+  };
+  
+  const handleBulkStatusChange = async (newStatus: string) => {
+    if (selectedItems.size === 0) return;
+    
+    try {
+      const updatePromises = Array.from(selectedItems).map(id => 
+        dispatch(updateFundFamily({ 
+          id: Number(id), 
+          data: { status: newStatus } 
+        })).unwrap()
+      );
+      
+      await Promise.all(updatePromises);
+      setSelectedItems(new Set());
+      setShowBulkActions(false);
+    } catch (error) {
+      console.error('Failed to update fund families:', error);
+    }
+  };
 
-  const filteredFundFamilies = fundFamilies.filter((ff: ExtendedFundFamily) => {
-    const matchesSearch = ff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ff.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ff.managementCompany?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !filterStatus || ff.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredAndSortedFundFamilies = fundFamilies
+    .filter((ff: ExtendedFundFamily) => {
+      const matchesSearch = ff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           ff.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           ff.managementCompany?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = !filterStatus || ff.status === filterStatus;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      const aValue = a[sortBy] || 0;
+      const bValue = b[sortBy] || 0;
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortOrder === 'asc' 
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+      
+      return sortOrder === 'asc' 
+        ? (aValue as number) - (bValue as number)
+        : (bValue as number) - (aValue as number);
+    });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -166,9 +282,13 @@ const FundFamilyList: React.FC = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Fund Family Management</h1>
         <div className="flex space-x-3">
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button 
+            onClick={exportFundFamilies}
+            disabled={isExporting}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+          >
             <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
-            Export
+            {isExporting ? 'Exporting...' : 'Export'}
           </button>
           <Link
             to="/fund-families/new"
@@ -275,6 +395,41 @@ const FundFamilyList: React.FC = () => {
         </div>
       </div>
 
+      {/* Bulk Actions */}
+      {selectedItems.size > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-blue-700">
+              {selectedItems.size} fund {selectedItems.size === 1 ? 'family' : 'families'} selected
+            </div>
+            <div className="flex space-x-2">
+              <select
+                onChange={(e) => e.target.value && handleBulkStatusChange(e.target.value)}
+                className="text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                defaultValue=""
+              >
+                <option value="">Change Status...</option>
+                <option value="active">Set Active</option>
+                <option value="inactive">Set Inactive</option>
+                <option value="archived">Archive</option>
+              </select>
+              <button
+                onClick={handleBulkDelete}
+                className="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700"
+              >
+                Delete Selected
+              </button>
+              <button
+                onClick={() => setSelectedItems(new Set())}
+                className="px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -298,9 +453,27 @@ const FundFamilyList: React.FC = () => {
             <option value="inactive">Inactive</option>
             <option value="archived">Archived</option>
           </select>
+          <select
+            value={`${sortBy}-${sortOrder}`}
+            onChange={(e) => {
+              const [field, order] = e.target.value.split('-');
+              setSortBy(field as any);
+              setSortOrder(order as 'asc' | 'desc');
+            }}
+            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="name-asc">Name A-Z</option>
+            <option value="name-desc">Name Z-A</option>
+            <option value="totalAUM-desc">AUM High-Low</option>
+            <option value="totalAUM-asc">AUM Low-High</option>
+            <option value="fundCount-desc">Funds High-Low</option>
+            <option value="fundCount-asc">Funds Low-High</option>
+            <option value="averageIRR-desc">IRR High-Low</option>
+            <option value="averageIRR-asc">IRR Low-High</option>
+          </select>
           <div className="flex items-center text-sm text-gray-500">
             <FunnelIcon className="h-4 w-4 mr-1" />
-            {filteredFundFamilies.length} of {fundFamilies.length} fund families
+            {filteredAndSortedFundFamilies.length} of {fundFamilies.length} fund families
           </div>
         </div>
       </div>
@@ -312,7 +485,32 @@ const FundFamilyList: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fund Family
+                  <input
+                    type="checkbox"
+                    checked={filteredAndSortedFundFamilies.length > 0 && selectedItems.size === filteredAndSortedFundFamilies.length}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                </th>
+                <th 
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    if (sortBy === 'name') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('name');
+                      setSortOrder('asc');
+                    }
+                  }}
+                >
+                  <div className="flex items-center">
+                    Fund Family
+                    {sortBy === 'name' && (
+                      <span className="ml-1">
+                        {sortOrder === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Management Company
@@ -320,14 +518,48 @@ const FundFamilyList: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Funds
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total AUM
+                <th 
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    if (sortBy === 'totalAUM') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('totalAUM');
+                      setSortOrder('desc');
+                    }
+                  }}
+                >
+                  <div className="flex items-center">
+                    Total AUM
+                    {sortBy === 'totalAUM' && (
+                      <span className="ml-1">
+                        {sortOrder === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Investors
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Performance
+                <th 
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    if (sortBy === 'averageIRR') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('averageIRR');
+                      setSortOrder('desc');
+                    }
+                  }}
+                >
+                  <div className="flex items-center">
+                    Performance
+                    {sortBy === 'averageIRR' && (
+                      <span className="ml-1">
+                        {sortOrder === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -338,15 +570,25 @@ const FundFamilyList: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredFundFamilies.length === 0 ? (
+              {filteredAndSortedFundFamilies.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
                     No fund families found
                   </td>
                 </tr>
               ) : (
-                filteredFundFamilies.map((fundFamily: ExtendedFundFamily) => (
-                  <tr key={fundFamily.id} className="hover:bg-gray-50">
+                filteredAndSortedFundFamilies.map((fundFamily: ExtendedFundFamily) => (
+                  <tr key={fundFamily.id} className={`hover:bg-gray-50 ${
+                    selectedItems.has(String(fundFamily.id)) ? 'bg-blue-50' : ''
+                  }`}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.has(String(fundFamily.id))}
+                        onChange={(e) => handleSelectItem(String(fundFamily.id), e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <BuildingOfficeIcon className="h-5 w-5 text-gray-400 mr-3" />

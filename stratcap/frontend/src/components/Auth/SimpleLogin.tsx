@@ -66,14 +66,32 @@ const SimpleLogin: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // TODO: Implement login API call
-      console.log('Login data:', formData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Navigate to dashboard
-      navigate('/dashboard');
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Store token if provided
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+        if (data.refreshToken) {
+          localStorage.setItem('refreshToken', data.refreshToken);
+        }
+        // Navigate to dashboard
+        navigate('/dashboard');
+      } else {
+        const errorData = await response.json();
+        setErrors({ submit: errorData.message || 'Login failed. Please check your credentials and try again.' });
+      }
     } catch (error) {
       setErrors({ submit: 'Login failed. Please check your credentials and try again.' });
     } finally {

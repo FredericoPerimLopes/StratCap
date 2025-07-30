@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { waterfallAPI, fundAPI } from '../../services/api';
 import {
   CalculatorIcon,
   ChevronDownIcon,
@@ -69,131 +72,112 @@ const WaterfallCalculation: React.FC = () => {
   const [scenarios, setScenarios] = useState<WaterfallScenario[]>([]);
   const [activeScenario, setActiveScenario] = useState<WaterfallScenario | null>(null);
   const [expandedTiers, setExpandedTiers] = useState<Set<string>>(new Set());
-  const [selectedFund, setSelectedFund] = useState('growth-fund-iii');
+  const [selectedFund, setSelectedFund] = useState('');
+  const [funds, setFunds] = useState<any[]>([]);
   const [proceedsAmount, setProceedsAmount] = useState(100000000);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showInvestorDetails, setShowInvestorDetails] = useState(false);
+  
+  const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    // Initialize with sample scenario
-    const initialScenario: WaterfallScenario = {
-      id: 'scenario-1',
-      name: 'Base Case Scenario',
-      totalProceedsAmount: 100000000,
-      isActive: true,
-      calculatedAt: new Date().toISOString(),
-      tiers: [
-        {
-          id: 'tier-1',
-          name: 'Return of Capital',
-          type: 'return_of_capital',
-          description: 'Return of original invested capital to LPs',
-          targetAmount: 50000000,
-          allocatedAmount: 50000000,
-          remainingAmount: 0,
-          status: 'complete',
-          order: 1
-        },
-        {
-          id: 'tier-2',
-          name: 'Preferred Return (8%)',
-          type: 'preferred_return',
-          description: 'Cumulative preferred return to LPs',
-          targetAmount: 12000000,
-          allocatedAmount: 12000000,
-          remainingAmount: 0,
-          percentage: 8,
-          status: 'complete',
-          order: 2
-        },
-        {
-          id: 'tier-3',
-          name: 'GP Catch-up',
-          type: 'catch_up',
-          description: 'GP catch-up to achieve 20% carried interest',
-          targetAmount: 15500000,
-          allocatedAmount: 15500000,
-          remainingAmount: 0,
-          percentage: 100,
-          status: 'complete',
-          order: 3
-        },
-        {
-          id: 'tier-4',
-          name: 'Carried Interest Split',
-          type: 'split',
-          description: 'Remaining proceeds split 80/20 LP/GP',
-          targetAmount: 22500000,
-          allocatedAmount: 22500000,
-          remainingAmount: 0,
-          lpPercentage: 80,
-          gpPercentage: 20,
-          status: 'complete',
-          order: 4
+    const fetchInitialData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Fetch available funds
+        const fundsResponse = await fundAPI.getAll();
+        const fundsData = fundsResponse.data.data || [];
+        setFunds(fundsData);
+        
+        if (fundsData.length > 0) {
+          setSelectedFund(fundsData[0].id.toString());
+          
+          // Fetch existing waterfall calculations for the first fund
+          try {
+            const waterfallResponse = await waterfallAPI.getFundWaterfallCalculations(fundsData[0].id);
+            const calculations = waterfallResponse.data.data || [];
+            
+            // Transform API data to match our interface
+            const transformedScenarios: WaterfallScenario[] = calculations.map((calc: any) => ({
+              id: calc.id.toString(),
+              name: calc.name || `Scenario - ${formatCurrency(calc.totalProceedsAmount)}`,
+              totalProceedsAmount: parseFloat(calc.totalProceedsAmount || '0'),
+              isActive: calc.isActive || false,
+              calculatedAt: calc.calculatedAt || calc.createdAt,
+              tiers: calc.tiers || [],
+              investorAllocations: calc.investorAllocations || []
+            }));
+            
+            if (transformedScenarios.length > 0) {
+              setScenarios(transformedScenarios);
+              setActiveScenario(transformedScenarios[0]);
+            }
+            
+          } catch (waterfallError) {
+            console.warn('No existing waterfall calculations found:', waterfallError);
+            // Continue without existing scenarios
+          }
         }
-      ],
-      investorAllocations: [
-        {
-          investorId: 'investor-1',
-          investorName: 'Pension Fund A',
-          commitmentAmount: 15000000,
-          ownershipPercentage: 30,
-          returnOfCapital: 15000000,
-          preferredReturn: 3600000,
-          carriedInterest: 0,
-          totalDistribution: 22950000,
-          remainingBalance: 0
-        },
-        {
-          investorId: 'investor-2',
-          investorName: 'Insurance Co B',
-          commitmentAmount: 12500000,
-          ownershipPercentage: 25,
-          returnOfCapital: 12500000,
-          preferredReturn: 3000000,
-          carriedInterest: 0,
-          totalDistribution: 19125000,
-          remainingBalance: 0
-        },
-        {
-          investorId: 'investor-3',
-          investorName: 'Endowment C',
-          commitmentAmount: 10000000,
-          ownershipPercentage: 20,
-          returnOfCapital: 10000000,
-          preferredReturn: 2400000,
-          carriedInterest: 0,
-          totalDistribution: 15300000,
-          remainingBalance: 0
-        },
-        {
-          investorId: 'investor-4',
-          investorName: 'Family Office D',
-          commitmentAmount: 7500000,
-          ownershipPercentage: 15,
-          returnOfCapital: 7500000,
-          preferredReturn: 1800000,
-          carriedInterest: 0,
-          totalDistribution: 11475000,
-          remainingBalance: 0
-        },
-        {
-          investorId: 'investor-5',
-          investorName: 'HNW Investor E',
-          commitmentAmount: 5000000,
-          ownershipPercentage: 10,
-          returnOfCapital: 5000000,
-          preferredReturn: 1200000,
-          carriedInterest: 0,
-          totalDistribution: 7650000,
-          remainingBalance: 0
-        }
-      ]
+        
+      } catch (err) {
+        console.error('Error fetching initial data:', err);
+        setError('Failed to load waterfall data');
+      } finally {
+        setLoading(false);
+      }
     };
-
-    setScenarios([initialScenario]);
-    setActiveScenario(initialScenario);
+    
+    fetchInitialData();
   }, []);
+  
+  // Load scenarios when fund selection changes
+  useEffect(() => {
+    const loadFundScenarios = async () => {
+      if (!selectedFund) {
+        setScenarios([]);
+        setActiveScenario(null);
+        return;
+      }
+      
+      try {
+        const response = await waterfallAPI.getFundWaterfallCalculations(parseInt(selectedFund));
+        const calculations = response.data.data || [];
+        
+        const transformedScenarios: WaterfallScenario[] = calculations.map((calc: any) => ({
+          id: calc.id.toString(),
+          name: calc.name || `Scenario - ${formatCurrency(calc.totalProceedsAmount)}`,
+          totalProceedsAmount: parseFloat(calc.totalProceedsAmount || '0'),
+          isActive: calc.isActive || false,
+          calculatedAt: calc.calculatedAt || calc.createdAt,
+          tiers: calc.tiers || [],
+          investorAllocations: calc.investorAllocations || []
+        }));
+        
+        setScenarios(transformedScenarios);
+        
+        // Set the most recent scenario as active
+        if (transformedScenarios.length > 0) {
+          const mostRecent = transformedScenarios.sort((a, b) => 
+            new Date(b.calculatedAt).getTime() - new Date(a.calculatedAt).getTime()
+          )[0];
+          setActiveScenario(mostRecent);
+        } else {
+          setActiveScenario(null);
+        }
+        
+      } catch (error) {
+        console.warn('No scenarios found for selected fund:', error);
+        setScenarios([]);
+        setActiveScenario(null);
+      }
+    };
+    
+    loadFundScenarios();
+  }, [selectedFund]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -236,26 +220,193 @@ const WaterfallCalculation: React.FC = () => {
     }
     setExpandedTiers(newExpanded);
   };
+  
+  const exportResults = async () => {
+    if (!activeScenario) {
+      alert('No scenario selected to export');
+      return;
+    }
+    
+    try {
+      // For now, create a simple CSV export
+      const csvData = [
+        ['Tier', 'Type', 'Target Amount', 'Allocated Amount', 'Status'],
+        ...activeScenario.tiers.map(tier => [
+          tier.name,
+          tier.type,
+          tier.targetAmount.toString(),
+          tier.allocatedAmount.toString(),
+          tier.status
+        ])
+      ];
+      
+      const csvContent = csvData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `waterfall-calculation-${activeScenario.id}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('Error exporting results:', error);
+      alert('Failed to export results');
+    }
+  };
+  
+  const loadScenarioHistory = async () => {
+    if (!selectedFund) return;
+    
+    try {
+      const response = await waterfallAPI.getFundWaterfallCalculations(parseInt(selectedFund));
+      const calculations = response.data.data || [];
+      
+      const transformedScenarios: WaterfallScenario[] = calculations.map((calc: any) => ({
+        id: calc.id.toString(),
+        name: calc.name || `Scenario - ${formatCurrency(calc.totalProceedsAmount)}`,
+        totalProceedsAmount: parseFloat(calc.totalProceedsAmount || '0'),
+        isActive: calc.isActive || false,
+        calculatedAt: calc.calculatedAt || calc.createdAt,
+        tiers: calc.tiers || [],
+        investorAllocations: calc.investorAllocations || []
+      }));
+      
+      setScenarios(transformedScenarios);
+      
+    } catch (error) {
+      console.error('Error loading scenario history:', error);
+    }
+  };
+  
+  const approveScenario = async (scenarioId: string) => {
+    try {
+      await waterfallAPI.approveCalculation(parseInt(scenarioId));
+      
+      // Update local state
+      setScenarios(prev => 
+        prev.map(scenario => 
+          scenario.id === scenarioId 
+            ? { ...scenario, isActive: true }
+            : { ...scenario, isActive: false }
+        )
+      );
+      
+      alert('Scenario approved successfully');
+      
+    } catch (error) {
+      console.error('Error approving scenario:', error);
+      alert('Failed to approve scenario');
+    }
+  };
 
   const runWaterfallCalculation = async () => {
+    if (!selectedFund) {
+      alert('Please select a fund first');
+      return;
+    }
+    
     setIsCalculating(true);
+    setError(null);
     
-    // Simulate calculation time
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // In real app, this would call the backend API
-    // For now, we'll just update the scenario
-    const newScenario: WaterfallScenario = {
-      ...activeScenario!,
-      id: `scenario-${Date.now()}`,
-      name: `Scenario - ${formatCurrency(proceedsAmount)}`,
-      totalProceedsAmount: proceedsAmount,
-      calculatedAt: new Date().toISOString()
-    };
-
-    setScenarios(prev => [newScenario, ...prev]);
-    setActiveScenario(newScenario);
-    setIsCalculating(false);
+    try {
+      // Call the backend API for waterfall calculation
+      const response = await waterfallAPI.calculateWaterfall({
+        fundId: parseInt(selectedFund),
+        totalProceedsAmount: proceedsAmount,
+        asOfDate: new Date().toISOString(),
+        distributionScenario: 'standard'
+      });
+      
+      const calculationResult = response.data;
+      
+      // Transform API response to our interface
+      const newScenario: WaterfallScenario = {
+        id: calculationResult.id?.toString() || `scenario-${Date.now()}`,
+        name: `Scenario - ${formatCurrency(proceedsAmount)}`,
+        totalProceedsAmount: proceedsAmount,
+        isActive: true,
+        calculatedAt: new Date().toISOString(),
+        tiers: calculationResult.tiers || [],
+        investorAllocations: calculationResult.investorAllocations || []
+      };
+      
+      // Add to scenarios list
+      setScenarios(prev => [newScenario, ...prev]);
+      setActiveScenario(newScenario);
+      
+    } catch (err) {
+      console.error('Error calculating waterfall:', err);
+      setError('Failed to calculate waterfall distribution');
+      
+      // For demo purposes, create a mock scenario if API fails
+      const fallbackScenario: WaterfallScenario = {
+        id: `fallback-${Date.now()}`,
+        name: `Scenario - ${formatCurrency(proceedsAmount)} (Simulated)`,
+        totalProceedsAmount: proceedsAmount,
+        isActive: true,
+        calculatedAt: new Date().toISOString(),
+        tiers: [
+          {
+            id: 'tier-1',
+            name: 'Return of Capital',
+            type: 'return_of_capital',
+            description: 'Return of original invested capital to LPs',
+            targetAmount: proceedsAmount * 0.5,
+            allocatedAmount: proceedsAmount * 0.5,
+            remainingAmount: 0,
+            status: 'complete',
+            order: 1
+          },
+          {
+            id: 'tier-2',
+            name: 'Preferred Return (8%)',
+            type: 'preferred_return',
+            description: 'Cumulative preferred return to LPs',
+            targetAmount: proceedsAmount * 0.12,
+            allocatedAmount: proceedsAmount * 0.12,
+            remainingAmount: 0,
+            percentage: 8,
+            status: 'complete',
+            order: 2
+          },
+          {
+            id: 'tier-3',
+            name: 'GP Catch-up',
+            type: 'catch_up',
+            description: 'GP catch-up to achieve 20% carried interest',
+            targetAmount: proceedsAmount * 0.155,
+            allocatedAmount: proceedsAmount * 0.155,
+            remainingAmount: 0,
+            percentage: 100,
+            status: 'complete',
+            order: 3
+          },
+          {
+            id: 'tier-4',
+            name: 'Carried Interest Split',
+            type: 'split',
+            description: 'Remaining proceeds split 80/20 LP/GP',
+            targetAmount: proceedsAmount * 0.225,
+            allocatedAmount: proceedsAmount * 0.225,
+            remainingAmount: 0,
+            lpPercentage: 80,
+            gpPercentage: 20,
+            status: 'complete',
+            order: 4
+          }
+        ],
+        investorAllocations: []
+      };
+      
+      setScenarios(prev => [fallbackScenario, ...prev]);
+      setActiveScenario(fallbackScenario);
+      
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   // Chart data
@@ -277,22 +428,48 @@ const WaterfallCalculation: React.FC = () => {
   const totalGPDistribution = activeScenario ? activeScenario.totalProceedsAmount - totalLPDistribution : 0;
   const gpCarryPercentage = activeScenario ? (totalGPDistribution / activeScenario.totalProceedsAmount) * 100 : 0;
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+      
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Waterfall Calculation</h1>
         <div className="flex space-x-3">
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button 
+            onClick={exportResults}
+            disabled={!activeScenario}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+          >
             <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
             Export Results
+          </button>
+          <button
+            onClick={loadScenarioHistory}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          >
+            <EyeIcon className="h-4 w-4 mr-2" />
+            Refresh History
           </button>
           <Link
             to="/waterfall/history"
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <EyeIcon className="h-4 w-4 mr-2" />
-            View History
+            View All History
           </Link>
         </div>
       </div>
@@ -309,10 +486,14 @@ const WaterfallCalculation: React.FC = () => {
               value={selectedFund}
               onChange={(e) => setSelectedFund(e.target.value)}
               className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              disabled={loading}
             >
-              <option value="growth-fund-iii">Growth Fund III</option>
-              <option value="growth-fund-ii">Growth Fund II</option>
-              <option value="venture-fund-iv">Venture Fund IV</option>
+              <option value="">Select a fund...</option>
+              {funds.map(fund => (
+                <option key={fund.id} value={fund.id.toString()}>
+                  {fund.name}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -330,7 +511,7 @@ const WaterfallCalculation: React.FC = () => {
           <div className="flex items-end">
             <button
               onClick={runWaterfallCalculation}
-              disabled={isCalculating}
+              disabled={isCalculating || !selectedFund || loading}
               className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
             >
               {isCalculating ? (
@@ -643,25 +824,45 @@ const WaterfallCalculation: React.FC = () => {
                 {scenarios.slice(0, 5).map((scenario) => (
                   <div 
                     key={scenario.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer hover:bg-gray-50 ${
-                      scenario.id === activeScenario.id ? 'border-indigo-300 bg-indigo-50' : 'border-gray-200'
+                    className={`flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 ${
+                      scenario.id === activeScenario?.id ? 'border-indigo-300 bg-indigo-50' : 'border-gray-200'
                     }`}
-                    onClick={() => setActiveScenario(scenario)}
                   >
-                    <div>
+                    <div 
+                      className="flex-1 cursor-pointer"
+                      onClick={() => setActiveScenario(scenario)}
+                    >
                       <p className="text-sm font-medium text-gray-900">{scenario.name}</p>
                       <p className="text-xs text-gray-500">
                         Calculated {new Date(scenario.calculatedAt).toLocaleString()}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-gray-900">
-                        {formatCurrency(scenario.totalProceedsAmount)}
-                      </p>
-                      {scenario.id === activeScenario.id && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                          Active
-                        </span>
+                    <div className="text-right flex items-center space-x-2">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {formatCurrency(scenario.totalProceedsAmount)}
+                        </p>
+                        {scenario.isActive && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Approved
+                          </span>
+                        )}
+                        {scenario.id === activeScenario?.id && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                            Active
+                          </span>
+                        )}
+                      </div>
+                      {!scenario.isActive && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            approveScenario(scenario.id);
+                          }}
+                          className="px-2 py-1 text-xs font-medium text-green-600 hover:text-green-900 border border-green-300 rounded hover:bg-green-50"
+                        >
+                          Approve
+                        </button>
                       )}
                     </div>
                   </div>

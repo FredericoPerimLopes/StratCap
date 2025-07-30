@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { fetchFundFamilyById } from '../../store/slices/fundFamilySlice';
+import { fetchFundFamilyById, fetchFundFamilySummary } from '../../store/slices/fundFamilySlice';
 import {
   BuildingOfficeIcon,
   CurrencyDollarIcon,
@@ -55,52 +55,55 @@ const FundFamilyDetails: React.FC = () => {
   useEffect(() => {
     if (id) {
       dispatch(fetchFundFamilyById(Number(id)));
-      // TODO: Implement fetchFundFamilySummary action
+      dispatch(fetchFundFamilySummary(Number(id)));
     }
   }, [dispatch, id]);
 
   useEffect(() => {
-    // Mock fund data - in real app, this would come from API
-    if (currentFundFamily) {
-      setFunds([
-        {
-          id: 1,
-          name: `${currentFundFamily.name} Fund I`,
-          vintage: 2019,
-          targetSize: 500000000,
-          committedCapital: 480000000,
-          calledCapital: 320000000,
-          distributedCapital: 150000000,
-          status: 'harvesting',
-          irr: 18.5,
-          multiple: 1.8
-        },
-        {
-          id: 2,
-          name: `${currentFundFamily.name} Fund II`,
-          vintage: 2021,
-          targetSize: 750000000,
-          committedCapital: 720000000,
-          calledCapital: 450000000,
-          distributedCapital: 50000000,
-          status: 'investing',
-          irr: 22.3,
-          multiple: 1.4
-        },
-        {
-          id: 3,
-          name: `${currentFundFamily.name} Fund III`,
-          vintage: 2023,
-          targetSize: 1000000000,
-          committedCapital: 650000000,
-          calledCapital: 120000000,
-          distributedCapital: 0,
-          status: 'fundraising',
-          irr: 0,
-          multiple: 1.0
+    // Fetch funds data from API when fund family is loaded
+    const fetchFunds = async () => {
+      if (currentFundFamily) {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/funds?fundFamilyId=${currentFundFamily.id}`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const fundsData = data.data || [];
+            
+            // Transform API data to match our interface
+            const transformedFunds: FundData[] = fundsData.map((fund: any) => ({
+              id: fund.id,
+              name: fund.name,
+              vintage: fund.vintage,
+              targetSize: parseFloat(fund.targetSize || '0'),
+              committedCapital: parseFloat(fund.committedCapital || '0'),
+              calledCapital: parseFloat(fund.calledCapital || '0'),
+              distributedCapital: parseFloat(fund.distributedCapital || '0'),
+              status: fund.status,
+              irr: parseFloat(fund.irr || '0'),
+              multiple: parseFloat(fund.multiple || '1.0')
+            }));
+            
+            setFunds(transformedFunds);
+          } else {
+            console.error('Failed to fetch funds:', response.statusText);
+            // Fallback to empty array
+            setFunds([]);
+          }
+        } catch (error) {
+          console.error('Error fetching funds:', error);
+          // Fallback to empty array
+          setFunds([]);
         }
-      ]);
-    }
+      }
+    };
+
+    fetchFunds();
   }, [currentFundFamily]);
 
   const formatCurrency = (amount: number) => {
@@ -132,29 +135,55 @@ const FundFamilyDetails: React.FC = () => {
     }
   };
 
-  // Mock chart data
-  const performanceData = [
-    { year: '2019', irr: 8.5, multiple: 1.2 },
-    { year: '2020', irr: 12.3, multiple: 1.4 },
-    { year: '2021', irr: 18.7, multiple: 1.6 },
-    { year: '2022', irr: 15.2, multiple: 1.7 },
-    { year: '2023', irr: 20.5, multiple: 1.9 }
-  ];
+  // Generate performance data from actual funds
+  const performanceData = funds.map(fund => ({
+    name: fund.name,
+    vintage: fund.vintage,
+    irr: fund.irr,
+    multiple: fund.multiple,
+    status: fund.status
+  }));
 
-  const capitalFlowData = [
-    { quarter: 'Q1 2023', calls: 50, distributions: 30 },
-    { quarter: 'Q2 2023', calls: 75, distributions: 45 },
-    { quarter: 'Q3 2023', calls: 60, distributions: 80 },
-    { quarter: 'Q4 2023', calls: 90, distributions: 120 }
-  ];
+  // Calculate summary metrics from real data
+  const summaryMetrics = {
+    totalFunds: funds.length,
+    totalTargetSize: funds.reduce((sum, fund) => sum + fund.targetSize, 0),
+    totalCommitted: funds.reduce((sum, fund) => sum + fund.committedCapital, 0),
+    totalCalled: funds.reduce((sum, fund) => sum + fund.calledCapital, 0),
+    totalDistributed: funds.reduce((sum, fund) => sum + fund.distributedCapital, 0),
+    averageIRR: funds.length > 0 ? funds.reduce((sum, fund) => sum + fund.irr, 0) / funds.length : 0,
+    averageMultiple: funds.length > 0 ? funds.reduce((sum, fund) => sum + fund.multiple, 0) / funds.length : 0
+  };
 
-  const assetAllocation = [
-    { name: 'Technology', value: 35, color: '#3B82F6' },
-    { name: 'Healthcare', value: 25, color: '#10B981' },
-    { name: 'Financial Services', value: 20, color: '#F59E0B' },
-    { name: 'Consumer', value: 15, color: '#8B5CF6' },
-    { name: 'Other', value: 5, color: '#6B7280' }
-  ];
+  // Generate status distribution for pie chart
+  const statusCounts = funds.reduce((acc, fund) => {
+    acc[fund.status] = (acc[fund.status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const statusDistribution = Object.entries(statusCounts).map(([status, count], index) => ({
+    name: status.charAt(0).toUpperCase() + status.slice(1),
+    value: count,
+    color: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'][index] || '#6B7280'
+  }));
+
+  // Generate vintage distribution
+  const vintageData = funds.reduce((acc, fund) => {
+    const vintage = fund.vintage.toString();
+    const existing = acc.find(item => item.year === vintage);
+    if (existing) {
+      existing.count += 1;
+      existing.totalSize += fund.targetSize;
+    } else {
+      acc.push({
+        year: vintage,
+        count: 1,
+        totalSize: fund.targetSize,
+        avgIRR: fund.irr
+      });
+    }
+    return acc;
+  }, [] as Array<{year: string, count: number, totalSize: number, avgIRR: number}>);
 
   if (loading) {
     return (
@@ -238,9 +267,9 @@ const FundFamilyDetails: React.FC = () => {
           <div className="flex items-center">
             <CurrencyDollarIcon className="h-8 w-8 text-blue-500" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total AUM</p>
+              <p className="text-sm font-medium text-gray-500">Total Committed</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {formatCurrency(summary?.totalAUM || 0)}
+                {formatCurrency(summaryMetrics.totalCommitted)}
               </p>
             </div>
           </div>
@@ -249,8 +278,8 @@ const FundFamilyDetails: React.FC = () => {
           <div className="flex items-center">
             <BanknotesIcon className="h-8 w-8 text-green-500" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Active Funds</p>
-              <p className="text-2xl font-semibold text-gray-900">{summary?.activeFunds || 0}</p>
+              <p className="text-sm font-medium text-gray-500">Total Funds</p>
+              <p className="text-2xl font-semibold text-gray-900">{summaryMetrics.totalFunds}</p>
             </div>
           </div>
         </div>
@@ -258,9 +287,9 @@ const FundFamilyDetails: React.FC = () => {
           <div className="flex items-center">
             <UsersIcon className="h-8 w-8 text-purple-500" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total Investors</p>
+              <p className="text-sm font-medium text-gray-500">Total Called</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {currentFundFamily?.investorCount || 0}
+                {formatCurrency(summaryMetrics.totalCalled)}
               </p>
             </div>
           </div>
@@ -271,7 +300,29 @@ const FundFamilyDetails: React.FC = () => {
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Avg IRR</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {currentFundFamily?.averageIRR ? `${currentFundFamily.averageIRR.toFixed(1)}%` : '-'}
+                {summaryMetrics.averageIRR.toFixed(1)}%
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <CurrencyDollarIcon className="h-8 w-8 text-indigo-500" />
+            <div className="ml-3">
+              <p className="text-sm font-medium text-gray-500">Total Distributed</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {formatCurrency(summaryMetrics.totalDistributed)}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <ChartBarIcon className="h-8 w-8 text-yellow-500" />
+            <div className="ml-3">
+              <p className="text-sm font-medium text-gray-500">Avg Multiple</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {summaryMetrics.averageMultiple.toFixed(2)}x
               </p>
             </div>
           </div>
@@ -331,24 +382,28 @@ const FundFamilyDetails: React.FC = () => {
             <div className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Capital Flow (Millions)</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Vintage Distribution</h3>
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={capitalFlowData}>
+                    <BarChart data={vintageData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="quarter" />
+                      <XAxis dataKey="year" />
                       <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="calls" fill="#3B82F6" name="Capital Calls" />
-                      <Bar dataKey="distributions" fill="#10B981" name="Distributions" />
+                      <Tooltip 
+                        formatter={(value, name) => [
+                          name === 'count' ? value : formatCurrency(value as number),
+                          name === 'count' ? 'Funds' : name === 'totalSize' ? 'Total Size' : 'Avg IRR'
+                        ]}
+                      />
+                      <Bar dataKey="count" fill="#3B82F6" name="Number of Funds" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Asset Allocation</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Fund Status Distribution</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie
-                        data={assetAllocation}
+                        data={statusDistribution}
                         cx="50%"
                         cy="50%"
                         outerRadius={100}
@@ -356,11 +411,13 @@ const FundFamilyDetails: React.FC = () => {
                         dataKey="value"
                         label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       >
-                        {assetAllocation.map((entry, index) => (
+                        {statusDistribution.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip 
+                        formatter={(value) => [value, 'Funds']}
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -472,10 +529,16 @@ const FundFamilyDetails: React.FC = () => {
                   <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={performanceData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="year" />
+                      <XAxis dataKey="vintage" />
                       <YAxis yAxisId="left" />
                       <YAxis yAxisId="right" orientation="right" />
-                      <Tooltip />
+                      <Tooltip 
+                        formatter={(value, name) => [
+                          name === 'irr' ? `${value}%` : `${value}x`,
+                          name === 'irr' ? 'IRR' : 'Multiple'
+                        ]}
+                        labelFormatter={(label) => `Vintage ${label}`}
+                      />
                       <Line yAxisId="left" type="monotone" dataKey="irr" stroke="#3B82F6" name="IRR %" />
                       <Line yAxisId="right" type="monotone" dataKey="multiple" stroke="#10B981" name="Multiple" />
                     </LineChart>
@@ -486,20 +549,28 @@ const FundFamilyDetails: React.FC = () => {
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Gross IRR</p>
-                        <p className="text-2xl font-semibold text-gray-900">18.5%</p>
+                        <p className="text-sm font-medium text-gray-500">Average IRR</p>
+                        <p className="text-2xl font-semibold text-gray-900">
+                          {summaryMetrics.averageIRR.toFixed(1)}%
+                        </p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Net IRR</p>
-                        <p className="text-2xl font-semibold text-gray-900">15.2%</p>
+                        <p className="text-sm font-medium text-gray-500">Average Multiple</p>
+                        <p className="text-2xl font-semibold text-gray-900">
+                          {summaryMetrics.averageMultiple.toFixed(2)}x
+                        </p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">TVPI</p>
-                        <p className="text-2xl font-semibold text-gray-900">1.85x</p>
+                        <p className="text-sm font-medium text-gray-500">Total Called</p>
+                        <p className="text-2xl font-semibold text-gray-900">
+                          {formatCurrency(summaryMetrics.totalCalled)}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">DPI</p>
-                        <p className="text-2xl font-semibold text-gray-900">0.95x</p>
+                        <p className="text-sm font-medium text-gray-500">Total Distributed</p>
+                        <p className="text-2xl font-semibold text-gray-900">
+                          {formatCurrency(summaryMetrics.totalDistributed)}
+                        </p>
                       </div>
                     </div>
                   </div>

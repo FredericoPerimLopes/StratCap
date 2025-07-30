@@ -604,10 +604,15 @@ export class DataAnalysisService {
       })),
     }));
 
+    // Calculate totals and subtotals
+    const totals = this.calculateTotals(rows, headers);
+    const subtotals = this.calculateSubtotals(rows, headers, pivotConfig);
+
     return {
       headers,
       rows,
-      // TODO: Add totals and subtotals calculation
+      totals,
+      subtotals,
     };
   }
 
@@ -647,6 +652,97 @@ export class DataAnalysisService {
   private generateChartConfig(_section: ReportSection, _data: any): any {
     // Generate chart configuration based on section and data
     return { type: 'bar', data: [] };
+  }
+
+  private calculateTotals(rows: any[], headers: PivotHeader[]): Record<string, any> {
+    const totals: Record<string, any> = {};
+    
+    headers.forEach(header => {
+      if (header.type === 'measure' && header.aggregationType) {
+        const values = rows.map(row => {
+          const cellData = row.cells.find((cell: any) => cell.header === header.id);
+          return cellData?.rawValue;
+        }).filter(val => val !== null && val !== undefined);
+
+        switch (header.aggregationType) {
+          case 'sum':
+            totals[header.id] = values.reduce((sum, val) => sum + (Number(val) || 0), 0);
+            break;
+          case 'average':
+            totals[header.id] = values.length > 0 
+              ? values.reduce((sum, val) => sum + (Number(val) || 0), 0) / values.length 
+              : 0;
+            break;
+          case 'count':
+            totals[header.id] = values.length;
+            break;
+          case 'min':
+            totals[header.id] = values.length > 0 ? Math.min(...values.map(v => Number(v) || 0)) : 0;
+            break;
+          case 'max':
+            totals[header.id] = values.length > 0 ? Math.max(...values.map(v => Number(v) || 0)) : 0;
+            break;
+        }
+      }
+    });
+
+    return totals;
+  }
+
+  private calculateSubtotals(rows: any[], headers: PivotHeader[], pivotConfig: PivotConfiguration): Record<string, any>[] {
+    const subtotals: Record<string, any>[] = [];
+    
+    // Group by row dimensions for subtotals
+    if (pivotConfig.rowDimensions.length > 0) {
+      const groupField = pivotConfig.rowDimensions[0].field;
+      const groups = this.groupBy(rows, groupField);
+      
+      Object.entries(groups).forEach(([groupValue, groupRows]) => {
+        const subtotal: Record<string, any> = {
+          groupField,
+          groupValue,
+          values: {}
+        };
+
+        headers.forEach(header => {
+          if (header.type === 'measure' && header.aggregationType) {
+            const values = groupRows.map(row => {
+              const cellData = row.cells.find((cell: any) => cell.header === header.id);
+              return cellData?.rawValue;
+            }).filter(val => val !== null && val !== undefined);
+
+            switch (header.aggregationType) {
+              case 'sum':
+                subtotal.values[header.id] = values.reduce((sum, val) => sum + (Number(val) || 0), 0);
+                break;
+              case 'average':
+                subtotal.values[header.id] = values.length > 0 
+                  ? values.reduce((sum, val) => sum + (Number(val) || 0), 0) / values.length 
+                  : 0;
+                break;
+              case 'count':
+                subtotal.values[header.id] = values.length;
+                break;
+            }
+          }
+        });
+
+        subtotals.push(subtotal);
+      });
+    }
+
+    return subtotals;
+  }
+
+  private groupBy(rows: any[], field: string): Record<string, any[]> {
+    return rows.reduce((groups, row) => {
+      const value = row[field];
+      if (!groups[value]) {
+        groups[value] = [];
+      }
+      groups[value].push(row);
+      return groups;
+    }, {} as Record<string, any[]>);
   }
 
   private async getExportData(dataSource: string, _filters: any[], _options: ExportOptions): Promise<any[] | undefined> {
