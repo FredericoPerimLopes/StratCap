@@ -12,7 +12,10 @@
     "lint": "eslint src --ext .ts",
     "migrate": "sequelize-cli db:migrate",
     "migrate:undo": "sequelize-cli db:migrate:undo",
-    "seed": "sequelize-cli db:seed:all"
+    "seed": "sequelize-cli db:seed:all",
+    "migrate:secrets": "ts-node scripts/migrate-to-secure-secrets.ts",
+    "secrets:check": "ts-node scripts/migrate-to-secure-secrets.ts --check",
+    "secrets:generate": "ts-node scripts/migrate-to-secure-secrets.ts --generate"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.9",

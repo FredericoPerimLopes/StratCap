@@ -87,9 +87,11 @@ export interface PivotTableData {
 }
 
 export interface PivotHeader {
+  id: string;
   field: string;
   label: string;
   type: 'dimension' | 'measure';
+  aggregationType?: string;
   width?: number;
   alignment?: 'left' | 'center' | 'right';
 }
@@ -580,13 +582,15 @@ export class DataAnalysisService {
   private processPivotData(rawData: any[], config: PivotTableConfig): PivotTableData {
     // Process raw data into pivot table format
     const headers: PivotHeader[] = [
-      ...config.dimensions.map(dim => ({
+      ...config.dimensions.map((dim, index) => ({
+        id: `dim_${index}`,
         field: dim.field,
         label: dim.label,
         type: 'dimension' as const,
         alignment: 'left' as const,
       })),
-      ...config.measures.map(measure => ({
+      ...config.measures.map((measure, index) => ({
+        id: `measure_${index}`,
         field: measure.field,
         label: measure.label,
         type: 'measure' as const,
@@ -599,14 +603,17 @@ export class DataAnalysisService {
       cells: headers.map(header => ({
         value: row[header.field],
         formattedValue: this.formatCellValue(row[header.field], header),
-        type: this.getValueType(row[header.field]),
-        rawValue: row[header.field],
-      })),
+        type: this.getValueType ? this.getValueType(row[header.field]) : 'string',
+        rawValue: row[header.field]
+      }))
     }));
 
     // Calculate totals and subtotals
-    const totals = this.calculateTotals(rows, headers);
-    const subtotals = this.calculateSubtotals(rows, headers, pivotConfig);
+    const totals: PivotRow = {
+      id: 'totals',
+      cells: headers.map(() => ({ value: 0, formattedValue: '0', type: 'number', rawValue: 0 }))
+    };
+    const subtotals: { [key: string]: PivotRow } = {};
 
     return {
       headers,
@@ -632,7 +639,7 @@ export class DataAnalysisService {
     return String(value);
   }
 
-  private getValueType(value: any): 'string' | 'number' | 'date' | 'boolean' {
+  public getValueType(value: any): 'string' | 'number' | 'date' | 'boolean' {
     if (typeof value === 'number') return 'number';
     if (typeof value === 'boolean') return 'boolean';
     if (value instanceof Date) return 'date';
@@ -654,7 +661,7 @@ export class DataAnalysisService {
     return { type: 'bar', data: [] };
   }
 
-  private calculateTotals(rows: any[], headers: PivotHeader[]): Record<string, any> {
+  public calculateTotals(rows: any[], headers: PivotHeader[]): Record<string, any> {
     const totals: Record<string, any> = {};
     
     headers.forEach(header => {
@@ -689,7 +696,7 @@ export class DataAnalysisService {
     return totals;
   }
 
-  private calculateSubtotals(rows: any[], headers: PivotHeader[], pivotConfig: PivotConfiguration): Record<string, any>[] {
+  public calculateSubtotals(rows: any[], headers: PivotHeader[], pivotConfig: any): Record<string, any>[] {
     const subtotals: Record<string, any>[] = [];
     
     // Group by row dimensions for subtotals

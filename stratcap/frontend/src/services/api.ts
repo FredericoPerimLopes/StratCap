@@ -455,4 +455,563 @@ export const investorTransferAPI = {
   }) => api.post<APIResponse>(`/investor-transfers/${transferId}/notify`, data),
 };
 
+// Credit Facility API
+export const creditFacilityAPI = {
+  // Credit Facility Management
+  getAll: (params?: { page?: number; limit?: number; search?: string; status?: string }) =>
+    api.get<APIResponse<any[]>>('/credit-facilities', { params }),
+
+  getById: (id: number) => api.get<APIResponse<any>>(`/credit-facilities/${id}`),
+
+  create: (data: any) => api.post<APIResponse<any>>('/credit-facilities', data),
+
+  update: (id: number, data: any) => api.patch<APIResponse<any>>(`/credit-facilities/${id}`, data),
+
+  delete: (id: number) => api.delete<APIResponse>(`/credit-facilities/${id}`),
+
+  // Drawdown Operations
+  createDrawdown: (facilityId: number, data: {
+    amount: number;
+    requestedDate: string;
+    purpose: string;
+    maturityDate?: string;
+    interestRate?: number;
+  }) => api.post<APIResponse<any>>(`/credit-facilities/${facilityId}/drawdowns`, data),
+
+  getDrawdowns: (facilityId: number, params?: { page?: number; limit?: number }) =>
+    api.get<APIResponse<any[]>>(`/credit-facilities/${facilityId}/drawdowns`, { params }),
+
+  approveDrawdown: (drawdownId: number) => 
+    api.post<APIResponse>(`/credit-facilities/drawdowns/${drawdownId}/approve`),
+
+  executeDrawdown: (drawdownId: number) => 
+    api.post<APIResponse>(`/credit-facilities/drawdowns/${drawdownId}/execute`),
+
+  // Paydown Operations
+  createPaydown: (facilityId: number, data: {
+    amount: number;
+    paydownDate: string;
+    paydownType: 'principal' | 'interest' | 'both';
+    accountingDate?: string;
+  }) => api.post<APIResponse<any>>(`/credit-facilities/${facilityId}/paydowns`, data),
+
+  getPaydowns: (facilityId: number, params?: { page?: number; limit?: number }) =>
+    api.get<APIResponse<any[]>>(`/credit-facilities/${facilityId}/paydowns`, { params }),
+
+  // Outstanding Balance and Reporting
+  getOutstandingBalance: (facilityId: number, asOfDate?: string) =>
+    api.get<APIResponse<any>>(`/credit-facilities/${facilityId}/balance`, { 
+      params: { asOfDate } 
+    }),
+
+  getUtilizationReport: (facilityId: number, params?: {
+    startDate?: string;
+    endDate?: string;
+  }) => api.get<APIResponse<any>>(`/credit-facilities/${facilityId}/utilization`, { params }),
+
+  // Interest Calculations
+  calculateInterest: (facilityId: number, data: {
+    startDate: string;
+    endDate: string;
+    principalAmount?: number;
+  }) => api.post<APIResponse<any>>(`/credit-facilities/${facilityId}/interest/calculate`, data),
+
+  // Covenant Monitoring
+  getCovenants: (facilityId: number) =>
+    api.get<APIResponse<any[]>>(`/credit-facilities/${facilityId}/covenants`),
+
+  checkCovenantCompliance: (facilityId: number, asOfDate: string) =>
+    api.post<APIResponse<any>>(`/credit-facilities/${facilityId}/covenants/check`, { asOfDate }),
+};
+
+// Document Management API
+export const documentAPI = {
+  // Document CRUD
+  getAll: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+    entityType?: string;
+    entityId?: number;
+  }) => api.get<APIResponse<any[]>>('/documents', { params }),
+
+  getById: (id: number) => api.get<APIResponse<any>>(`/documents/${id}`),
+
+  upload: (data: FormData) =>
+    api.post<APIResponse<any>>('/documents/upload', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+
+  update: (id: number, data: {
+    name?: string;
+    description?: string;
+    category?: string;
+    tags?: string[];
+  }) => api.patch<APIResponse<any>>(`/documents/${id}`, data),
+
+  delete: (id: number) => api.delete<APIResponse>(`/documents/${id}`),
+
+  download: (id: number) => api.get(`/documents/${id}/download`, { responseType: 'blob' }),
+
+  // Document Organization
+  createFolder: (data: { name: string; parentId?: number; description?: string }) =>
+    api.post<APIResponse<any>>('/documents/folders', data),
+
+  getFolders: (parentId?: number) =>
+    api.get<APIResponse<any[]>>('/documents/folders', { params: { parentId } }),
+
+  moveDocument: (documentId: number, folderId: number) =>
+    api.patch<APIResponse>(`/documents/${documentId}/move`, { folderId }),
+
+  // Document Sharing and Permissions
+  shareDocument: (documentId: number, data: {
+    recipientEmails: string[];
+    permissions: string[];
+    expirationDate?: string;
+  }) => api.post<APIResponse<any>>(`/documents/${documentId}/share`, data),
+
+  getSharedDocuments: () => api.get<APIResponse<any[]>>('/documents/shared'),
+
+  // Document Versioning
+  getVersions: (documentId: number) =>
+    api.get<APIResponse<any[]>>(`/documents/${documentId}/versions`),
+
+  createVersion: (documentId: number, file: FormData) =>
+    api.post<APIResponse<any>>(`/documents/${documentId}/versions`, file, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+
+  // Search and Metadata
+  search: (query: string, filters?: {
+    category?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    entityType?: string;
+  }) => api.get<APIResponse<any[]>>('/documents/search', { 
+    params: { query, ...filters } 
+  }),
+
+  extractMetadata: (documentId: number) =>
+    api.post<APIResponse<any>>(`/documents/${documentId}/extract-metadata`),
+};
+
+// Global Entity API
+export const globalEntityAPI = {
+  // Entity Management
+  getAll: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    entityType?: string;
+    jurisdiction?: string;
+    status?: string;
+  }) => api.get<APIResponse<any[]>>('/global-entities', { params }),
+
+  getById: (id: number) => api.get<APIResponse<any>>(`/global-entities/${id}`),
+
+  create: (data: {
+    name: string;
+    entityType: string;
+    jurisdiction: string;
+    taxId?: string;
+    registrationNumber?: string;
+    address: any;
+    incorporationDate?: string;
+    status?: string;
+  }) => api.post<APIResponse<any>>('/global-entities', data),
+
+  update: (id: number, data: any) => 
+    api.patch<APIResponse<any>>(`/global-entities/${id}`, data),
+
+  delete: (id: number) => api.delete<APIResponse>(`/global-entities/${id}`),
+
+  // Entity Relationships
+  getRelationships: (entityId: number) =>
+    api.get<APIResponse<any[]>>(`/global-entities/${entityId}/relationships`),
+
+  createRelationship: (entityId: number, data: {
+    relatedEntityId: number;
+    relationshipType: string;
+    startDate: string;
+    endDate?: string;
+    description?: string;
+  }) => api.post<APIResponse<any>>(`/global-entities/${entityId}/relationships`, data),
+
+  updateRelationship: (entityId: number, relationshipId: number, data: any) =>
+    api.patch<APIResponse<any>>(`/global-entities/${entityId}/relationships/${relationshipId}`, data),
+
+  deleteRelationship: (entityId: number, relationshipId: number) =>
+    api.delete<APIResponse>(`/global-entities/${entityId}/relationships/${relationshipId}`),
+
+  // Ownership Structure
+  getOwnershipStructure: (entityId: number, asOfDate?: string) =>
+    api.get<APIResponse<any>>(`/global-entities/${entityId}/ownership`, {
+      params: { asOfDate }
+    }),
+
+  updateOwnership: (entityId: number, data: {
+    owners: Array<{
+      ownerId: number;
+      ownershipPercentage: number;
+      ownershipType: string;
+      effectiveDate: string;
+    }>;
+  }) => api.post<APIResponse<any>>(`/global-entities/${entityId}/ownership`, data),
+
+  // Compliance and Reporting
+  getComplianceStatus: (entityId: number) =>
+    api.get<APIResponse<any>>(`/global-entities/${entityId}/compliance`),
+
+  generateReport: (entityId: number, reportType: string, params?: any) =>
+    api.post<APIResponse<any>>(`/global-entities/${entityId}/reports/${reportType}`, params),
+
+  // Entity Directory Features
+  searchDirectory: (query: string, filters?: {
+    entityType?: string;
+    jurisdiction?: string;
+    status?: string;
+  }) => api.get<APIResponse<any[]>>('/global-entities/directory/search', {
+    params: { query, ...filters }
+  }),
+
+  getEntityHierarchy: (rootEntityId: number) =>
+    api.get<APIResponse<any>>(`/global-entities/${rootEntityId}/hierarchy`),
+};
+
+// Data Analysis API  
+export const dataAnalysisAPI = {
+  // Pivot Table Operations
+  createPivotTable: (data: {
+    name: string;
+    dataSource: string;
+    configuration: {
+      rows: string[];
+      columns: string[];
+      values: string[];
+      filters?: any[];
+      aggregations?: any[];
+    };
+    schedule?: {
+      frequency: string;
+      time?: string;
+      recipients?: string[];
+    };
+  }) => api.post<APIResponse<any>>('/data-analysis/pivot-tables', data),
+
+  getPivotTables: (params?: { page?: number; limit?: number; search?: string }) =>
+    api.get<APIResponse<any[]>>('/data-analysis/pivot-tables', { params }),
+
+  getPivotTableById: (id: number) => 
+    api.get<APIResponse<any>>(`/data-analysis/pivot-tables/${id}`),
+
+  updatePivotTable: (id: number, data: any) =>
+    api.patch<APIResponse<any>>(`/data-analysis/pivot-tables/${id}`, data),
+
+  deletePivotTable: (id: number) => 
+    api.delete<APIResponse>(`/data-analysis/pivot-tables/${id}`),
+
+  executePivotTable: (id: number, params?: {
+    filters?: any[];
+    dateRange?: { start: string; end: string };
+  }) => api.post<APIResponse<any>>(`/data-analysis/pivot-tables/${id}/execute`, params),
+
+  // Data Sources
+  getDataSources: () => api.get<APIResponse<any[]>>('/data-analysis/data-sources'),
+
+  getDataSourceSchema: (sourceId: string) =>
+    api.get<APIResponse<any>>(`/data-analysis/data-sources/${sourceId}/schema`),
+
+  previewData: (sourceId: string, params?: {
+    limit?: number;
+    filters?: any[];
+  }) => api.get<APIResponse<any>>(`/data-analysis/data-sources/${sourceId}/preview`, { params }),
+
+  // Custom Queries
+  executeCustomQuery: (data: {
+    query: string;
+    dataSource: string;
+    parameters?: any[];
+  }) => api.post<APIResponse<any>>('/data-analysis/custom-query', data),
+
+  validateQuery: (data: { query: string; dataSource: string }) =>
+    api.post<APIResponse<any>>('/data-analysis/custom-query/validate', data),
+
+  // Export and Sharing
+  exportPivotTable: (id: number, format: 'excel' | 'csv' | 'pdf') =>
+    api.get(`/data-analysis/pivot-tables/${id}/export/${format}`, { responseType: 'blob' }),
+
+  sharePivotTable: (id: number, data: {
+    recipients: string[];
+    includeData: boolean;
+    expirationDate?: string;
+  }) => api.post<APIResponse<any>>(`/data-analysis/pivot-tables/${id}/share`, data),
+
+  // Analytics and Insights
+  getInsights: (data: {
+    dataSource: string;
+    dimensions: string[];
+    metrics: string[];
+    dateRange?: { start: string; end: string };
+  }) => api.post<APIResponse<any>>('/data-analysis/insights', data),
+
+  getTrendAnalysis: (data: {
+    dataSource: string;
+    metric: string;
+    dimension: string;
+    period: string;
+  }) => api.post<APIResponse<any>>('/data-analysis/trends', data),
+};
+
+// General Ledger API
+export const generalLedgerAPI = {
+  // Chart of Accounts
+  getChartOfAccounts: (params?: { 
+    accountType?: string; 
+    status?: string;
+    level?: number;
+  }) => api.get<APIResponse<any[]>>('/general-ledger/accounts', { params }),
+
+  getAccountById: (id: number) => 
+    api.get<APIResponse<any>>(`/general-ledger/accounts/${id}`),
+
+  createAccount: (data: {
+    accountCode: string;
+    accountName: string;
+    accountType: string;
+    parentAccountId?: number;
+    description?: string;
+    isActive: boolean;
+  }) => api.post<APIResponse<any>>('/general-ledger/accounts', data),
+
+  updateAccount: (id: number, data: any) =>
+    api.patch<APIResponse<any>>(`/general-ledger/accounts/${id}`, data),
+
+  deactivateAccount: (id: number) =>
+    api.patch<APIResponse>(`/general-ledger/accounts/${id}/deactivate`),
+
+  // Journal Entries
+  getJournalEntries: (params?: {
+    page?: number;
+    limit?: number;
+    dateFrom?: string;
+    dateTo?: string;
+    accountId?: number;
+    status?: string;
+    reference?: string;
+  }) => api.get<APIResponse<any[]>>('/general-ledger/journal-entries', { params }),
+
+  getJournalEntryById: (id: number) =>
+    api.get<APIResponse<any>>(`/general-ledger/journal-entries/${id}`),
+
+  createJournalEntry: (data: {
+    entryDate: string;
+    reference: string;
+    description: string;
+    totalAmount: number;
+    lines: Array<{
+      accountId: number;
+      debitAmount?: number;
+      creditAmount?: number;
+      description?: string;
+      reference?: string;
+    }>;
+    attachments?: number[];
+  }) => api.post<APIResponse<any>>('/general-ledger/journal-entries', data),
+
+  updateJournalEntry: (id: number, data: any) =>
+    api.patch<APIResponse<any>>(`/general-ledger/journal-entries/${id}`, data),
+
+  deleteJournalEntry: (id: number) =>
+    api.delete<APIResponse>(`/general-ledger/journal-entries/${id}`),
+
+  postJournalEntry: (id: number) =>
+    api.post<APIResponse>(`/general-ledger/journal-entries/${id}/post`),
+
+  reverseJournalEntry: (id: number, data: { reason: string; reversalDate: string }) =>
+    api.post<APIResponse<any>>(`/general-ledger/journal-entries/${id}/reverse`, data),
+
+  // Trial Balance
+  getTrialBalance: (params: {
+    asOfDate: string;
+    accountLevel?: number;
+    includeZeroBalances?: boolean;
+    accountTypes?: string[];
+  }) => api.get<APIResponse<any>>('/general-ledger/trial-balance', { params }),
+
+  getDetailedTrialBalance: (params: {
+    asOfDate: string;
+    accountId?: number;
+    includeTransactions?: boolean;
+  }) => api.get<APIResponse<any>>('/general-ledger/trial-balance/detailed', { params }),
+
+  // General Ledger Reports
+  getGeneralLedger: (params: {
+    accountId?: number;
+    dateFrom: string;
+    dateTo: string;
+    includeOpeningBalance?: boolean;
+  }) => api.get<APIResponse<any>>('/general-ledger/general-ledger', { params }),
+
+  getAccountBalance: (accountId: number, asOfDate: string) =>
+    api.get<APIResponse<any>>(`/general-ledger/accounts/${accountId}/balance`, {
+      params: { asOfDate }
+    }),
+
+  getAccountActivity: (accountId: number, params: {
+    dateFrom: string;
+    dateTo: string;
+    page?: number;
+    limit?: number;
+  }) => api.get<APIResponse<any[]>>(`/general-ledger/accounts/${accountId}/activity`, { params }),
+
+  // Financial Statements
+  getBalanceSheet: (params: {
+    asOfDate: string;
+    consolidate?: boolean;
+    entityIds?: number[];
+  }) => api.get<APIResponse<any>>('/general-ledger/balance-sheet', { params }),
+
+  getIncomeStatement: (params: {
+    startDate: string;
+    endDate: string;
+    consolidate?: boolean;
+    entityIds?: number[];
+  }) => api.get<APIResponse<any>>('/general-ledger/income-statement', { params }),
+
+  getCashFlowStatement: (params: {
+    startDate: string;
+    endDate: string;
+    method?: 'direct' | 'indirect';
+    consolidate?: boolean;
+  }) => api.get<APIResponse<any>>('/general-ledger/cash-flow', { params }),
+
+  // Period Management
+  getAccountingPeriods: () => 
+    api.get<APIResponse<any[]>>('/general-ledger/periods'),
+
+  createAccountingPeriod: (data: {
+    name: string;
+    startDate: string;
+    endDate: string;
+    fiscalYear: number;
+    status: string;
+  }) => api.post<APIResponse<any>>('/general-ledger/periods', data),
+
+  closePeriod: (periodId: number) =>
+    api.post<APIResponse>(`/general-ledger/periods/${periodId}/close`),
+
+  reopenPeriod: (periodId: number, data: { reason: string }) =>
+    api.post<APIResponse>(`/general-ledger/periods/${periodId}/reopen`, data),
+};
+
+// Configuration API
+export const configurationAPI = {
+  // System Settings
+  getSystemSettings: () => api.get<APIResponse<any>>('/configuration/system'),
+
+  updateSystemSettings: (data: {
+    organizationName?: string;
+    timezone?: string;
+    currency?: string;
+    fiscalYearEnd?: string;
+    dateFormat?: string;
+    decimalPrecision?: number;
+    features?: any;
+  }) => api.patch<APIResponse<any>>('/configuration/system', data),
+
+  // User Preferences
+  getUserPreferences: () => api.get<APIResponse<any>>('/configuration/preferences'),
+
+  updateUserPreferences: (data: {
+    language?: string;
+    timezone?: string;
+    dateFormat?: string;
+    numberFormat?: string;
+    dashboardLayout?: any;
+    notifications?: any;
+  }) => api.patch<APIResponse<any>>('/configuration/preferences', data),
+
+  // Application Configuration
+  getFeatureFlags: () => api.get<APIResponse<any>>('/configuration/features'),
+
+  updateFeatureFlag: (flagName: string, enabled: boolean) =>
+    api.patch<APIResponse>(`/configuration/features/${flagName}`, { enabled }),
+
+  // Email Templates
+  getEmailTemplates: () => api.get<APIResponse<any[]>>('/configuration/email-templates'),
+
+  getEmailTemplate: (templateId: string) =>
+    api.get<APIResponse<any>>(`/configuration/email-templates/${templateId}`),
+
+  updateEmailTemplate: (templateId: string, data: {
+    subject?: string;
+    body?: string;
+    variables?: string[];
+  }) => api.patch<APIResponse<any>>(`/configuration/email-templates/${templateId}`, data),
+
+  // Notification Settings
+  getNotificationSettings: () => 
+    api.get<APIResponse<any>>('/configuration/notifications'),
+
+  updateNotificationSettings: (data: {
+    emailNotifications?: boolean;
+    smsNotifications?: boolean;
+    inAppNotifications?: boolean;
+    channels?: any;
+  }) => api.patch<APIResponse<any>>('/configuration/notifications', data),
+
+  // Integration Settings
+  getIntegrations: () => api.get<APIResponse<any[]>>('/configuration/integrations'),
+
+  getIntegration: (integrationId: string) =>
+    api.get<APIResponse<any>>(`/configuration/integrations/${integrationId}`),
+
+  updateIntegration: (integrationId: string, data: any) =>
+    api.patch<APIResponse<any>>(`/configuration/integrations/${integrationId}`, data),
+
+  testIntegration: (integrationId: string) =>
+    api.post<APIResponse<any>>(`/configuration/integrations/${integrationId}/test`),
+
+  // Audit Configuration
+  getAuditSettings: () => api.get<APIResponse<any>>('/configuration/audit'),
+
+  updateAuditSettings: (data: {
+    retentionPeriod?: number;
+    logLevel?: string;
+    enableUserTracking?: boolean;
+    enableDataChanges?: boolean;
+  }) => api.patch<APIResponse<any>>('/configuration/audit', data),
+
+  // Backup and Maintenance
+  getBackupSettings: () => api.get<APIResponse<any>>('/configuration/backup'),
+
+  updateBackupSettings: (data: {
+    schedule?: string;
+    retention?: number;
+    enabled?: boolean;
+    destination?: string;
+  }) => api.patch<APIResponse<any>>('/configuration/backup', data),
+
+  createBackup: () => api.post<APIResponse<any>>('/configuration/backup/create'),
+
+  getBackupHistory: () => api.get<APIResponse<any[]>>('/configuration/backup/history'),
+
+  // Performance and Monitoring
+  getPerformanceSettings: () => 
+    api.get<APIResponse<any>>('/configuration/performance'),
+
+  updatePerformanceSettings: (data: {
+    cacheTimeout?: number;
+    maxQueryTime?: number;
+    enableMetrics?: boolean;
+    alertingEnabled?: boolean;
+  }) => api.patch<APIResponse<any>>('/configuration/performance', data),
+
+  getSystemHealth: () => api.get<APIResponse<any>>('/configuration/health'),
+
+  getSystemMetrics: (timeRange?: string) =>
+    api.get<APIResponse<any>>('/configuration/metrics', { params: { timeRange } }),
+};
+
 export default api;

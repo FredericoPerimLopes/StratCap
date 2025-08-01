@@ -1,7 +1,42 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import { secretsManager } from './secrets';
 
 dotenv.config({ path: path.join(__dirname, '../../.env') });
+
+// Initialize secrets manager
+let secretsInitialized = false;
+const initializeSecrets = async () => {
+  if (!secretsInitialized) {
+    await secretsManager.initialize();
+    secretsInitialized = true;
+  }
+};
+
+// Lazy load secrets
+const getSecureConfig = () => {
+  if (!secretsInitialized) {
+    throw new Error('Secrets not initialized. Call initializeSecrets() first.');
+  }
+  
+  const secrets = secretsManager.getSecret.bind(secretsManager);
+  
+  return {
+    jwt: {
+      secret: secrets('jwt.secret'),
+      refreshSecret: secrets('jwt.refreshSecret')
+    },
+    session: {
+      secret: secrets('session.secret')
+    },
+    database: {
+      password: secrets('database.password')
+    },
+    email: {
+      smtpPassword: secrets('email.smtpPassword')
+    }
+  };
+};
 
 export const config = {
   env: process.env.NODE_ENV || 'development',
@@ -12,18 +47,42 @@ export const config = {
     port: parseInt(process.env.DB_PORT || '5432', 10),
     name: process.env.DB_NAME || 'stratcap_db',
     user: process.env.DB_USER || 'stratcap_user',
-    password: process.env.DB_PASSWORD || '',
+    get password() {
+      try {
+        return getSecureConfig().database.password;
+      } catch {
+        return process.env.DB_PASSWORD || '';
+      }
+    },
   },
   
   jwt: {
-    secret: process.env.JWT_SECRET || 'your-secret-key',
+    get secret() {
+      try {
+        return getSecureConfig().jwt.secret;
+      } catch {
+        return process.env.JWT_SECRET || 'development-secret-key';
+      }
+    },
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret',
+    get refreshSecret() {
+      try {
+        return getSecureConfig().jwt.refreshSecret;
+      } catch {
+        return process.env.JWT_REFRESH_SECRET || 'development-refresh-secret';
+      }
+    },
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
   },
   
   session: {
-    secret: process.env.SESSION_SECRET || 'your-session-secret',
+    get secret() {
+      try {
+        return getSecureConfig().session.secret;
+      } catch {
+        return process.env.SESSION_SECRET || 'development-session-secret';
+      }
+    },
   },
   
   cors: {
@@ -38,7 +97,13 @@ export const config = {
       secure: false,
       auth: {
         user: process.env.SMTP_USER || '',
-        pass: process.env.SMTP_PASS || '',
+        get pass() {
+          try {
+            return getSecureConfig().email.smtpPassword;
+          } catch {
+            return process.env.SMTP_PASS || '';
+          }
+        },
       },
     },
     from: process.env.EMAIL_FROM || 'noreply@stratcap.com',
@@ -64,4 +129,5 @@ export const config = {
   },
 };
 
+export { initializeSecrets };
 export default config;

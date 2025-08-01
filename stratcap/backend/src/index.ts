@@ -1,10 +1,15 @@
 import app from './app';
-import { config } from './config/config';
+import { config, initializeSecrets } from './config/config';
 import { connectDatabase } from './db/database';
 import logger from './utils/logger';
 
 const startServer = async () => {
   try {
+    // Initialize secure secrets management
+    logger.info('Initializing secrets management...');
+    await initializeSecrets();
+    logger.info('Secrets management initialized successfully');
+
     // Connect to database
     await connectDatabase();
 

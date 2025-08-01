@@ -22,6 +22,11 @@ import WaterfallTier from './WaterfallTier';
 import DistributionEvent from './DistributionEvent';
 import TierAudit from './TierAudit';
 import InvestorTransfer from './InvestorTransfer';
+import Document from './Document';
+import GlobalEntity from './GlobalEntity';
+import AuditLog from './AuditLog';
+import NotificationQueue from './NotificationQueue';
+import SystemConfiguration from './SystemConfiguration';
 
 const models = {
   User,
@@ -47,6 +52,11 @@ const models = {
   DistributionEvent,
   TierAudit,
   InvestorTransfer,
+  Document,
+  GlobalEntity,
+  AuditLog,
+  NotificationQueue,
+  SystemConfiguration,
 };
 
 // Initialize associations
@@ -78,6 +88,11 @@ export {
   DistributionEvent,
   TierAudit,
   InvestorTransfer,
+  Document,
+  GlobalEntity,
+  AuditLog,
+  NotificationQueue,
+  SystemConfiguration,
 };
 
 export default models;

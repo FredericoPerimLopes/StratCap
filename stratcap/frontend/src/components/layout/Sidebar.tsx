@@ -14,6 +14,9 @@ import {
   CalculatorIcon,
   BookOpenIcon,
   TableCellsIcon,
+  CurrencyDollarIcon,
+  WrenchScrewdriverIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 import { RootState } from '../../store/store';
 import { toggleSidebar } from '../../store/slices/uiSlice';
@@ -30,16 +33,19 @@ const navigation = [
   },
   { name: 'Investors', href: '/investors', icon: UsersIcon },
   { name: 'Capital Activities', href: '/capital-activities', icon: ArrowsRightLeftIcon },
+  { name: 'Fee Management', href: '/fee-management', icon: CurrencyDollarIcon },
   { name: 'Waterfall', href: '/waterfall', icon: CalculatorIcon },
   { name: 'Credit Facilities', href: '/credit-facilities', icon: CreditCardIcon },
   { name: 'Global Entities', href: '/global-entities', icon: GlobeAltIcon },
   { name: 'Data Analysis', href: '/data-analysis', icon: TableCellsIcon },
   { name: 'General Ledger', href: '/general-ledger/journal-entries', icon: BookOpenIcon },
+  { name: 'Documents', href: '/documents', icon: DocumentTextIcon },
   { name: 'Reports', href: '/reports', icon: ChartBarIcon },
   { 
     name: 'Configuration', 
     icon: CogIcon,
     children: [
+      { name: 'Fund Configuration', href: '/fund-configuration' },
       { name: 'System Settings', href: '/configuration/system' },
       { name: 'User Preferences', href: '/configuration/preferences' },
     ]

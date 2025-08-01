@@ -244,9 +244,15 @@ class DistributionAllocationService {
       gpCommitment = await Commitment.create({
         fundId: calculation.fundId,
         investorEntityId: gpEntity.id,
-        amount: '0', // GP typically doesn't have capital commitment
+        investorClassId: 1, // Default class ID for GP
+        commitmentAmount: '0', // GP typically doesn't have capital commitment
         status: 'active',
         commitmentDate: new Date(),
+        capitalCalled: '0',
+        capitalReturned: '0',
+        unfundedCommitment: '0',
+        preferredReturn: '0',
+        carriedInterest: '0',
         metadata: {
           isGPCommitment: true
         }

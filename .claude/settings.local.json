@@ -18,7 +18,9 @@
       "mcp__ide__getDiagnostics",
       "Bash(npm run type-check:*)",
       "Bash(npm run lint)",
-      "Bash(npm outdated)"
+      "Bash(npm outdated)",
+      "Bash(npm audit:*)",
+      "Bash(touch:*)"
     ],
     "deny": []
   }

@@ -1,8 +1,10 @@
 import { Sequelize } from 'sequelize';
 import { config } from '../config/config';
+import { databaseEncryptionConfig } from '../utils/encryption';
 
-const sequelize = new Sequelize({
-  dialect: 'postgres',
+// Merge encryption config with base config
+const databaseConfig = {
+  dialect: 'postgres' as const,
   host: config.database.host,
   port: config.database.port,
   database: config.database.name,
@@ -14,12 +16,23 @@ const sequelize = new Sequelize({
     underscored: true,
   },
   pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
+    max: parseInt(process.env.DB_POOL_MAX || '25'),
+    min: parseInt(process.env.DB_POOL_MIN || '5'),
+    acquire: parseInt(process.env.DB_POOL_ACQUIRE_TIMEOUT || '60000'),
+    idle: parseInt(process.env.DB_POOL_IDLE_TIMEOUT || '30000'),
   },
-});
+  // SSL/TLS configuration for encrypted connections
+  ...(config.env === 'production' && {
+    dialectOptions: databaseEncryptionConfig.dialectOptions,
+  }),
+  // Query timeout - removed as incompatible with Sequelize Options type
+  // Retry configuration
+  retry: {
+    max: 3,
+  },
+};
+
+const sequelize = new Sequelize(databaseConfig);
 
 export const connectDatabase = async (): Promise<void> => {
   try {

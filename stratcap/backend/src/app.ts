@@ -23,6 +23,8 @@ import analyticsRoutes from './routes/analytics';
 import creditFacilityRoutes from './routes/creditFacilityRoutes';
 import dataAnalysisRoutes from './routes/dataAnalysisRoutes';
 import generalLedgerRoutes from './routes/generalLedgerRoutes';
+import documentRoutes from './routes/document';
+import globalEntityRoutes from './routes/globalEntityRoutes';
 
 const app: Application = express();
 
@@ -67,6 +69,20 @@ app.get('/health', (_req, res) => {
   });
 });
 
+// Secrets health check (admin only)
+app.get('/health/secrets', (_req, res) => {
+  // In production, add authentication check here
+  const { secretsManager } = require('./config/secrets');
+  const secretsHealth = secretsManager.getHealthStatus();
+  
+  res.status(secretsHealth.healthy ? 200 : 503).json({
+    success: secretsHealth.healthy,
+    message: secretsHealth.healthy ? 'All secrets are healthy' : 'Some secrets need attention',
+    issues: secretsHealth.issues,
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/fund-families', fundFamilyRoutes);
@@ -82,6 +98,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/credit-facilities', creditFacilityRoutes);
 app.use('/api/data-analysis', dataAnalysisRoutes);
 app.use('/api/general-ledger', generalLedgerRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/global-entities', globalEntityRoutes);
 
 // Error handling
 app.use(notFound);

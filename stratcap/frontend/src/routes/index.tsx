@@ -147,6 +147,19 @@ const AppRoutes: React.FC = () => {
             <Route path=":id/edit" element={<FundForm />} />
           </Route>
 
+          {/* Fee Management */}
+          <Route path="fee-management">
+            <Route index element={<FeeManagementDashboard />} />
+            <Route path="calculation" element={<FeeCalculationForm />} />
+          </Route>
+
+          {/* Fund Configuration */}
+          <Route path="fund-configuration">
+            <Route index element={<FundConfigurationList />} />
+            <Route path="new" element={<FundConfigurationWizard />} />
+            <Route path=":id/edit" element={<FundConfigurationWizard />} />
+          </Route>
+
           {/* Investor Management */}
           <Route path="investors">
             <Route index element={<InvestorList />} />
@@ -219,6 +232,14 @@ const AppRoutes: React.FC = () => {
             <Route path="builder" element={<ReportBuilder />} />
             <Route path="preview" element={<ReportPreview />} />
             <Route path=":id" element={<ReportViewer />} />
+          </Route>
+
+          {/* Documents */}
+          <Route path="documents">
+            <Route index element={<div>Document List</div>} />
+            <Route path="upload" element={<div>Document Upload</div>} />
+            <Route path="approvals" element={<div>Document Approvals</div>} />
+            <Route path=":id" element={<div>Document Details</div>} />
           </Route>
 
           {/* Configuration */}

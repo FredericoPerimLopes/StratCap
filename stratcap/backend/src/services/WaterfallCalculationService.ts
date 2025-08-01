@@ -585,8 +585,9 @@ class WaterfallCalculationService {
     let totalPreferredPaid = new Decimal(0);
     
     for (const calculation of previousCalculations) {
-      if (calculation.distributionEvents && calculation.distributionEvents.length > 0) {
-        for (const event of calculation.distributionEvents) {
+      const calcWithEvents = calculation as any; // Type assertion for associated data
+      if (calcWithEvents.distributionEvents && calcWithEvents.distributionEvents.length > 0) {
+        for (const event of calcWithEvents.distributionEvents) {
           totalPreferredPaid = totalPreferredPaid.plus(new Decimal(event.distributionAmount));
         }
       }
@@ -659,7 +660,6 @@ class WaterfallCalculationService {
   }
 }
 
-// Import Op for Sequelize operators
-const { Op } = require('sequelize');
+// Op is already imported at the top of the file
 
 export default WaterfallCalculationService;
