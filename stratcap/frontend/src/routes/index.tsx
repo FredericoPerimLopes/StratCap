@@ -115,8 +115,8 @@ const AppRoutes: React.FC = () => {
         
         {/* Auth Routes */}
         <Route path="/auth" element={<AuthLayoutWrapper />}>
-          <Route path="login" element={<SimpleLogin />} />
-          <Route path="login-legacy" element={<Login />} />
+          <Route path="login" element={<Login />} />
+          <Route path="login-simple" element={<SimpleLogin />} />
           <Route path="register" element={<UserRegistration />} />
           <Route path="registration-success" element={<RegistrationSuccess />} />
           <Route path="setup-password" element={<SetupPassword />} />

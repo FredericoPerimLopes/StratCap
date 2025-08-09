@@ -1,130 +1,302 @@
-import React, { Fragment } from 'react';
-import { Menu, Transition } from '@headlessui/react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
-  BellIcon,
-  UserCircleIcon,
-  Cog6ToothIcon,
-  ArrowRightOnRectangleIcon,
-} from '@heroicons/react/24/outline';
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
+  Badge,
+  Box,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  useTheme,
+  alpha
+} from '@mui/material';
+import {
+  Notifications as NotificationsIcon,
+  Person as PersonIcon,
+  Settings as SettingsIcon,
+  Logout as LogoutIcon,
+  AccountCircle as AccountCircleIcon
+} from '@mui/icons-material';
+
 import { RootState } from '../../store/store';
 import { logout } from '../../store/slices/authSlice';
 
 export const Header: React.FC = () => {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { notifications } = useSelector((state: RootState) => state.ui);
+  const { sidebarOpen } = useSelector((state: RootState) => state.ui);
+  
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
+  
+  // Mock notifications count - replace with actual notification state
+  const unreadNotifications = 3;
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleNotificationOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationAnchor(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationAnchor(null);
+  };
 
   const handleLogout = async () => {
+    handleProfileMenuClose();
     await dispatch(logout() as any);
     navigate('/login');
   };
 
-  const unreadCount = notifications.length;
+  const handleProfile = () => {
+    handleProfileMenuClose();
+    navigate('/profile');
+  };
+
+  const handleSettings = () => {
+    handleProfileMenuClose();
+    navigate('/settings');
+  };
+
+  const drawerWidth = 280;
+  const collapsedWidth = 72;
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Fund Administration Platform
-            </h2>
-          </div>
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        width: `calc(100% - ${sidebarOpen ? drawerWidth : collapsedWidth}px)`,
+        ml: `${sidebarOpen ? drawerWidth : collapsedWidth}px`,
+        transition: 'width 0.3s ease-in-out, margin-left 0.3s ease-in-out',
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.text.primary,
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        boxShadow: `0 1px 3px ${alpha(theme.palette.common.black, 0.1)}`,
+      }}
+    >
+      <Toolbar sx={{ px: { xs: 2, sm: 3 }, py: 1 }}>
+        {/* Page Title */}
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            component="h1"
+            sx={{
+              fontWeight: 600,
+              color: theme.palette.text.primary,
+              fontSize: '1.125rem',
+            }}
+          >
+            Fund Administration Platform
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              color: theme.palette.text.secondary,
+              fontSize: '0.75rem',
+            }}
+          >
+            Professional Portfolio Management
+          </Typography>
+        </Box>
 
-          <div className="flex items-center space-x-4">
-            {/* Notifications */}
-            <button
-              type="button"
-              className="relative p-1 text-gray-400 hover:text-gray-500"
+        {/* Actions */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Notifications */}
+          <IconButton
+            size="large"
+            color="inherit"
+            onClick={handleNotificationOpen}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.action.hover, 0.1),
+              },
+            }}
+          >
+            <Badge badgeContent={unreadNotifications} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+
+          {/* User Profile */}
+          <IconButton
+            size="large"
+            edge="end"
+            onClick={handleProfileMenuOpen}
+            sx={{
+              ml: 1,
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.action.hover, 0.1),
+              },
+            }}
+          >
+            <Avatar
+              sx={{
+                width: 40,
+                height: 40,
+                bgcolor: theme.palette.primary.main,
+                fontSize: '0.875rem',
+                fontWeight: 600,
+              }}
             >
-              <span className="sr-only">View notifications</span>
-              <BellIcon className="h-6 w-6" aria-hidden="true" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </button>
+              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            </Avatar>
+          </IconButton>
+        </Box>
 
-            {/* Profile dropdown */}
-            <Menu as="div" className="relative ml-3">
-              <div>
-                <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-                  <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full bg-primary-500 flex items-center justify-center">
-                    <span className="text-sm font-medium text-white">
-                      {user?.firstName?.[0]}{user?.lastName?.[0]}
-                    </span>
-                  </div>
-                </Menu.Button>
-              </div>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">
-                      {user?.firstName} {user?.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500">{user?.email}</p>
-                  </div>
-                  
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        onClick={() => navigate('/settings')}
-                        className={`${
-                          active ? 'bg-gray-100' : ''
-                        } flex w-full px-4 py-2 text-sm text-gray-700`}
-                      >
-                        <UserCircleIcon className="mr-3 h-5 w-5" />
-                        Your Profile
-                      </button>
-                    )}
-                  </Menu.Item>
-                  
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        onClick={() => navigate('/settings')}
-                        className={`${
-                          active ? 'bg-gray-100' : ''
-                        } flex w-full px-4 py-2 text-sm text-gray-700`}
-                      >
-                        <Cog6ToothIcon className="mr-3 h-5 w-5" />
-                        Settings
-                      </button>
-                    )}
-                  </Menu.Item>
-                  
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        onClick={handleLogout}
-                        className={`${
-                          active ? 'bg-gray-100' : ''
-                        } flex w-full px-4 py-2 text-sm text-gray-700`}
-                      >
-                        <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5" />
-                        Sign out
-                      </button>
-                    )}
-                  </Menu.Item>
-                </Menu.Items>
-              </Transition>
-            </Menu>
-          </div>
-        </div>
-      </div>
-    </header>
+        {/* Profile Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleProfileMenuClose}
+          onClick={handleProfileMenuClose}
+          PaperProps={{
+            elevation: 3,
+            sx: {
+              mt: 1.5,
+              minWidth: 220,
+              borderRadius: 2,
+              border: `1px solid ${theme.palette.divider}`,
+              '& .MuiMenuItem-root': {
+                px: 2,
+                py: 1.5,
+                borderRadius: 1,
+                mx: 1,
+                my: 0.5,
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                },
+              },
+            },
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          {/* User Info */}
+          <Box sx={{ px: 2, py: 2 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+              {user?.firstName} {user?.lastName}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {user?.email}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+              {user?.role}
+            </Typography>
+          </Box>
+          
+          <Divider sx={{ my: 1 }} />
+
+          <MenuItem onClick={handleProfile}>
+            <ListItemIcon>
+              <PersonIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Your Profile</ListItemText>
+          </MenuItem>
+
+          <MenuItem onClick={handleSettings}>
+            <ListItemIcon>
+              <SettingsIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Settings</ListItemText>
+          </MenuItem>
+
+          <Divider sx={{ my: 1 }} />
+
+          <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+            <ListItemIcon>
+              <LogoutIcon fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText>Sign Out</ListItemText>
+          </MenuItem>
+        </Menu>
+
+        {/* Notifications Menu */}
+        <Menu
+          anchorEl={notificationAnchor}
+          open={Boolean(notificationAnchor)}
+          onClose={handleNotificationClose}
+          PaperProps={{
+            elevation: 3,
+            sx: {
+              mt: 1.5,
+              minWidth: 320,
+              maxWidth: 400,
+              borderRadius: 2,
+              border: `1px solid ${theme.palette.divider}`,
+            },
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <Box sx={{ px: 2, py: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+              Notifications
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              You have {unreadNotifications} unread notifications
+            </Typography>
+          </Box>
+          <Divider />
+          <Box sx={{ py: 1 }}>
+            <MenuItem>
+              <ListItemIcon>
+                <AccountCircleIcon color="primary" />
+              </ListItemIcon>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  New investor onboarded
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  2 minutes ago
+                </Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem>
+              <ListItemIcon>
+                <NotificationsIcon color="info" />
+              </ListItemIcon>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  Monthly report ready
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  1 hour ago
+                </Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem>
+              <ListItemIcon>
+                <SettingsIcon color="warning" />
+              </ListItemIcon>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  System maintenance scheduled
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  3 hours ago
+                </Typography>
+              </Box>
+            </MenuItem>
+          </Box>
+        </Menu>
+      </Toolbar>
+    </AppBar>
   );
 };

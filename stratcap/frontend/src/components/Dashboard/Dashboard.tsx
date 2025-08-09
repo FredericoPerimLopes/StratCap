@@ -1,30 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
+  Paper,
   Typography,
+  Divider,
   CircularProgress,
   Alert,
   IconButton,
   Tooltip,
-  Paper,
-  Divider,
   Chip,
-  LinearProgress,
+  Button,
 } from '@mui/material';
 import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
   Refresh as RefreshIcon,
-  AccountBalance as AccountBalanceIcon,
-  Group as GroupIcon,
-  PieChart as PieChartIcon,
-  AttachMoney as AttachMoneyIcon,
   Notifications as NotificationsIcon
 } from '@mui/icons-material';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { fundAPI, investorAPI, capitalActivityAPI, feeAPI } from '../../services/api';
+import { DashboardTemplate, MetricCard } from '../common/PageTemplate/DashboardTemplate';
 
 interface DashboardMetrics {
   totalAUM: number;
@@ -142,45 +135,65 @@ const Dashboard: React.FC = () => {
     return `$${value.toFixed(0)}`;
   };
 
-  const formatPercentage = (value: number): string => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
-  };
+  // Prepare metrics for the template
+  const dashboardMetrics: MetricCard[] = [
+    {
+      title: 'Total AUM',
+      value: formatCurrency(metrics?.totalAUM || 0),
+      change: {
+        value: metrics?.aumChange || 0,
+        trend: metrics?.aumChange && metrics.aumChange >= 0 ? 'up' : 'down'
+      },
+      loading
+    },
+    {
+      title: 'Active Funds',
+      value: `${metrics?.activeFunds || 0}${metrics ? ` of ${metrics.totalFunds}` : ''}`,
+      loading
+    },
+    {
+      title: 'Total Commitments',
+      value: formatCurrency(metrics?.totalCommitments || 0),
+      loading
+    },
+    {
+      title: 'Active Investors',
+      value: `${metrics?.activeInvestors || 0}${metrics ? ` of ${metrics.totalInvestors}` : ''}`,
+      loading
+    }
+  ];
 
-  if (loading) {
+  // Error state
+  if (error && !loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="400px">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box p={3}>
-        <Alert severity="error" action={
-          <IconButton size="small" onClick={fetchDashboardData}>
-            <RefreshIcon />
-          </IconButton>
-        }>
+      <DashboardTemplate
+        title="Executive Dashboard"
+        subtitle="Error loading dashboard data"
+        actions={
+          <Button
+            variant="contained"
+            startIcon={<RefreshIcon />}
+            onClick={fetchDashboardData}
+          >
+            Retry
+          </Button>
+        }
+      >
+        <Alert severity="error">
           {error}
         </Alert>
-      </Box>
+      </DashboardTemplate>
     );
   }
 
   return (
-    <Box>
-      {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <div>
-          <Typography variant="h4" gutterBottom>
-            Executive Dashboard
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            Last updated: {format(lastRefresh, 'MMM dd, yyyy HH:mm')}
-          </Typography>
-        </div>
-        <Box display="flex" gap={2}>
+    <DashboardTemplate
+      title="Executive Dashboard"
+      subtitle={`Last updated: ${format(lastRefresh, 'MMM dd, yyyy HH:mm')}`}
+      metrics={dashboardMetrics}
+      loading={loading}
+      actions={
+        <>
           <Tooltip title="Refresh data">
             <IconButton onClick={fetchDashboardData} disabled={loading}>
               <RefreshIcon />
@@ -192,183 +205,83 @@ const Dashboard: React.FC = () => {
             color={metrics?.pendingActivities ? 'warning' : 'default'}
             variant="outlined"
           />
+        </>
+      }
+    >
+      {loading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" height="200px">
+          <CircularProgress />
         </Box>
-      </Box>
+      ) : (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
+          {/* YTD Capital Activity */}
+          <Paper sx={{ p: 3, flex: '1 1 calc(50% - 12px)', minWidth: 400 }}>
+            <Typography variant="h6" gutterBottom>
+              YTD Capital Activity
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Box sx={{ flex: '1 1 calc(50% - 4px)' }}>
+                <Typography variant="body2" color="text.secondary">
+                  Capital Calls
+                </Typography>
+                <Typography variant="h6" color="primary">
+                  {formatCurrency(metrics?.ytdCapitalCalls || 0)}
+                </Typography>
+              </Box>
+              <Box sx={{ flex: '1 1 calc(50% - 4px)' }}>
+                <Typography variant="body2" color="text.secondary">
+                  Distributions
+                </Typography>
+                <Typography variant="h6" color="success.main">
+                  {formatCurrency(metrics?.ytdDistributions || 0)}
+                </Typography>
+              </Box>
+              <Box sx={{ flex: '1 1 100%' }}>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Net Cash Flow
+                </Typography>
+                <Typography
+                  variant="h6"
+                  color={
+                    (metrics?.ytdDistributions || 0) - (metrics?.ytdCapitalCalls || 0) >= 0
+                      ? 'success.main'
+                      : 'error.main'
+                  }
+                >
+                  {formatCurrency((metrics?.ytdDistributions || 0) - (metrics?.ytdCapitalCalls || 0))}
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
 
-      {/* Key Metrics */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-        {/* Total AUM */}
-        <Card sx={{ flex: '1 1 calc(25% - 18px)', minWidth: 280 }}>
-          <CardContent>
-            <Box display="flex" justifyContent="space-between" alignItems="start">
-              <div>
-                <Typography color="textSecondary" variant="body2" gutterBottom>
-                  Total AUM
+          {/* Average Performance */}
+          <Paper sx={{ p: 3, flex: '1 1 calc(50% - 12px)', minWidth: 400 }}>
+            <Typography variant="h6" gutterBottom>
+              Average Performance
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Box sx={{ flex: '1 1 calc(50% - 4px)' }}>
+                <Typography variant="body2" color="text.secondary">
+                  Net IRR
                 </Typography>
-                <Typography variant="h5" fontWeight="bold">
-                  {formatCurrency(metrics?.totalAUM || 0)}
+                <Typography variant="h6">
+                  {metrics?.averageIRR?.toFixed(1) || 0}%
                 </Typography>
-                <Box display="flex" alignItems="center" mt={1}>
-                  {metrics && metrics.aumChange >= 0 ? (
-                    <TrendingUpIcon color="success" fontSize="small" />
-                  ) : (
-                    <TrendingDownIcon color="error" fontSize="small" />
-                  )}
-                  <Typography
-                    variant="body2"
-                    color={metrics && metrics.aumChange >= 0 ? 'success.main' : 'error.main'}
-                    ml={0.5}
-                  >
-                    {formatPercentage(metrics?.aumChange || 0)}
-                  </Typography>
-                </Box>
-              </div>
-              <AccountBalanceIcon color="primary" />
+              </Box>
+              <Box sx={{ flex: '1 1 calc(50% - 4px)' }}>
+                <Typography variant="body2" color="text.secondary">
+                  MOIC
+                </Typography>
+                <Typography variant="h6">
+                  {metrics?.averageMOIC?.toFixed(2) || 0}x
+                </Typography>
+              </Box>
             </Box>
-          </CardContent>
-        </Card>
-
-        {/* Active Funds */}
-        <Card sx={{ flex: '1 1 calc(25% - 18px)', minWidth: 280 }}>
-          <CardContent>
-            <Box display="flex" justifyContent="space-between" alignItems="start">
-              <div>
-                <Typography color="textSecondary" variant="body2" gutterBottom>
-                  Active Funds
-                </Typography>
-                <Typography variant="h5" fontWeight="bold">
-                  {metrics?.activeFunds || 0}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" mt={1}>
-                  of {metrics?.totalFunds || 0} total
-                </Typography>
-              </div>
-              <PieChartIcon color="primary" />
-            </Box>
-          </CardContent>
-        </Card>
-
-        {/* Total Commitments */}
-        <Card sx={{ flex: '1 1 calc(25% - 18px)', minWidth: 280 }}>
-          <CardContent>
-            <Box display="flex" justifyContent="space-between" alignItems="start">
-              <div>
-                <Typography color="textSecondary" variant="body2" gutterBottom>
-                  Total Commitments
-                </Typography>
-                <Typography variant="h5" fontWeight="bold">
-                  {formatCurrency(metrics?.totalCommitments || 0)}
-                </Typography>
-                <Box mt={1}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={
-                      metrics && metrics.totalCommitments > 0
-                        ? ((metrics.totalCommitments - metrics.unfundedCommitments) / metrics.totalCommitments) * 100
-                        : 0
-                    }
-                    sx={{ height: 6, borderRadius: 3 }}
-                  />
-                  <Typography variant="caption" color="textSecondary" mt={0.5}>
-                    {formatCurrency(metrics?.unfundedCommitments || 0)} unfunded
-                  </Typography>
-                </Box>
-              </div>
-              <AttachMoneyIcon color="primary" />
-            </Box>
-          </CardContent>
-        </Card>
-
-        {/* Active Investors */}
-        <Card sx={{ flex: '1 1 calc(25% - 18px)', minWidth: 280 }}>
-          <CardContent>
-            <Box display="flex" justifyContent="space-between" alignItems="start">
-              <div>
-                <Typography color="textSecondary" variant="body2" gutterBottom>
-                  Active Investors
-                </Typography>
-                <Typography variant="h5" fontWeight="bold">
-                  {metrics?.activeInvestors || 0}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" mt={1}>
-                  of {metrics?.totalInvestors || 0} total
-                </Typography>
-              </div>
-              <GroupIcon color="primary" />
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
-
-      {/* Performance Metrics */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
-        {/* YTD Capital Activity */}
-        <Paper sx={{ p: 3, flex: '1 1 calc(50% - 12px)', minWidth: 400 }}>
-          <Typography variant="h6" gutterBottom>
-            YTD Capital Activity
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            <Box sx={{ flex: '1 1 calc(50% - 4px)' }}>
-              <Typography variant="body2" color="textSecondary">
-                Capital Calls
-              </Typography>
-              <Typography variant="h6" color="primary">
-                {formatCurrency(metrics?.ytdCapitalCalls || 0)}
-              </Typography>
-            </Box>
-            <Box sx={{ flex: '1 1 calc(50% - 4px)' }}>
-              <Typography variant="body2" color="textSecondary">
-                Distributions
-              </Typography>
-              <Typography variant="h6" color="success.main">
-                {formatCurrency(metrics?.ytdDistributions || 0)}
-              </Typography>
-            </Box>
-            <Box sx={{ flex: '1 1 100%' }}>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="body2" color="textSecondary">
-                Net Cash Flow
-              </Typography>
-              <Typography
-                variant="h6"
-                color={
-                  (metrics?.ytdDistributions || 0) - (metrics?.ytdCapitalCalls || 0) >= 0
-                    ? 'success.main'
-                    : 'error.main'
-                }
-              >
-                {formatCurrency((metrics?.ytdDistributions || 0) - (metrics?.ytdCapitalCalls || 0))}
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-
-        {/* Average Performance */}
-        <Paper sx={{ p: 3, flex: '1 1 calc(50% - 12px)', minWidth: 400 }}>
-          <Typography variant="h6" gutterBottom>
-            Average Performance
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            <Box sx={{ flex: '1 1 calc(50% - 4px)' }}>
-              <Typography variant="body2" color="textSecondary">
-                Net IRR
-              </Typography>
-              <Typography variant="h6">
-                {metrics?.averageIRR?.toFixed(1) || 0}%
-              </Typography>
-            </Box>
-            <Box sx={{ flex: '1 1 calc(50% - 4px)' }}>
-              <Typography variant="body2" color="textSecondary">
-                MOIC
-              </Typography>
-              <Typography variant="h6">
-                {metrics?.averageMOIC?.toFixed(2) || 0}x
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-      </Box>
-    </Box>
+          </Paper>
+        </Box>
+      )}
+    </DashboardTemplate>
   );
 };
 

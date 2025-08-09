@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { Box, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { Sidebar } from './Sidebar';
@@ -9,23 +10,37 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const theme = useTheme();
   const { sidebarOpen } = useSelector((state: RootState) => state.ui);
 
+  const drawerWidth = 280;
+  const collapsedWidth = 72;
+
   return (
-    <div className="flex h-screen bg-gray-50">
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: theme.palette.grey[50] }}>
       <Sidebar />
-      <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${
-          sidebarOpen ? 'ml-64' : 'ml-16'
-        }`}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          ml: sidebarOpen ? `${drawerWidth}px` : `${collapsedWidth}px`,
+          transition: 'margin-left 0.3s ease-in-out',
+          minWidth: 0, // Prevents flex item from overflowing
+        }}
       >
         <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
-        </main>
-      </div>
-    </div>
+        <Box
+          sx={{
+            flexGrow: 1,
+            overflow: 'auto',
+            backgroundColor: theme.palette.grey[50],
+          }}
+        >
+          {children}
+        </Box>
+      </Box>
+    </Box>
   );
 };
