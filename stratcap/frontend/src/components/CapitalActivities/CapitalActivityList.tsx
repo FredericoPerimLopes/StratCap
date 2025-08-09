@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store';
 import { capitalActivityAPI } from '../../services/api';
 import {
   PlusIcon,
@@ -16,9 +14,7 @@ import {
   ExclamationTriangleIcon,
   FunnelIcon,
   DocumentArrowDownIcon,
-  ArrowsUpDownIcon,
-  CheckIcon,
-  XMarkIcon
+  CheckIcon
 } from '@heroicons/react/24/outline';
 import {
   BarChart,
@@ -55,7 +51,6 @@ interface CapitalActivity {
 }
 
 const CapitalActivityList: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
   
   const [activities, setActivities] = useState<CapitalActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +63,6 @@ const CapitalActivityList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
-  const [showBulkActions, setShowBulkActions] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [processing, setProcessing] = useState(false);
 
@@ -273,7 +267,6 @@ const CapitalActivityList: React.FC = () => {
       await Promise.all(deletePromises);
       setActivities(activities.filter(a => !selectedItems.has(a.id)));
       setSelectedItems(new Set());
-      setShowBulkActions(false);
     } catch (error) {
       console.error('Failed to delete capital activities:', error);
     } finally {
@@ -296,7 +289,6 @@ const CapitalActivityList: React.FC = () => {
         selectedItems.has(a.id) ? { ...a, status: newStatus as any } : a
       ));
       setSelectedItems(new Set());
-      setShowBulkActions(false);
     } catch (error) {
       console.error('Failed to update capital activities:', error);
     } finally {

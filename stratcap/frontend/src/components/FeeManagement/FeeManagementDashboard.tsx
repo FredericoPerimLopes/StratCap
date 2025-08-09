@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
 import { feeAPI, fundAPI } from '../../services/api';
 import {
   CalculatorIcon,
@@ -73,7 +71,6 @@ const FeeManagementDashboard: React.FC = () => {
   const [showCalculationModal, setShowCalculationModal] = useState(false);
   const [showPostingModal, setShowPostingModal] = useState(false);
   
-  const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const fetchFeeData = async () => {
@@ -590,7 +587,7 @@ const FeeManagementDashboard: React.FC = () => {
                           <div className="flex items-center">
                             {getStatusIcon(calc.status)}
                             <span className="text-sm font-medium text-gray-900 ml-3">
-                              {calc.fundName} {calc.description.toLowerCase()}
+                              {calc.fundName} {calc.description?.toLowerCase() || ''}
                             </span>
                           </div>
                           <span className="text-sm text-gray-500">{timeAgo}</span>

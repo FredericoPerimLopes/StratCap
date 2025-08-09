@@ -31,7 +31,7 @@ export class ErrorHandler {
   /**
    * Transform different error types into standardized AppError
    */
-  static transformError(error: any, context?: ErrorContext): AppError {
+  static transformError(error: any, _context?: ErrorContext): AppError {
     const timestamp = Date.now();
     const baseError: Partial<AppError> = {
       timestamp,
@@ -288,7 +288,7 @@ export class ErrorHandler {
     if (mediumSeverity.includes(error.code)) return 'medium';
     if (lowSeverity.includes(error.code)) return 'low';
     
-    return error.statusCode >= 500 ? 'critical' : 'medium';
+    return (error.statusCode ?? 0) >= 500 ? 'critical' : 'medium';
   }
 
   /**

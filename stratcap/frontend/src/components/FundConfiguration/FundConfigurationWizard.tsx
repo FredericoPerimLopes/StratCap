@@ -202,7 +202,7 @@ const FundConfigurationWizard: React.FC = () => {
     setLoading(true);
     try {
       const response = await fundAPI.getById(Number(id));
-      const fund = response.data;
+      const fund = response.data.data;
       
       // Map fund data to form structure
       setFormData(prev => ({

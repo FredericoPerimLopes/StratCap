@@ -7,7 +7,6 @@ import {
   ChevronRightIcon,
   InformationCircleIcon,
   DocumentTextIcon,
-  ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
   CalculatorIcon,
@@ -63,10 +62,10 @@ const DistributionWorkflow: React.FC = () => {
   
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const [funds, setFunds] = useState<any[]>([]);
-  const [investors, setInvestors] = useState<any[]>([]);
-  const [selectedFund, setSelectedFund] = useState<any>(null);
+  const [_investors, setInvestors] = useState<any[]>([]);
+  const [_selectedFund, setSelectedFund] = useState<any>(null);
   
   const [formData, setFormData] = useState<DistributionData>({
     fundId: paramFundId ? parseInt(paramFundId) : 0,

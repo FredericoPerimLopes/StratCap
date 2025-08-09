@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { capitalActivityAPI, fundAPI, investorAPI } from '../../services/api';
 import {
   CheckIcon,
-  XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   InformationCircleIcon,
@@ -11,7 +10,6 @@ import {
   UserGroupIcon,
   CurrencyDollarIcon,
   CalendarIcon,
-  ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';

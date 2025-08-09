@@ -57,7 +57,6 @@ const FundFamilyList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
-  const [showBulkActions, setShowBulkActions] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [metrics, setMetrics] = useState<FundFamilyMetrics>({
     totalAUM: 0,
@@ -167,7 +166,6 @@ const FundFamilyList: React.FC = () => {
       
       await Promise.all(deletePromises);
       setSelectedItems(new Set());
-      setShowBulkActions(false);
     } catch (error) {
       console.error('Failed to delete fund families:', error);
     }
@@ -180,13 +178,12 @@ const FundFamilyList: React.FC = () => {
       const updatePromises = Array.from(selectedItems).map(id => 
         dispatch(updateFundFamily({ 
           id: Number(id), 
-          data: { status: newStatus } 
+          data: { status: newStatus as 'active' | 'inactive' | 'archived' } 
         })).unwrap()
       );
       
       await Promise.all(updatePromises);
       setSelectedItems(new Set());
-      setShowBulkActions(false);
     } catch (error) {
       console.error('Failed to update fund families:', error);
     }

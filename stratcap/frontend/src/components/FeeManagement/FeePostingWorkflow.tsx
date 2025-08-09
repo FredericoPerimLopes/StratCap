@@ -1,21 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { feeAPI, fundAPI } from '../../services/api';
+import { feeAPI } from '../../services/api';
 import {
   CheckIcon,
-  XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   InformationCircleIcon,
   DocumentTextIcon,
-  CurrencyDollarIcon,
-  CalendarIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
   CalculatorIcon,
   CreditCardIcon,
-  EyeIcon,
   BookOpenIcon
 } from '@heroicons/react/24/outline';
 
@@ -88,7 +84,6 @@ const FeePostingWorkflow: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [calculations, setCalculations] = useState<FeeCalculation[]>([]);
   const [selectedCalculation, setSelectedCalculation] = useState<FeeCalculation | null>(null);
-  const [funds, setFunds] = useState<any[]>([]);
   
   const [formData, setFormData] = useState<FeePostingData>({
     fundId: 0,
@@ -156,11 +151,6 @@ const FeePostingWorkflow: React.FC = () => {
   const fetchInitialData = async () => {
     setLoading(true);
     try {
-      const [fundsResponse] = await Promise.all([
-        fundAPI.getAll()
-      ]);
-      
-      setFunds(fundsResponse.data.data || []);
       
       // Fetch pending fee calculations
       await fetchPendingCalculations();

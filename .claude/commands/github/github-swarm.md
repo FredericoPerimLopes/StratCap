@@ -20,37 +20,25 @@ npx claude-flow github swarm [options]
 ## Examples
 
 ### Basic GitHub swarm
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow github swarm --repository owner/repo
 ```
 
 ### Maintenance-focused swarm
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow github swarm -r owner/repo -f maintenance --issue-labels
 ```
 
 ### Development swarm with PR automation
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow github swarm -r owner/repo -f development --auto-pr --code-review
 ```
 
 ### Full-featured triage swarm
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow github swarm -r owner/repo -a 8 -f triage --issue-labels --auto-pr
 ```
@@ -58,46 +46,31 @@ npx claude-flow github swarm -r owner/repo -a 8 -f triage --issue-labels --auto-
 ## Agent Types
 
 ### Issue Triager
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - Analyzes and categorizes issues
 - Suggests labels and priorities
 - Identifies duplicates and related issues
 
 ### PR Reviewer
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - Reviews code changes
 - Suggests improvements
 - Checks for best practices
 
 ### Documentation Agent
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - Updates README files
 - Creates API documentation
 - Maintains changelog
 
 ### Test Agent
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - Identifies missing tests
 - Suggests test cases
 - Validates test coverage
 
 ### Security Agent
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - Scans for vulnerabilities
 - Reviews dependencies
 - Suggests security improvements
@@ -105,10 +78,7 @@ npx claude-flow github swarm -r owner/repo -a 8 -f triage --issue-labels --auto-
 ## Workflows
 
 ### Issue Triage Workflow
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 1. Scan all open issues
 2. Categorize by type and priority
 3. Apply appropriate labels
@@ -116,10 +86,7 @@ npx claude-flow github swarm -r owner/repo -a 8 -f triage --issue-labels --auto-
 5. Link related issues
 
 ### PR Enhancement Workflow
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 1. Analyze PR changes
 2. Suggest missing tests
 3. Improve documentation
@@ -127,10 +94,7 @@ npx claude-flow github swarm -r owner/repo -a 8 -f triage --issue-labels --auto-
 5. Add helpful comments
 
 ### Repository Health Check
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 1. Analyze code quality metrics
 2. Review dependency status
 3. Check test coverage
@@ -140,20 +104,12 @@ npx claude-flow github swarm -r owner/repo -a 8 -f triage --issue-labels --auto-
 ## Integration with Claude Code
 
 Use in Claude Code with MCP tools:
-<<<<<<< HEAD
-```javascript
-mcp__claude-flow__github_swarm { 
-  repository: "owner/repo", 
-  agents: 6, 
-  focus: "maintenance" 
-=======
 
 ```javascript
 mcp__claude-flow__github_swarm {
   repository: "owner/repo",
   agents: 6,
   focus: "maintenance"
->>>>>>> 000b3fd (updates)
 }
 ```
 
@@ -162,8 +118,4 @@ mcp__claude-flow__github_swarm {
 - `repo analyze` - Deep repository analysis
 - `pr enhance` - Enhance pull requests
 - `issue triage` - Intelligent issue management
-<<<<<<< HEAD
 - `code review` - Automated reviews
-=======
-- `code review` - Automated reviews
->>>>>>> 000b3fd (updates)

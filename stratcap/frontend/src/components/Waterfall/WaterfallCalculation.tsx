@@ -80,7 +80,7 @@ const WaterfallCalculation: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showInvestorDetails, setShowInvestorDetails] = useState(false);
   
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user: _user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -320,7 +320,7 @@ const WaterfallCalculation: React.FC = () => {
         distributionScenario: 'standard'
       });
       
-      const calculationResult = response.data;
+      const calculationResult = response.data.data;
       
       // Transform API response to our interface
       const newScenario: WaterfallScenario = {

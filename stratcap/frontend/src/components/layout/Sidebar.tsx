@@ -15,7 +15,6 @@ import {
   BookOpenIcon,
   TableCellsIcon,
   CurrencyDollarIcon,
-  WrenchScrewdriverIcon,
   DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 import { RootState } from '../../store/store';

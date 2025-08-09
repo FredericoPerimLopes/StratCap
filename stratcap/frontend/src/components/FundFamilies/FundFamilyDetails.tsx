@@ -48,7 +48,7 @@ const FundFamilyDetails: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   
-  const { currentFundFamily, loading, summary, error } = useSelector((state: RootState) => state.fundFamily);
+  const { currentFundFamily, loading, error } = useSelector((state: RootState) => state.fundFamily);
   const [activeTab, setActiveTab] = useState<'overview' | 'funds' | 'performance' | 'settings'>('overview');
   const [funds, setFunds] = useState<FundData[]>([]);
 

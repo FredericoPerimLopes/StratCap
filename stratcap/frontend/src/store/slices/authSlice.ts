@@ -33,7 +33,7 @@ const initialState: AuthState = {
 // Async thunks
 export const login = createAsyncThunk(
   'auth/login',
-  async (credentials: { email: string; password: string; mfaToken?: string }) => {
+  async (credentials: { email: string; password: string; mfaToken?: string; rememberMe?: boolean }) => {
     const response = await authAPI.login(credentials);
     localStorage.setItem('token', response.data.data.token);
     localStorage.setItem('refreshToken', response.data.data.refreshToken);

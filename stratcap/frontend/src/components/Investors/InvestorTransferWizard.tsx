@@ -10,13 +10,10 @@ import {
   DocumentTextIcon,
   UserGroupIcon,
   CurrencyDollarIcon,
-  CalendarIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
   ShieldCheckIcon,
-  ArrowRightIcon,
-  DocumentArrowUpIcon,
   PaperClipIcon
 } from '@heroicons/react/24/outline';
 
@@ -116,7 +113,7 @@ const InvestorTransferWizard: React.FC = () => {
   const [fromInvestor, setFromInvestor] = useState<Investor | null>(null);
   const [toInvestor, setToInvestor] = useState<Investor | null>(null);
   const [validationResult, setValidationResult] = useState<any>(null);
-  const [complianceResults, setComplianceResults] = useState<any>({});
+  const [_complianceResults, setComplianceResults] = useState<any>({});
   
   const [formData, setFormData] = useState<TransferData>({
     fundId: paramFundId ? parseInt(paramFundId) : 0,
@@ -221,8 +218,7 @@ const InvestorTransferWizard: React.FC = () => {
     try {
       // Create a temporary transfer to run compliance checks
       const tempTransfer = await investorTransferAPI.create({
-        ...formData,
-        status: 'draft'
+        ...formData
       });
 
       const transferId = tempTransfer.data.data.id;
@@ -712,7 +708,7 @@ const InvestorTransferWizard: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              {formData.legalDocuments.map((doc, index) => (
+              {formData.legalDocuments.map((doc) => (
                 <div key={doc.type} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">

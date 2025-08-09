@@ -19,37 +19,25 @@ npx claude-flow bottleneck detect [options]
 ## Examples
 
 ### Basic bottleneck detection
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow bottleneck detect
 ```
 
 ### Analyze specific swarm
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow bottleneck detect --swarm-id swarm-123
 ```
 
 ### Last 24 hours with export
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow bottleneck detect -t 24h -e bottlenecks.json
 ```
 
 ### Auto-fix detected issues
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 ```bash
 npx claude-flow bottleneck detect --fix --threshold 15
 ```
@@ -57,40 +45,28 @@ npx claude-flow bottleneck detect --fix --threshold 15
 ## Metrics Analyzed
 
 ### Communication Bottlenecks
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - Message queue delays
 - Agent response times
 - Coordination overhead
 - Memory access patterns
 
 ### Processing Bottlenecks
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - Task completion times
 - Agent utilization rates
 - Parallel execution efficiency
 - Resource contention
 
 ### Memory Bottlenecks
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - Cache hit rates
 - Memory access patterns
 - Storage I/O performance
 - Neural pattern loading
 
 ### Network Bottlenecks
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - API call latency
 - MCP communication delays
 - External service timeouts
@@ -111,11 +87,7 @@ npx claude-flow bottleneck detect --fix --threshold 15
 🚨 Critical Bottlenecks
 1. Agent Communication (35% impact)
    └── coordinator → coder-1 messages delayed by 2.3s avg
-<<<<<<< HEAD
-   
-=======
 
->>>>>>> 000b3fd (updates)
 2. Memory Access (28% impact)
    └── Neural pattern loading taking 1.8s per access
 
@@ -140,28 +112,19 @@ Run with --fix to apply:
 When using `--fix`, the following optimizations may be applied:
 
 1. **Topology Optimization**
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
    - Switch to more efficient topology
    - Adjust communication patterns
    - Reduce coordination overhead
 
 2. **Caching Enhancement**
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
    - Enable memory caching
    - Optimize cache strategies
    - Preload common patterns
 
 3. **Concurrency Tuning**
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
    - Adjust agent counts
    - Optimize parallel execution
    - Balance workload distribution
@@ -174,10 +137,7 @@ When using `--fix`, the following optimizations may be applied:
 ## Performance Impact
 
 Typical improvements after bottleneck resolution:
-<<<<<<< HEAD
-=======
 
->>>>>>> 000b3fd (updates)
 - **Communication**: 30-50% faster message delivery
 - **Processing**: 20-40% reduced task completion time
 - **Memory**: 40-60% fewer cache misses
@@ -187,11 +147,7 @@ Typical improvements after bottleneck resolution:
 
 ```javascript
 // Check for bottlenecks in Claude Code
-<<<<<<< HEAD
-mcp__claude-flow__bottleneck_detect { 
-=======
 mcp__claude-flow__bottleneck_detect {
->>>>>>> 000b3fd (updates)
   timeRange: "1h",
   threshold: 20,
   autoFix: false
@@ -203,8 +159,4 @@ mcp__claude-flow__bottleneck_detect {
 - `performance report` - Detailed performance analysis
 - `token usage` - Token optimization analysis
 - `swarm monitor` - Real-time monitoring
-<<<<<<< HEAD
 - `cache manage` - Cache optimization
-=======
-- `cache manage` - Cache optimization
->>>>>>> 000b3fd (updates)

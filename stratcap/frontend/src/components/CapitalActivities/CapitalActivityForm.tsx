@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
-import { capitalActivityAPI, fundAPI, investorAPI } from '../../services/api';
+import { capitalActivityAPI, fundAPI } from '../../services/api';
 import {
   CurrencyDollarIcon,
   CalendarIcon,
   BanknotesIcon,
-  UsersIcon,
   CheckCircleIcon,
   ArrowLeftIcon
 } from '@heroicons/react/24/outline';
@@ -29,21 +26,32 @@ interface CapitalActivityFormData {
   }>;
 }
 
+interface CapitalActivity extends CapitalActivityFormData {
+  id: number;
+  status: string;
+  fundName?: string;
+  totalAmount?: number;
+}
+
+interface Fund {
+  id: number;
+  name: string;
+  // Add other fund properties as needed
+}
+
+
 const CapitalActivityForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isEdit = !!id;
   
-  const { user } = useSelector((state: RootState) => state.auth);
   
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   
-  const [funds, setFunds] = useState<any[]>([]);
-  const [investors, setInvestors] = useState<any[]>([]);
-  const [selectedInvestors, setSelectedInvestors] = useState<any[]>([]);
+  const [funds, setFunds] = useState<Fund[]>([]);
   
   const [formData, setFormData] = useState<CapitalActivityFormData>({
     fundId: null,
@@ -64,20 +72,16 @@ const CapitalActivityForm: React.FC = () => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        // Fetch funds and investors
-        const [fundsRes, investorsRes] = await Promise.all([
-          fundAPI.getAll(),
-          investorAPI.getAll()
-        ]);
+        // Fetch funds
+        const fundsRes = await fundAPI.getAll();
         
         setFunds(fundsRes.data.data || []);
-        setInvestors(investorsRes.data.data || []);
         
         // If editing, fetch the capital activity
         if (isEdit && id) {
           try {
             const activityRes = await capitalActivityAPI.getById(Number(id));
-            const activity = activityRes.data;
+            const activity: CapitalActivity = activityRes.data.data; // Access nested data
             
             setFormData({
               fundId: activity.fundId,
