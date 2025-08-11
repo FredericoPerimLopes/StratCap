@@ -98,7 +98,7 @@ FeeCalculation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -180,7 +180,7 @@ FeeCalculation.init(
   {
     sequelize,
     modelName: 'FeeCalculation',
-    tableName: 'fee_calculations',
+    tableName: 'FeeCalculations',
     indexes: [
       {
         fields: ['fund_id', 'period_start_date', 'period_end_date', 'fee_type'],

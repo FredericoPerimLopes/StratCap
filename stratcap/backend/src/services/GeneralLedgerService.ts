@@ -11,20 +11,20 @@ export interface JournalEntryRequest {
   reference?: string;
   sourceType: 'manual' | 'automated' | 'import' | 'closing' | 'adjustment';
   sourceId?: string;
-  fundId?: string;
+  fundId?: number;
   lineItems: JournalEntryLineItemRequest[];
   metadata?: Record<string, any>;
 }
 
 export interface JournalEntryLineItemRequest {
-  glAccountId: string;
+  glAccountId: number;
   debitAmount?: string | number | Decimal;
   creditAmount?: string | number | Decimal;
   description?: string;
   reference?: string;
-  fundId?: string;
-  investorId?: string;
-  investmentId?: string;
+  fundId?: number;
+  investorId?: number;
+  investmentId?: number;
   metadata?: Record<string, any>;
 }
 
@@ -37,7 +37,7 @@ export interface AutoJournalEntryRequest {
   entryDate: Date;
   description: string;
   reference?: string;
-  fundId?: string;
+  fundId?: number;
   metadata?: Record<string, any>;
 }
 
@@ -47,7 +47,7 @@ export interface GLAccountRequest {
   accountType: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
   category: string;
   subCategory?: string;
-  parentAccountId?: string;
+  parentAccountId?: number;
   requiresSubAccount?: boolean;
   allowsDirectPosting?: boolean;
   description?: string;
@@ -56,14 +56,14 @@ export interface GLAccountRequest {
 
 export interface TrialBalanceOptions {
   asOfDate: Date;
-  fundId?: string;
+  fundId?: number;
   includeInactive?: boolean;
   accountType?: string;
   category?: string;
 }
 
 export interface TrialBalanceAccount {
-  accountId: string;
+  accountId: number;
   accountNumber: string;
   accountName: string;
   accountType: string;
@@ -75,7 +75,7 @@ export interface TrialBalanceAccount {
 }
 
 export interface GLAccountBalance {
-  accountId: string;
+  accountId: number;
   accountNumber: string;
   accountName: string;
   debitTotal: string;
@@ -86,10 +86,13 @@ export interface GLAccountBalance {
 
 export class GeneralLedgerService {
   
+  // System user ID for automated operations
+  private static readonly SYSTEM_USER_ID = 1;
+  
   /**
    * Create a new GL account
    */
-  async createGLAccount(request: GLAccountRequest, _createdBy: string, transaction?: Transaction): Promise<GLAccount> {
+  async createGLAccount(request: GLAccountRequest, _createdBy: number, transaction?: Transaction): Promise<GLAccount> {
     // Validate account number uniqueness
     const existingAccount = await GLAccount.findOne({
       where: { accountNumber: request.accountNumber },
@@ -135,7 +138,7 @@ export class GeneralLedgerService {
   /**
    * Create a manual journal entry
    */
-  async createJournalEntry(request: JournalEntryRequest, createdBy: string, transaction?: Transaction): Promise<JournalEntry> {
+  async createJournalEntry(request: JournalEntryRequest, createdBy: number, transaction?: Transaction): Promise<JournalEntry> {
     const t = transaction || await sequelize.transaction();
 
     try {
@@ -243,11 +246,11 @@ export class GeneralLedgerService {
         },
       };
 
-      const journalEntry = await this.createJournalEntry(journalEntryRequest, 'system', t);
+      const journalEntry = await this.createJournalEntry(journalEntryRequest, GeneralLedgerService.SYSTEM_USER_ID, t);
 
       // Auto-post if configured
       if (this.shouldAutoPost(request.sourceSystem, request.sourceType)) {
-        await this.postJournalEntry(journalEntry.id, 'system', t);
+        await this.postJournalEntry(journalEntry.id, GeneralLedgerService.SYSTEM_USER_ID, t);
       }
 
       if (!transaction) {
@@ -266,7 +269,7 @@ export class GeneralLedgerService {
   /**
    * Post a journal entry
    */
-  async postJournalEntry(journalEntryId: string, postedBy: string, transaction?: Transaction): Promise<JournalEntry> {
+  async postJournalEntry(journalEntryId: number, postedBy: number, transaction?: Transaction): Promise<JournalEntry> {
     const t = transaction || await sequelize.transaction();
 
     try {
@@ -307,9 +310,9 @@ export class GeneralLedgerService {
    * Reverse a journal entry
    */
   async reverseJournalEntry(
-    journalEntryId: string,
+    journalEntryId: number,
     reversalReason: string,
-    reversedBy: string,
+    reversedBy: number,
     transaction?: Transaction
   ): Promise<JournalEntry> {
     const t = transaction || await sequelize.transaction();
@@ -368,7 +371,7 @@ export class GeneralLedgerService {
       await originalEntry.update({
         status: 'reversed',
         reversalId: reversalEntry.id,
-        reversedBy,
+        reversedBy: reversedBy,
         reversedAt: new Date(),
         reversalReason,
       }, { transaction: t });
@@ -484,7 +487,7 @@ export class GeneralLedgerService {
   /**
    * Get account balance for a specific account
    */
-  async getAccountBalance(accountId: string, asOfDate: Date, fundId?: string): Promise<GLAccountBalance> {
+  async getAccountBalance(accountId: number, asOfDate: Date, fundId?: number): Promise<GLAccountBalance> {
     const query = `
       SELECT 
         gl.id as account_id,
@@ -540,7 +543,7 @@ export class GeneralLedgerService {
   /**
    * Get journal entry by ID
    */
-  async getJournalEntryById(journalEntryId: string): Promise<JournalEntry> {
+  async getJournalEntryById(journalEntryId: number): Promise<JournalEntry> {
     const journalEntry = await JournalEntry.findByPk(journalEntryId, {
       include: [
         {
@@ -622,7 +625,7 @@ export class GeneralLedgerService {
     sourceType: string,
     sourceSubType: string | undefined,
     sourceData: Record<string, any>,
-    fundId: string | undefined,
+    fundId: number | undefined,
     transaction: Transaction
   ): Promise<GLAccountMapping[]> {
     const whereClause: any = {

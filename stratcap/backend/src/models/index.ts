@@ -34,11 +34,12 @@ const models = {
   Fund,
   InvestorEntity,
   InvestorClass,
+  SystemConfiguration,
+  NotificationTemplate,
   Commitment,
   CapitalActivity,
   CapitalAllocation,
   DistributionAllocation,
-  NotificationTemplate,
   Transaction,
   Investment,
   Closing,
@@ -56,7 +57,6 @@ const models = {
   GlobalEntity,
   AuditLog,
   NotificationQueue,
-  SystemConfiguration,
 };
 
 // Initialize associations

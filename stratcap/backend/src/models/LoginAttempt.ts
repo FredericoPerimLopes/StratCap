@@ -221,19 +221,19 @@ export function initLoginAttempt(sequelize: Sequelize): typeof LoginAttempt {
           fields: ['email'],
         },
         {
-          fields: ['ipAddress'],
+          fields: ['ip_address'],
         },
         {
           fields: ['success'],
         },
         {
-          fields: ['createdAt'],
+          fields: ['created_at'],
         },
         {
-          fields: ['email', 'success', 'createdAt'],
+          fields: ['email', 'success', 'created_at'],
         },
         {
-          fields: ['ipAddress', 'createdAt'],
+          fields: ['ip_address', 'created_at'],
         },
       ],
     }

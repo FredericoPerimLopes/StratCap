@@ -114,7 +114,7 @@ TierAudit.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'waterfall_calculations',
+        model: 'WaterfallCalculations',
         key: 'id',
       },
     },
@@ -122,7 +122,7 @@ TierAudit.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'waterfall_tiers',
+        model: 'WaterfallTiers',
         key: 'id',
       },
     },
@@ -207,7 +207,7 @@ TierAudit.init(
   {
     sequelize,
     modelName: 'TierAudit',
-    tableName: 'tier_audits',
+    tableName: 'TierAudits',
     indexes: [
       {
         fields: ['waterfall_calculation_id'],

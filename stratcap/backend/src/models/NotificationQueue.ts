@@ -463,22 +463,22 @@ NotificationQueue.init(
         fields: ['type'],
       },
       {
-        fields: ['recipientId', 'recipientType'],
+        fields: ['recipient_id', 'recipient_type'],
       },
       {
-        fields: ['scheduledAt'],
+        fields: ['scheduled_at'],
       },
       {
-        fields: ['createdAt'],
+        fields: ['created_at'],
       },
       {
-        fields: ['entityType', 'entityId'],
+        fields: ['entity_type', 'entity_id'],
       },
       {
-        fields: ['status', 'scheduledAt'],
+        fields: ['status', 'scheduled_at'],
       },
       {
-        fields: ['status', 'priority', 'createdAt'],
+        fields: ['status', 'priority', 'created_at'],
       },
     ],
   }

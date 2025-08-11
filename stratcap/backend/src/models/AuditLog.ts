@@ -304,10 +304,10 @@ AuditLog.init(
     timestamps: false, // We handle our own timestamp
     indexes: [
       {
-        fields: ['entityType', 'entityId'],
+        fields: ['entity_type', 'entity_id'],
       },
       {
-        fields: ['userId'],
+        fields: ['user_id'],
       },
       {
         fields: ['action'],
@@ -316,16 +316,16 @@ AuditLog.init(
         fields: ['timestamp'],
       },
       {
-        fields: ['riskLevel'],
+        fields: ['risk_level'],
       },
       {
-        fields: ['complianceRelevant'],
+        fields: ['compliance_relevant'],
       },
       {
-        fields: ['ipAddress'],
+        fields: ['ip_address'],
       },
       {
-        fields: ['sessionId'],
+        fields: ['session_id'],
       },
     ],
   }

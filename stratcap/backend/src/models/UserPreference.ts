@@ -136,17 +136,17 @@ UserPreference.init(
     timestamps: true,
     indexes: [
       {
-        fields: ['userId', 'preferenceKey'],
+        fields: ['user_id', 'preference_key'],
         unique: true,
       },
       {
-        fields: ['userId'],
+        fields: ['user_id'],
       },
       {
         fields: ['category'],
       },
       {
-        fields: ['isPublic'],
+        fields: ['is_public'],
       },
     ],
   }

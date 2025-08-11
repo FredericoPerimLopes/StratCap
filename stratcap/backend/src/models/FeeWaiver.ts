@@ -111,7 +111,7 @@ FeeWaiver.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'fee_calculations',
+        model: 'FeeCalculations',
         key: 'id',
       },
     },
@@ -119,7 +119,7 @@ FeeWaiver.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'investor_entities',
+        model: 'InvestorEntities',
         key: 'id',
       },
     },
@@ -163,7 +163,7 @@ FeeWaiver.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -184,7 +184,7 @@ FeeWaiver.init(
   {
     sequelize,
     modelName: 'FeeWaiver',
-    tableName: 'fee_waivers',
+    tableName: 'FeeWaivers',
     indexes: [
       {
         fields: ['fee_calculation_id'],

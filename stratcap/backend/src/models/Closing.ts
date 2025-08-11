@@ -80,7 +80,7 @@ Closing.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -152,7 +152,7 @@ Closing.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -177,7 +177,7 @@ Closing.init(
   {
     sequelize,
     modelName: 'Closing',
-    tableName: 'closings',
+    tableName: 'Closings',
     indexes: [
       {
         fields: ['fund_id'],

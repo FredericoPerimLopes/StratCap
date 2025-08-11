@@ -33,7 +33,7 @@ export class GeneralLedgerController {
 
       const glAccount = await this.generalLedgerService.createGLAccount(
         request,
-        req.user?.id?.toString() || '',
+        req.user?.id || 1,
         transaction
       );
       
@@ -74,7 +74,7 @@ export class GeneralLedgerController {
 
       const journalEntry = await this.generalLedgerService.createJournalEntry(
         request,
-        req.user?.id?.toString() || '',
+        req.user?.id || 1,
         transaction
       );
       
@@ -147,8 +147,8 @@ export class GeneralLedgerController {
       const journalEntryId = req.params.id;
 
       const journalEntry = await this.generalLedgerService.postJournalEntry(
-        journalEntryId,
-        req.user?.id?.toString() || '',
+        parseInt(journalEntryId),
+        req.user?.id || 1,
         transaction
       );
       
@@ -180,9 +180,9 @@ export class GeneralLedgerController {
       const { reversalReason } = req.body;
 
       const reversalEntry = await this.generalLedgerService.reverseJournalEntry(
-        journalEntryId,
+        parseInt(journalEntryId),
         reversalReason,
-        req.user?.id?.toString() || '',
+        req.user?.id || 1,
         transaction
       );
       
@@ -209,7 +209,7 @@ export class GeneralLedgerController {
   getJournalEntry = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const journalEntryId = req.params.id;
-      const journalEntry = await this.generalLedgerService.getJournalEntryById(journalEntryId);
+      const journalEntry = await this.generalLedgerService.getJournalEntryById(parseInt(journalEntryId));
       
       res.json({
         success: true,
@@ -231,7 +231,7 @@ export class GeneralLedgerController {
     try {
       const options: TrialBalanceOptions = {
         asOfDate: new Date(req.query.asOfDate as string),
-        fundId: req.query.fundId as string,
+        fundId: req.query.fundId ? parseInt(req.query.fundId as string) : undefined,
         includeInactive: req.query.includeInactive === 'true',
         accountType: req.query.accountType as string,
         category: req.query.category as string,
@@ -271,9 +271,9 @@ export class GeneralLedgerController {
       const fundId = req.query.fundId as string;
 
       const balance = await this.generalLedgerService.getAccountBalance(
-        accountId,
+        parseInt(accountId),
         asOfDate,
-        fundId
+        fundId ? parseInt(fundId) : undefined
       );
       
       res.json({
@@ -410,7 +410,7 @@ export class GeneralLedgerController {
       // Get trial balance for calculations
       const trialBalance = await this.generalLedgerService.getTrialBalance({
         asOfDate,
-        fundId,
+        fundId: fundId ? parseInt(fundId) : undefined,
         includeInactive: false,
       });
 

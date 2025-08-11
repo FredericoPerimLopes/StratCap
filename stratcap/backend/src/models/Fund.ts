@@ -100,7 +100,7 @@ Fund.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'fund_families',
+        model: 'FundFamilies',
         key: 'id',
       },
     },
@@ -196,7 +196,7 @@ Fund.init(
   {
     sequelize,
     modelName: 'Fund',
-    tableName: 'funds',
+    tableName: 'Funds',
     indexes: [
       {
         unique: true,

@@ -2,13 +2,13 @@ import { Model, DataTypes, Optional } from 'sequelize';
 import sequelize from '../db/database';
 
 export interface GLAccountAttributes {
-  id: string;
+  id: number;
   accountNumber: string;
   accountName: string;
   accountType: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
   category: 'current_assets' | 'non_current_assets' | 'current_liabilities' | 'non_current_liabilities' | 'equity' | 'operating_revenue' | 'non_operating_revenue' | 'operating_expenses' | 'non_operating_expenses';
   subCategory?: string;
-  parentAccountId?: string;
+  parentAccountId?: number;
   isActive: boolean;
   requiresSubAccount: boolean;
   allowsDirectPosting: boolean;
@@ -22,13 +22,13 @@ export interface GLAccountAttributes {
 interface GLAccountCreationAttributes extends Optional<GLAccountAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export class GLAccount extends Model<GLAccountAttributes, GLAccountCreationAttributes> implements GLAccountAttributes {
-  public id!: string;
+  public id!: number;
   public accountNumber!: string;
   public accountName!: string;
   public accountType!: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
   public category!: 'current_assets' | 'non_current_assets' | 'current_liabilities' | 'non_current_liabilities' | 'equity' | 'operating_revenue' | 'non_operating_revenue' | 'operating_expenses' | 'non_operating_expenses';
   public subCategory?: string;
-  public parentAccountId?: string;
+  public parentAccountId?: number;
   public isActive!: boolean;
   public requiresSubAccount!: boolean;
   public allowsDirectPosting!: boolean;
@@ -74,8 +74,8 @@ export class GLAccount extends Model<GLAccountAttributes, GLAccountCreationAttri
 GLAccount.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     accountNumber: {
@@ -116,7 +116,7 @@ GLAccount.init(
       allowNull: true,
     },
     parentAccountId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'GLAccounts',
@@ -157,20 +157,20 @@ GLAccount.init(
     timestamps: true,
     indexes: [
       {
-        fields: ['accountNumber'],
+        fields: ['account_number'],
         unique: true,
       },
       {
-        fields: ['accountType'],
+        fields: ['account_type'],
       },
       {
         fields: ['category'],
       },
       {
-        fields: ['parentAccountId'],
+        fields: ['parent_account_id'],
       },
       {
-        fields: ['isActive'],
+        fields: ['is_active'],
       },
     ],
   }

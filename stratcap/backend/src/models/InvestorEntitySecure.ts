@@ -215,7 +215,7 @@ InvestorEntitySecure.init(
   {
     sequelize,
     modelName: 'InvestorEntitySecure',
-    tableName: 'investor_entities',
+    tableName: 'InvestorEntities',
     timestamps: true,
     hooks: {
       // Generate search hashes before validation

@@ -171,7 +171,7 @@ WaterfallCalculation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -179,7 +179,7 @@ WaterfallCalculation.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'capital_activities',
+        model: 'CapitalActivities',
         key: 'id',
       },
     },
@@ -341,7 +341,7 @@ WaterfallCalculation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -349,7 +349,7 @@ WaterfallCalculation.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -361,7 +361,7 @@ WaterfallCalculation.init(
   {
     sequelize,
     modelName: 'WaterfallCalculation',
-    tableName: 'waterfall_calculations',
+    tableName: 'WaterfallCalculations',
     indexes: [
       {
         fields: ['fund_id'],

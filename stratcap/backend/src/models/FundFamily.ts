@@ -94,7 +94,7 @@ FundFamily.init(
   {
     sequelize,
     modelName: 'FundFamily',
-    tableName: 'fund_families',
+    tableName: 'FundFamilies',
   }
 );
 

@@ -4,7 +4,7 @@ import sequelize from '../db/database';
 import { GLAccount } from './GLAccount';
 
 export interface JournalEntryAttributes {
-  id: string;
+  id: number;
   entryNumber: string;
   entryDate: Date;
   description: string;
@@ -12,14 +12,14 @@ export interface JournalEntryAttributes {
   sourceType: 'manual' | 'automated' | 'import' | 'closing' | 'adjustment';
   sourceId?: string;
   status: 'draft' | 'posted' | 'reversed';
-  reversalId?: string;
+  reversalId?: number;
   totalDebitAmount: string; // Stored as string for Decimal precision
   totalCreditAmount: string;
-  fundId?: string;
-  createdBy: string;
-  postedBy?: string;
+  fundId?: number;
+  createdBy: number;
+  postedBy?: number;
   postedAt?: Date;
-  reversedBy?: string;
+  reversedBy?: number;
   reversedAt?: Date;
   reversalReason?: string;
   metadata?: Record<string, any>;
@@ -30,7 +30,7 @@ export interface JournalEntryAttributes {
 interface JournalEntryCreationAttributes extends Optional<JournalEntryAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export class JournalEntry extends Model<JournalEntryAttributes, JournalEntryCreationAttributes> implements JournalEntryAttributes {
-  public id!: string;
+  public id!: number;
   public entryNumber!: string;
   public entryDate!: Date;
   public description!: string;
@@ -38,14 +38,14 @@ export class JournalEntry extends Model<JournalEntryAttributes, JournalEntryCrea
   public sourceType!: 'manual' | 'automated' | 'import' | 'closing' | 'adjustment';
   public sourceId?: string;
   public status!: 'draft' | 'posted' | 'reversed';
-  public reversalId?: string;
+  public reversalId?: number;
   public totalDebitAmount!: string;
   public totalCreditAmount!: string;
-  public fundId?: string;
-  public createdBy!: string;
-  public postedBy?: string;
+  public fundId?: number;
+  public createdBy!: number;
+  public postedBy?: number;
   public postedAt?: Date;
-  public reversedBy?: string;
+  public reversedBy?: number;
   public reversedAt?: Date;
   public reversalReason?: string;
   public metadata?: Record<string, any>;
@@ -108,17 +108,17 @@ export class JournalEntry extends Model<JournalEntryAttributes, JournalEntryCrea
 }
 
 export interface JournalEntryLineItemAttributes {
-  id: string;
-  journalEntryId: string;
+  id: number;
+  journalEntryId: number;
   lineNumber: number;
-  glAccountId: string;
+  glAccountId: number;
   debitAmount: string;
   creditAmount: string;
   description?: string;
   reference?: string;
-  fundId?: string;
-  investorId?: string;
-  investmentId?: string;
+  fundId?: number;
+  investorId?: number;
+  investmentId?: number;
   metadata?: Record<string, any>;
   createdAt?: Date;
   updatedAt?: Date;
@@ -127,17 +127,17 @@ export interface JournalEntryLineItemAttributes {
 interface JournalEntryLineItemCreationAttributes extends Optional<JournalEntryLineItemAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export class JournalEntryLineItem extends Model<JournalEntryLineItemAttributes, JournalEntryLineItemCreationAttributes> implements JournalEntryLineItemAttributes {
-  public id!: string;
-  public journalEntryId!: string;
+  public id!: number;
+  public journalEntryId!: number;
   public lineNumber!: number;
-  public glAccountId!: string;
+  public glAccountId!: number;
   public debitAmount!: string;
   public creditAmount!: string;
   public description?: string;
   public reference?: string;
-  public fundId?: string;
-  public investorId?: string;
-  public investmentId?: string;
+  public fundId?: number;
+  public investorId?: number;
+  public investmentId?: number;
   public metadata?: Record<string, any>;
 
   public readonly createdAt!: Date;
@@ -189,8 +189,8 @@ export class JournalEntryLineItem extends Model<JournalEntryLineItemAttributes, 
 JournalEntry.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     entryNumber: {
@@ -227,7 +227,7 @@ JournalEntry.init(
       defaultValue: 'draft',
     },
     reversalId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'JournalEntries',
@@ -257,7 +257,7 @@ JournalEntry.init(
       },
     },
     fundId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'Funds',
@@ -265,7 +265,7 @@ JournalEntry.init(
       },
     },
     createdBy: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'Users',
@@ -273,7 +273,7 @@ JournalEntry.init(
       },
     },
     postedBy: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'Users',
@@ -285,7 +285,7 @@ JournalEntry.init(
       allowNull: true,
     },
     reversedBy: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'Users',
@@ -311,23 +311,23 @@ JournalEntry.init(
     timestamps: true,
     indexes: [
       {
-        fields: ['entryNumber'],
+        fields: ['entry_number'],
         unique: true,
       },
       {
-        fields: ['entryDate'],
+        fields: ['entry_date'],
       },
       {
         fields: ['status'],
       },
       {
-        fields: ['sourceType'],
+        fields: ['source_type'],
       },
       {
-        fields: ['fundId'],
+        fields: ['fund_id'],
       },
       {
-        fields: ['createdBy'],
+        fields: ['created_by'],
       },
     ],
   }
@@ -336,12 +336,12 @@ JournalEntry.init(
 JournalEntryLineItem.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     journalEntryId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'JournalEntries',
@@ -353,7 +353,7 @@ JournalEntryLineItem.init(
       allowNull: false,
     },
     glAccountId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'GLAccounts',
@@ -391,7 +391,7 @@ JournalEntryLineItem.init(
       allowNull: true,
     },
     fundId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'Funds',
@@ -399,7 +399,7 @@ JournalEntryLineItem.init(
       },
     },
     investorId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'InvestorEntities',
@@ -407,7 +407,7 @@ JournalEntryLineItem.init(
       },
     },
     investmentId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'Investments',
@@ -425,20 +425,20 @@ JournalEntryLineItem.init(
     timestamps: true,
     indexes: [
       {
-        fields: ['journalEntryId', 'lineNumber'],
+        fields: ['journal_entry_id', 'line_number'],
         unique: true,
       },
       {
-        fields: ['glAccountId'],
+        fields: ['gl_account_id'],
       },
       {
-        fields: ['fundId'],
+        fields: ['fund_id'],
       },
       {
-        fields: ['investorId'],
+        fields: ['investor_id'],
       },
       {
-        fields: ['investmentId'],
+        fields: ['investment_id'],
       },
     ],
   }

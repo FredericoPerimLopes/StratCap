@@ -76,7 +76,7 @@ Investment.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -193,7 +193,7 @@ Investment.init(
   {
     sequelize,
     modelName: 'Investment',
-    tableName: 'investments',
+    tableName: 'Investments',
     indexes: [
       {
         fields: ['fund_id'],

@@ -77,7 +77,7 @@ FeeOffset.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'fee_calculations',
+        model: 'FeeCalculations',
         key: 'id',
       },
     },
@@ -114,7 +114,7 @@ FeeOffset.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -131,7 +131,7 @@ FeeOffset.init(
   {
     sequelize,
     modelName: 'FeeOffset',
-    tableName: 'fee_offsets',
+    tableName: 'FeeOffsets',
     indexes: [
       {
         fields: ['fee_calculation_id'],

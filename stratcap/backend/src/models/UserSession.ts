@@ -162,23 +162,23 @@ export function initUserSession(sequelize: Sequelize): typeof UserSession {
       timestamps: true,
       indexes: [
         {
-          fields: ['userId'],
+          fields: ['user_id'],
         },
         {
-          fields: ['sessionToken'],
+          fields: ['session_token'],
           unique: true,
         },
         {
-          fields: ['isActive'],
+          fields: ['is_active'],
         },
         {
-          fields: ['expiresAt'],
+          fields: ['expires_at'],
         },
         {
-          fields: ['lastActivity'],
+          fields: ['last_activity'],
         },
         {
-          fields: ['ipAddress'],
+          fields: ['ip_address'],
         },
       ],
     }

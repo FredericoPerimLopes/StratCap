@@ -312,7 +312,7 @@ export function initCreditDrawdown(sequelize: Sequelize): typeof CreditDrawdown 
       timestamps: true,
       indexes: [
         {
-          fields: ['facilityId'],
+          fields: ['facility_id'],
         },
         {
           fields: ['status'],
@@ -321,10 +321,10 @@ export function initCreditDrawdown(sequelize: Sequelize): typeof CreditDrawdown 
           fields: ['priority'],
         },
         {
-          fields: ['requestDate'],
+          fields: ['request_date'],
         },
         {
-          fields: ['requestedBy'],
+          fields: ['requested_by'],
         },
       ],
     }

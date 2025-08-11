@@ -96,7 +96,7 @@ Transaction.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -104,7 +104,7 @@ Transaction.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'commitments',
+        model: 'Commitments',
         key: 'id',
       },
     },
@@ -112,7 +112,7 @@ Transaction.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'capital_activities',
+        model: 'CapitalActivities',
         key: 'id',
       },
     },
@@ -188,7 +188,7 @@ Transaction.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'transactions',
+        model: 'Transactions',
         key: 'id',
       },
     },
@@ -213,7 +213,7 @@ Transaction.init(
   {
     sequelize,
     modelName: 'Transaction',
-    tableName: 'transactions',
+    tableName: 'Transactions',
     indexes: [
       {
         fields: ['fund_id'],

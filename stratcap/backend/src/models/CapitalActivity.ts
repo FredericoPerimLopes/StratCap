@@ -97,7 +97,7 @@ CapitalActivity.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -177,7 +177,7 @@ CapitalActivity.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -202,7 +202,7 @@ CapitalActivity.init(
   {
     sequelize,
     modelName: 'CapitalActivity',
-    tableName: 'capital_activities',
+    tableName: 'CapitalActivities',
     indexes: [
       {
         fields: ['fund_id'],

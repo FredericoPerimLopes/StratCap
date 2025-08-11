@@ -154,7 +154,7 @@ FeeBasis.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -205,7 +205,7 @@ FeeBasis.init(
   {
     sequelize,
     modelName: 'FeeBasis',
-    tableName: 'fee_basis',
+    tableName: 'FeeBases',
     hooks: {
       beforeCreate: (basis: FeeBasis) => {
         if (!basis.adjustedBasisAmount) {

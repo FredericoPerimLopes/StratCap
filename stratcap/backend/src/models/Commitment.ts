@@ -91,7 +91,7 @@ Commitment.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -99,7 +99,7 @@ Commitment.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_entities',
+        model: 'InvestorEntities',
         key: 'id',
       },
     },
@@ -107,7 +107,7 @@ Commitment.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_classes',
+        model: 'InvestorClasses',
         key: 'id',
       },
     },
@@ -127,7 +127,7 @@ Commitment.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'closings',
+        model: 'Closings',
         key: 'id',
       },
     },
@@ -200,7 +200,7 @@ Commitment.init(
   {
     sequelize,
     modelName: 'Commitment',
-    tableName: 'commitments',
+    tableName: 'Commitments',
     indexes: [
       {
         fields: ['fund_id'],

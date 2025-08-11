@@ -458,13 +458,13 @@ SystemConfiguration.init(
         fields: ['category'],
       },
       {
-        fields: ['isPublic'],
+        fields: ['is_public'],
       },
       {
         fields: ['environment'],
       },
       {
-        fields: ['lastModifiedBy'],
+        fields: ['last_modified_by'],
       },
     ],
     hooks: {

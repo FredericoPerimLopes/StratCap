@@ -68,7 +68,7 @@ InvestorClass.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -157,7 +157,7 @@ InvestorClass.init(
   {
     sequelize,
     modelName: 'InvestorClass',
-    tableName: 'investor_classes',
+    tableName: 'InvestorClasses',
     indexes: [
       {
         unique: true,

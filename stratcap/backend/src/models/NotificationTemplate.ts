@@ -99,7 +99,7 @@ NotificationTemplate.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -107,7 +107,7 @@ NotificationTemplate.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -128,7 +128,7 @@ NotificationTemplate.init(
   {
     sequelize,
     modelName: 'NotificationTemplate',
-    tableName: 'notification_templates',
+    tableName: 'NotificationTemplates',
     indexes: [
       {
         fields: ['type'],

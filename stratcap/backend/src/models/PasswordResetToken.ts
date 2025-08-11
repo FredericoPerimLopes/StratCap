@@ -113,7 +113,7 @@ export function initPasswordResetToken(sequelize: Sequelize): typeof PasswordRes
       timestamps: true,
       indexes: [
         {
-          fields: ['userId'],
+          fields: ['user_id'],
         },
         {
           fields: ['token'],
@@ -123,10 +123,10 @@ export function initPasswordResetToken(sequelize: Sequelize): typeof PasswordRes
           fields: ['used'],
         },
         {
-          fields: ['expiresAt'],
+          fields: ['expires_at'],
         },
         {
-          fields: ['createdAt'],
+          fields: ['created_at'],
         },
       ],
     }

@@ -329,23 +329,23 @@ WorkflowConfiguration.init(
     timestamps: true,
     indexes: [
       {
-        fields: ['workflowName'],
+        fields: ['workflow_name'],
         unique: true,
       },
       {
-        fields: ['module', 'triggerEvent'],
+        fields: ['module', 'trigger_event'],
       },
       {
-        fields: ['workflowType'],
+        fields: ['workflow_type'],
       },
       {
-        fields: ['isActive'],
+        fields: ['is_active'],
       },
       {
         fields: ['priority'],
       },
       {
-        fields: ['fundId'],
+        fields: ['fund_id'],
       },
     ],
   }

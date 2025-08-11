@@ -306,13 +306,13 @@ export function initCreditFacility(sequelize: Sequelize): typeof CreditFacility 
       timestamps: true,
       indexes: [
         {
-          fields: ['fundId'],
+          fields: ['fund_id'],
         },
         {
-          fields: ['facilityStatus'],
+          fields: ['facility_status'],
         },
         {
-          fields: ['maturityDate'],
+          fields: ['maturity_date'],
         },
         {
           fields: ['lender'],

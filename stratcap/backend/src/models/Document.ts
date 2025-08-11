@@ -257,22 +257,22 @@ Document.init(
         fields: ['category'],
       },
       {
-        fields: ['entityType', 'entityId'],
+        fields: ['entity_type', 'entity_id'],
       },
       {
         fields: ['status'],
       },
       {
-        fields: ['uploadedBy'],
+        fields: ['uploaded_by'],
       },
       {
-        fields: ['createdAt'],
+        fields: ['created_at'],
       },
       {
-        fields: ['approvedBy'],
+        fields: ['approved_by'],
       },
       {
-        fields: ['parentDocumentId'],
+        fields: ['parent_document_id'],
       },
     ],
     hooks: {

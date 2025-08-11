@@ -400,19 +400,19 @@ export function initCreditPaydown(sequelize: Sequelize): typeof CreditPaydown {
       timestamps: true,
       indexes: [
         {
-          fields: ['facilityId'],
+          fields: ['facility_id'],
         },
         {
           fields: ['status'],
         },
         {
-          fields: ['paydownType'],
+          fields: ['paydown_type'],
         },
         {
-          fields: ['paymentDate'],
+          fields: ['payment_date'],
         },
         {
-          fields: ['initiatedBy'],
+          fields: ['initiated_by'],
         },
       ],
     }

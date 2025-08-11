@@ -182,7 +182,7 @@ InvestorEntity.init(
   {
     sequelize,
     modelName: 'InvestorEntity',
-    tableName: 'investor_entities',
+    tableName: 'InvestorEntities',
     indexes: [
       {
         fields: ['name'],

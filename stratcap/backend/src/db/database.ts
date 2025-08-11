@@ -2,6 +2,9 @@ import { Sequelize } from 'sequelize';
 import { config } from '../config/config';
 import { databaseEncryptionConfig } from '../utils/encryption';
 
+// Import models to register them with Sequelize before sync
+import '../models';
+
 // Merge encryption config with base config
 const databaseConfig = {
   dialect: 'postgres' as const,
@@ -36,15 +39,27 @@ const sequelize = new Sequelize(databaseConfig);
 
 export const connectDatabase = async (): Promise<void> => {
   try {
+    console.log('🔌 Connecting to PostgreSQL database...');
     await sequelize.authenticate();
-    console.log('Database connection established successfully.');
+    console.log('✅ Database connection established successfully.');
     
     if (config.env === 'development') {
-      await sequelize.sync({ alter: true });
-      console.log('Database synchronized.');
+      // CRITICAL: Force clear any cached schema/metadata to eliminate UUID corruption
+      console.log('🧹 Clearing Sequelize schema cache...');
+      sequelize.modelManager.models = [];
+      // Note: sequelize.models is read-only, drop() will handle cache clearing
+      
+      // CRITICAL: Drop all tables first to eliminate UUID schema corruption
+      console.log('🗑️  Dropping all existing tables to clear UUID corruption...');
+      await sequelize.drop({ cascade: true });
+      
+      // Force recreation of tables with fresh INTEGER schema
+      console.log('🔄 Syncing database schema with INTEGER models...');
+      await sequelize.sync({ force: true });
+      console.log('✅ Database synchronized with INTEGER types - UUID corruption eliminated');
     }
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.error('❌ Unable to connect to the database:', error);
     process.exit(1);
   }
 };

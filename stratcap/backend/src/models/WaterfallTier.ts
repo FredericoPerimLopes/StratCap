@@ -121,7 +121,7 @@ WaterfallTier.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'waterfall_calculations',
+        model: 'WaterfallCalculations',
         key: 'id',
       },
     },
@@ -229,7 +229,7 @@ WaterfallTier.init(
   {
     sequelize,
     modelName: 'WaterfallTier',
-    tableName: 'waterfall_tiers',
+    tableName: 'WaterfallTiers',
     indexes: [
       {
         fields: ['waterfall_calculation_id'],

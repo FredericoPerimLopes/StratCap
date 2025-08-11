@@ -101,7 +101,7 @@ FeeCharge.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'fee_calculations',
+        model: 'FeeCalculations',
         key: 'id',
       },
     },
@@ -109,7 +109,7 @@ FeeCharge.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_entities',
+        model: 'InvestorEntities',
         key: 'id',
       },
     },
@@ -117,7 +117,7 @@ FeeCharge.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'commitments',
+        model: 'Commitments',
         key: 'id',
       },
     },
@@ -184,7 +184,7 @@ FeeCharge.init(
   {
     sequelize,
     modelName: 'FeeCharge',
-    tableName: 'fee_charges',
+    tableName: 'FeeCharges',
     hooks: {
       beforeCreate: (charge: FeeCharge) => {
         if (!charge.remainingAmount) {

@@ -3,20 +3,20 @@ import sequelize from '../db/database';
 import { GLAccount } from './GLAccount';
 
 export interface GLAccountMappingAttributes {
-  id: string;
+  id: number;
   sourceSystem: string;
   sourceType: 'capital_activity' | 'fee' | 'expense' | 'investment' | 'distribution' | 'commitment' | 'credit_facility' | 'custom';
   sourceSubType?: string;
-  glAccountId: string;
-  debitAccountId?: string;
-  creditAccountId?: string;
-  fundId?: string;
+  glAccountId: number;
+  debitAccountId?: number;
+  creditAccountId?: number;
+  fundId?: number;
   priority: number;
   isActive: boolean;
   conditions?: Record<string, any>;
   description?: string;
-  createdBy: string;
-  lastModifiedBy?: string;
+  createdBy: number;
+  lastModifiedBy?: number;
   metadata?: Record<string, any>;
   createdAt?: Date;
   updatedAt?: Date;
@@ -25,20 +25,20 @@ export interface GLAccountMappingAttributes {
 interface GLAccountMappingCreationAttributes extends Optional<GLAccountMappingAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export class GLAccountMapping extends Model<GLAccountMappingAttributes, GLAccountMappingCreationAttributes> implements GLAccountMappingAttributes {
-  public id!: string;
+  public id!: number;
   public sourceSystem!: string;
   public sourceType!: 'capital_activity' | 'fee' | 'expense' | 'investment' | 'distribution' | 'commitment' | 'credit_facility' | 'custom';
   public sourceSubType?: string;
-  public glAccountId!: string;
-  public debitAccountId?: string;
-  public creditAccountId?: string;
-  public fundId?: string;
+  public glAccountId!: number;
+  public debitAccountId?: number;
+  public creditAccountId?: number;
+  public fundId?: number;
   public priority!: number;
   public isActive!: boolean;
   public conditions?: Record<string, any>;
   public description?: string;
-  public createdBy!: string;
-  public lastModifiedBy?: string;
+  public createdBy!: number;
+  public lastModifiedBy?: number;
   public metadata?: Record<string, any>;
 
   public readonly createdAt!: Date;
@@ -104,7 +104,7 @@ export class GLAccountMapping extends Model<GLAccountMappingAttributes, GLAccoun
   /**
    * Get the appropriate GL account based on transaction type
    */
-  public getGLAccountId(transactionSide: 'debit' | 'credit'): string {
+  public getGLAccountId(transactionSide: 'debit' | 'credit'): number {
     if (transactionSide === 'debit' && this.debitAccountId) {
       return this.debitAccountId;
     }
@@ -118,8 +118,8 @@ export class GLAccountMapping extends Model<GLAccountMappingAttributes, GLAccoun
 GLAccountMapping.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     sourceSystem: {
@@ -147,7 +147,7 @@ GLAccountMapping.init(
       allowNull: true,
     },
     glAccountId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'GLAccounts',
@@ -155,7 +155,7 @@ GLAccountMapping.init(
       },
     },
     debitAccountId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'GLAccounts',
@@ -163,7 +163,7 @@ GLAccountMapping.init(
       },
     },
     creditAccountId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'GLAccounts',
@@ -171,7 +171,7 @@ GLAccountMapping.init(
       },
     },
     fundId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'Funds',
@@ -201,7 +201,7 @@ GLAccountMapping.init(
       allowNull: true,
     },
     createdBy: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'Users',
@@ -209,7 +209,7 @@ GLAccountMapping.init(
       },
     },
     lastModifiedBy: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: 'Users',
@@ -227,25 +227,25 @@ GLAccountMapping.init(
     timestamps: true,
     indexes: [
       {
-        fields: ['sourceSystem', 'sourceType'],
+        fields: ['source_system', 'source_type'],
       },
       {
-        fields: ['sourceType', 'sourceSubType'],
+        fields: ['source_type', 'source_sub_type'],
       },
       {
-        fields: ['glAccountId'],
+        fields: ['gl_account_id'],
       },
       {
-        fields: ['fundId'],
+        fields: ['fund_id'],
       },
       {
         fields: ['priority'],
       },
       {
-        fields: ['isActive'],
+        fields: ['is_active'],
       },
       {
-        fields: ['sourceSystem', 'sourceType', 'priority'],
+        fields: ['source_system', 'source_type', 'priority'],
       },
     ],
   }

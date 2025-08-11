@@ -88,7 +88,7 @@ CapitalAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'capital_activities',
+        model: 'CapitalActivities',
         key: 'id',
       },
     },
@@ -96,7 +96,7 @@ CapitalAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'commitments',
+        model: 'Commitments',
         key: 'id',
       },
     },
@@ -104,7 +104,7 @@ CapitalAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -112,7 +112,7 @@ CapitalAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_entities',
+        model: 'InvestorEntities',
         key: 'id',
       },
     },
@@ -120,7 +120,7 @@ CapitalAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_classes',
+        model: 'InvestorClasses',
         key: 'id',
       },
     },
@@ -205,7 +205,7 @@ CapitalAllocation.init(
   {
     sequelize,
     modelName: 'CapitalAllocation',
-    tableName: 'capital_allocations',
+    tableName: 'CapitalAllocations',
     indexes: [
       {
         fields: ['capital_activity_id'],

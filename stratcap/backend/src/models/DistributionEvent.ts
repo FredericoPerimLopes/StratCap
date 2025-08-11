@@ -125,7 +125,7 @@ DistributionEvent.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'waterfall_calculations',
+        model: 'WaterfallCalculations',
         key: 'id',
       },
     },
@@ -133,7 +133,7 @@ DistributionEvent.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_entities',
+        model: 'InvestorEntities',
         key: 'id',
       },
     },
@@ -141,7 +141,7 @@ DistributionEvent.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'commitments',
+        model: 'Commitments',
         key: 'id',
       },
     },
@@ -230,7 +230,7 @@ DistributionEvent.init(
   {
     sequelize,
     modelName: 'DistributionEvent',
-    tableName: 'distribution_events',
+    tableName: 'DistributionEvents',
     indexes: [
       {
         fields: ['waterfall_calculation_id'],

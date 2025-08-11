@@ -386,7 +386,7 @@ GlobalEntity.init(
     timestamps: true,
     indexes: [
       {
-        fields: ['entityType', 'entityId'],
+        fields: ['entity_type', 'entity_id'],
         unique: true,
       },
       {
@@ -397,10 +397,10 @@ GlobalEntity.init(
         using: 'gin',
       },
       {
-        fields: ['isActive'],
+        fields: ['is_active'],
       },
       {
-        fields: ['lastSyncAt'],
+        fields: ['last_sync_at'],
       },
       {
         fields: ['relationships'],

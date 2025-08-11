@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: stratcap
+      POSTGRES_USER: stratcap
+      POSTGRES_PASSWORD: stratcap123456
+    ports:
+      - "5432:5432"
+    # Removed persistent volume for clean schema recreation
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+    networks:
+      - stratcap-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - stratcap-network
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@stratcap.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - stratcap-network
+
+  # Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - stratcap-network
+
+networks:
+  stratcap-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

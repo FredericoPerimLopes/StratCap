@@ -98,7 +98,7 @@ DistributionAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'capital_activities',
+        model: 'CapitalActivities',
         key: 'id',
       },
     },
@@ -106,7 +106,7 @@ DistributionAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'commitments',
+        model: 'Commitments',
         key: 'id',
       },
     },
@@ -114,7 +114,7 @@ DistributionAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -122,7 +122,7 @@ DistributionAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_entities',
+        model: 'InvestorEntities',
         key: 'id',
       },
     },
@@ -130,7 +130,7 @@ DistributionAllocation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_classes',
+        model: 'InvestorClasses',
         key: 'id',
       },
     },
@@ -258,7 +258,7 @@ DistributionAllocation.init(
   {
     sequelize,
     modelName: 'DistributionAllocation',
-    tableName: 'distribution_allocations',
+    tableName: 'DistributionAllocations',
     indexes: [
       {
         fields: ['capital_activity_id'],

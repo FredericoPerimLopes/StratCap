@@ -421,19 +421,19 @@ export function initBorrowingBase(sequelize: Sequelize): typeof BorrowingBase {
       timestamps: true,
       indexes: [
         {
-          fields: ['facilityId'],
+          fields: ['facility_id'],
         },
         {
           fields: ['status'],
         },
         {
-          fields: ['reportingDate'],
+          fields: ['reporting_date'],
         },
         {
           fields: ['version'],
         },
         {
-          fields: ['nextReviewDate'],
+          fields: ['next_review_date'],
         },
       ],
     }

@@ -137,7 +137,7 @@ InvestorTransfer.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'funds',
+        model: 'Funds',
         key: 'id',
       },
     },
@@ -145,7 +145,7 @@ InvestorTransfer.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'investor_entities',
+        model: 'InvestorEntities',
         key: 'id',
       },
     },
@@ -153,7 +153,7 @@ InvestorTransfer.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'investor_entities',
+        model: 'InvestorEntities',
         key: 'id',
       },
     },
@@ -161,7 +161,7 @@ InvestorTransfer.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'commitments',
+        model: 'Commitments',
         key: 'id',
       },
     },
@@ -249,7 +249,7 @@ InvestorTransfer.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -261,7 +261,7 @@ InvestorTransfer.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -273,7 +273,7 @@ InvestorTransfer.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id',
       },
     },
@@ -307,7 +307,7 @@ InvestorTransfer.init(
   {
     sequelize,
     modelName: 'InvestorTransfer',
-    tableName: 'investor_transfers',
+    tableName: 'InvestorTransfers',
     indexes: [
       {
         fields: ['fund_id'],
