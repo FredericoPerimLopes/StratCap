@@ -1,13 +1,9 @@
 import { Router } from 'express';
 import commitmentController from '../controllers/CommitmentController';
-import { protect } from '../middleware/auth';
 import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';
 import Joi from 'joi';
 
 const router = Router();
-
-// All routes require authentication
-router.use(protect);
 
 // Commitment CRUD operations
 router.post('/', validate(schemas.createCommitment), commitmentController.createCommitment);

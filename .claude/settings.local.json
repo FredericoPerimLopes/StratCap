@@ -6,7 +6,25 @@
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
       "Bash(rm:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(timeout 30s npm run dev)",
+      "Bash(timeout 15s npm run dev)",
+      "Bash(npm run:*)",
+      "Bash(timeout 20s npm run dev)",
+      "Bash(PGPASSWORD=stratcap_dev_2024 psql -h localhost -U stratcap -d stratcap -c \"\\dt\")",
+      "Bash(fuser:*)",
+      "Bash(kill:*)",
+      "Bash(curl:*)",
+      "Bash(psql:*)",
+      "Bash(timeout:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker exec:*)",
+      "Bash(node:*)",
+      "Bash(lsof:*)",
+      "Bash(npm ls:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   }

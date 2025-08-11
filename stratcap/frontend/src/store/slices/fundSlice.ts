@@ -49,7 +49,9 @@ const initialState: FundState = {
 export const fetchFunds = createAsyncThunk(
   'fund/fetchFunds',
   async (params?: { page?: number; limit?: number; search?: string; fundFamilyId?: number }) => {
+    console.log('🔍 fetchFunds called with params:', params);
     const response = await fundAPI.getAll(params);
+    console.log('📡 API response:', response.data);
     return response.data;
   }
 );
@@ -106,8 +108,12 @@ const fundSlice = createSlice({
       })
       .addCase(fetchFunds.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.funds = action.payload.data;
-        state.pagination = action.payload.pagination || null;
+        // Handle nested backend response structure
+        console.log('📝 Redux payload:', action.payload);
+        const funds = action.payload.data?.funds || action.payload.funds || [];
+        console.log('📊 Extracted funds:', funds);
+        state.funds = funds;
+        state.pagination = action.payload.data?.pagination || action.payload.pagination || null;
       })
       .addCase(fetchFunds.rejected, (state, action) => {
         state.isLoading = false;
@@ -121,7 +127,7 @@ const fundSlice = createSlice({
       })
       .addCase(fetchFundById.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentFund = action.payload.data;
+        state.currentFund = action.payload.data || action.payload;
       })
       .addCase(fetchFundById.rejected, (state, action) => {
         state.isLoading = false;
@@ -135,7 +141,8 @@ const fundSlice = createSlice({
       })
       .addCase(createFund.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.funds.unshift(action.payload.data);
+        const newFund = action.payload.data || action.payload;
+        state.funds.unshift(newFund);
       })
       .addCase(createFund.rejected, (state, action) => {
         state.isLoading = false;

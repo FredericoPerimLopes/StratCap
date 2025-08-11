@@ -2,8 +2,7 @@ import { Sequelize } from 'sequelize';
 import { config } from '../config/config';
 import { databaseEncryptionConfig } from '../utils/encryption';
 
-// Import models to register them with Sequelize before sync
-import '../models';
+// Models will be imported after sequelize instance is created
 
 // Merge encryption config with base config
 const databaseConfig = {
@@ -43,23 +42,28 @@ export const connectDatabase = async (): Promise<void> => {
     await sequelize.authenticate();
     console.log('✅ Database connection established successfully.');
     
+    // Import and initialize all models
+    console.log('🔧 Registering database models...');
+    const models = await import('../models');
+    console.log(`✅ ${Object.keys(models.default).length} models registered successfully`);
+    
     if (config.env === 'development') {
-      // CRITICAL: Force clear any cached schema/metadata to eliminate UUID corruption
-      console.log('🧹 Clearing Sequelize schema cache...');
-      sequelize.modelManager.models = [];
-      // Note: sequelize.models is read-only, drop() will handle cache clearing
-      
       // CRITICAL: Drop all tables first to eliminate UUID schema corruption
       console.log('🗑️  Dropping all existing tables to clear UUID corruption...');
       await sequelize.drop({ cascade: true });
       
       // Force recreation of tables with fresh INTEGER schema
       console.log('🔄 Syncing database schema with INTEGER models...');
-      await sequelize.sync({ force: true });
-      console.log('✅ Database synchronized with INTEGER types - UUID corruption eliminated');
+      await sequelize.sync({ force: true, alter: false });
+      console.log(`✅ Database synchronized: ${Object.keys(sequelize.models).length} tables created`);
+      
+      // Log created tables for verification
+      const tableNames = Object.keys(sequelize.models);
+      console.log(`📊 Created tables: ${tableNames.join(', ')}`);
     }
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error);
+    console.error('Full error:', error);
     process.exit(1);
   }
 };

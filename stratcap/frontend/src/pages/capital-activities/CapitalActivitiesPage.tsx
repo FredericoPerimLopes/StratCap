@@ -1,22 +1,49 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  PlusIcon,
-  MagnifyingGlassIcon,
-  EyeIcon,
-  PencilIcon,
-  CheckIcon,
-  XMarkIcon,
-  FunnelIcon,
-  DocumentArrowDownIcon,
-  CurrencyDollarIcon,
-  BanknotesIcon,
-  CalendarIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon
-} from '@heroicons/react/24/outline';
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  IconButton,
+  InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import {
+  Add as PlusIcon,
+  Search as MagnifyingGlassIcon,
+  Visibility as EyeIcon,
+  Edit as PencilIcon,
+  Check as CheckIcon,
+  Close as XMarkIcon,
+  FilterList as FunnelIcon,
+  FileDownload as DocumentArrowDownIcon,
+  AttachMoney as CurrencyDollarIcon,
+  MonetizationOn as BanknotesIcon,
+  CalendarMonth as CalendarIcon,
+  AccessTime as ClockIcon,
+  CheckCircle as CheckCircleIcon,
+  TrendingUp as ArrowTrendingUpIcon,
+  TrendingDown as ArrowTrendingDownIcon
+} from '@mui/icons-material';
 import {
   XAxis,
   YAxis,
@@ -183,34 +210,34 @@ const CapitalActivitiesPage: React.FC = () => {
     }).format(amount);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string): 'success' | 'info' | 'warning' | 'default' | 'error' => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'approved': return 'bg-blue-100 text-blue-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'draft': return 'bg-gray-100 text-gray-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed': return 'success';
+      case 'approved': return 'info';
+      case 'pending': return 'warning';
+      case 'draft': return 'default';
+      case 'cancelled': return 'error';
+      default: return 'default';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircleIcon className="h-4 w-4" />;
-      case 'approved': return <CheckIcon className="h-4 w-4" />;
-      case 'pending': return <ClockIcon className="h-4 w-4" />;
-      case 'draft': return <PencilIcon className="h-4 w-4" />;
-      case 'cancelled': return <XMarkIcon className="h-4 w-4" />;
-      default: return <ClockIcon className="h-4 w-4" />;
+      case 'completed': return <CheckCircleIcon sx={{ fontSize: 16 }} />;
+      case 'approved': return <CheckIcon sx={{ fontSize: 16 }} />;
+      case 'pending': return <ClockIcon sx={{ fontSize: 16 }} />;
+      case 'draft': return <PencilIcon sx={{ fontSize: 16 }} />;
+      case 'cancelled': return <XMarkIcon sx={{ fontSize: 16 }} />;
+      default: return <ClockIcon sx={{ fontSize: 16 }} />;
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'capital_call': return <ArrowTrendingDownIcon className="h-5 w-5 text-red-500" />;
-      case 'distribution': return <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />;
-      case 'transfer': return <BanknotesIcon className="h-5 w-5 text-blue-500" />;
-      default: return <CurrencyDollarIcon className="h-5 w-5 text-gray-500" />;
+      case 'capital_call': return <ArrowTrendingDownIcon sx={{ fontSize: 20, color: 'error.main' }} />;
+      case 'distribution': return <ArrowTrendingUpIcon sx={{ fontSize: 20, color: 'success.main' }} />;
+      case 'transfer': return <BanknotesIcon sx={{ fontSize: 20, color: 'primary.main' }} />;
+      default: return <CurrencyDollarIcon sx={{ fontSize: 20, color: 'text.secondary' }} />;
     }
   };
 
@@ -243,411 +270,476 @@ const CapitalActivitiesPage: React.FC = () => {
   const pendingActivities = activities.filter(a => a.status === 'pending' || a.status === 'approved').length;
 
   return (
-    <div className="space-y-6">
+    <Box sx={{ p: 2 }}>
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Capital Activities</h1>
-        <div className="flex space-x-3">
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-            <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
-            Export
-          </button>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+          Capital Activities
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<DocumentArrowDownIcon />}
           >
-            <PlusIcon className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<PlusIcon />}
+            onClick={() => setShowCreateModal(true)}
+          >
             Create Activity
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Box>
+      </Box>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <ArrowTrendingDownIcon className="h-8 w-8 text-red-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total Capital Calls</p>
-              <p className="text-2xl font-semibold text-gray-900">{formatCurrency(totalCapitalCalls)}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <ArrowTrendingUpIcon className="h-8 w-8 text-green-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total Distributions</p>
-              <p className="text-2xl font-semibold text-gray-900">{formatCurrency(totalDistributions)}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <ClockIcon className="h-8 w-8 text-yellow-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Pending Activities</p>
-              <p className="text-2xl font-semibold text-gray-900">{pendingActivities}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <CalendarIcon className="h-8 w-8 text-blue-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">This Month</p>
-              <p className="text-2xl font-semibold text-gray-900">6</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ArrowTrendingDownIcon sx={{ fontSize: 32, color: 'error.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Total Capital Calls</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {formatCurrency(totalCapitalCalls)}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ArrowTrendingUpIcon sx={{ fontSize: 32, color: 'success.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Total Distributions</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {formatCurrency(totalDistributions)}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ClockIcon sx={{ fontSize: 32, color: 'warning.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Pending Activities</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {pendingActivities}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <CalendarIcon sx={{ fontSize: 32, color: 'primary.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">This Month</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    6
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Activity Trends</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={activityTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip formatter={(value) => [formatCurrency(value as number), '']} />
-              <Area type="monotone" dataKey="capitalCalls" stackId="1" stroke="#EF4444" fill="#EF4444" name="Capital Calls" />
-              <Area type="monotone" dataKey="distributions" stackId="1" stroke="#10B981" fill="#10B981" name="Distributions" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} lg={8}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2 }}>Activity Trends</Typography>
+              <Box sx={{ height: 300 }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={activityTrendData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [formatCurrency(value as number), '']} />
+                    <Area type="monotone" dataKey="capitalCalls" stackId="1" stroke="#EF4444" fill="#EF4444" name="Capital Calls" />
+                    <Area type="monotone" dataKey="distributions" stackId="1" stroke="#10B981" fill="#10B981" name="Distributions" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Activity Types</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={activityTypeData}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              >
-                {activityTypeData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+        <Grid item xs={12} lg={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2 }}>Activity Types</Typography>
+              <Box sx={{ height: 300 }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={activityTypeData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {activityTypeData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="relative">
-            <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-3 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search activities..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          <select
-            value={filterFund}
-            onChange={(e) => setFilterFund(e.target.value)}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">All Funds</option>
-            <option value="Growth Fund III">Growth Fund III</option>
-            <option value="Venture Fund II">Venture Fund II</option>
-            <option value="Real Estate Fund I">Real Estate Fund I</option>
-          </select>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">All Types</option>
-            <option value="capital_call">Capital Call</option>
-            <option value="distribution">Distribution</option>
-            <option value="transfer">Transfer</option>
-          </select>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">All Status</option>
-            <option value="draft">Draft</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <div className="flex items-center text-sm text-gray-500">
-            <FunnelIcon className="h-4 w-4 mr-1" />
-            {filteredActivities.length} of {activities.length} activities
-          </div>
-        </div>
-      </div>
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Grid container spacing={3} alignItems="center">
+            <Grid item xs={12} md={3}>
+              <TextField
+                fullWidth
+                placeholder="Search activities..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MagnifyingGlassIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Fund</InputLabel>
+                <Select
+                  value={filterFund}
+                  label="Fund"
+                  onChange={(e) => setFilterFund(e.target.value)}
+                >
+                  <MenuItem value="">All Funds</MenuItem>
+                  <MenuItem value="Growth Fund III">Growth Fund III</MenuItem>
+                  <MenuItem value="Venture Fund II">Venture Fund II</MenuItem>
+                  <MenuItem value="Real Estate Fund I">Real Estate Fund I</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Type</InputLabel>
+                <Select
+                  value={filterType}
+                  label="Type"
+                  onChange={(e) => setFilterType(e.target.value)}
+                >
+                  <MenuItem value="">All Types</MenuItem>
+                  <MenuItem value="capital_call">Capital Call</MenuItem>
+                  <MenuItem value="distribution">Distribution</MenuItem>
+                  <MenuItem value="transfer">Transfer</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={filterStatus}
+                  label="Status"
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <MenuItem value="">All Status</MenuItem>
+                  <MenuItem value="draft">Draft</MenuItem>
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="approved">Approved</MenuItem>
+                  <MenuItem value="completed">Completed</MenuItem>
+                  <MenuItem value="cancelled">Cancelled</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <FunnelIcon sx={{ fontSize: 16 }} />
+                <Typography variant="body2" color="text.secondary">
+                  {filteredActivities.length} of {activities.length} activities
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       {/* Activities Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Activity
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fund
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Call Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Due Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Investors
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredActivities.length === 0 ? (
-                <tr>
-                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
-                    No activities found
-                  </td>
-                </tr>
-              ) : (
-                filteredActivities.map((activity) => (
-                  <tr key={activity.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        {getTypeIcon(activity.type)}
-                        <div className="ml-3">
-                          <div className="text-sm font-medium text-gray-900">{activity.description}</div>
-                          <div className="text-sm text-gray-500">ID: {activity.id}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {activity.type.replace('_', ' ')}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {activity.fund}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Activity</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Fund</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Call Date</TableCell>
+              <TableCell>Due Date</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Investors</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredActivities.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                  <Typography color="text.secondary">No activities found</Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredActivities.map((activity) => (
+                <TableRow key={activity.id} hover>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      {getTypeIcon(activity.type)}
+                      <Box sx={{ ml: 2 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {activity.description}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          ID: {activity.id}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={activity.type.replace('_', ' ')} 
+                      size="small" 
+                      color="primary" 
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{activity.fund}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {formatCurrency(activity.amount)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
                       {new Date(activity.callDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
                       {new Date(activity.dueDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>
-                        {getStatusIcon(activity.status)}
-                        <span className="ml-1">{activity.status}</span>
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {activity.investorCount}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
-                        <Link
-                          to={`/capital-activities/${activity.id}`}
-                          className="text-indigo-600 hover:text-indigo-900"
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={activity.status}
+                      size="small"
+                      color={getStatusColor(activity.status)}
+                      icon={getStatusIcon(activity.status)}
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{activity.investorCount}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                      <IconButton
+                        size="small"
+                        component={Link}
+                        to={`/capital-activities/${activity.id}`}
+                        color="primary"
+                      >
+                        <EyeIcon />
+                      </IconButton>
+                      {activity.status === 'draft' && (
+                        <IconButton
+                          size="small"
+                          onClick={() => handleStatusUpdate(activity.id, 'pending')}
+                          color="info"
+                          title="Submit for Approval"
                         >
-                          <EyeIcon className="h-4 w-4" />
-                        </Link>
-                        {activity.status === 'draft' && (
-                          <button
-                            onClick={() => handleStatusUpdate(activity.id, 'pending')}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="Submit for Approval"
-                          >
-                            <CheckIcon className="h-4 w-4" />
-                          </button>
-                        )}
-                        {activity.status === 'pending' && (
-                          <button
-                            onClick={() => setShowApprovalModal(activity.id)}
-                            className="text-green-600 hover:text-green-900"
-                            title="Approve/Reject"
-                          >
-                            <CheckCircleIcon className="h-4 w-4" />
-                          </button>
-                        )}
-                        {activity.status === 'approved' && (
-                          <button
-                            onClick={() => handleStatusUpdate(activity.id, 'completed')}
-                            className="text-purple-600 hover:text-purple-900"
-                            title="Mark Complete"
-                          >
-                            <CheckCircleIcon className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                          <CheckIcon />
+                        </IconButton>
+                      )}
+                      {activity.status === 'pending' && (
+                        <IconButton
+                          size="small"
+                          onClick={() => setShowApprovalModal(activity.id)}
+                          color="success"
+                          title="Approve/Reject"
+                        >
+                          <CheckCircleIcon />
+                        </IconButton>
+                      )}
+                      {activity.status === 'approved' && (
+                        <IconButton
+                          size="small"
+                          onClick={() => handleStatusUpdate(activity.id, 'completed')}
+                          color="secondary"
+                          title="Mark Complete"
+                        >
+                          <CheckCircleIcon />
+                        </IconButton>
+                      )}
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       {/* Create Activity Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Create Capital Activity</h3>
-              <form onSubmit={handleCreateActivity} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Fund</label>
-                  <select
-                    required
-                    value={formData.fund}
-                    onChange={(e) => setFormData({ ...formData, fund: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="">Select Fund</option>
-                    <option value="Growth Fund III">Growth Fund III</option>
-                    <option value="Venture Fund II">Venture Fund II</option>
-                    <option value="Real Estate Fund I">Real Estate Fund I</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="capital_call">Capital Call</option>
-                    <option value="distribution">Distribution</option>
-                    <option value="transfer">Transfer</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Amount</label>
-                  <input
-                    type="number"
-                    required
-                    value={formData.amount}
-                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Call Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={formData.callDate}
-                    onChange={(e) => setFormData({ ...formData, callDate: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Due Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={formData.dueDate}
-                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Description</label>
-                  <textarea
-                    required
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowCreateModal(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700"
-                  >
-                    Create Activity
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Create Capital Activity</DialogTitle>
+        <form onSubmit={handleCreateActivity}>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
+              <FormControl fullWidth required>
+                <InputLabel>Fund</InputLabel>
+                <Select
+                  value={formData.fund}
+                  label="Fund"
+                  onChange={(e) => setFormData({ ...formData, fund: e.target.value })}
+                >
+                  <MenuItem value="">Select Fund</MenuItem>
+                  <MenuItem value="Growth Fund III">Growth Fund III</MenuItem>
+                  <MenuItem value="Venture Fund II">Venture Fund II</MenuItem>
+                  <MenuItem value="Real Estate Fund I">Real Estate Fund I</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Type</InputLabel>
+                <Select
+                  value={formData.type}
+                  label="Type"
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                >
+                  <MenuItem value="capital_call">Capital Call</MenuItem>
+                  <MenuItem value="distribution">Distribution</MenuItem>
+                  <MenuItem value="transfer">Transfer</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                label="Amount"
+                type="number"
+                required
+                fullWidth
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              />
+              <TextField
+                label="Call Date"
+                type="date"
+                required
+                fullWidth
+                value={formData.callDate}
+                onChange={(e) => setFormData({ ...formData, callDate: e.target.value })}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Due Date"
+                type="date"
+                required
+                fullWidth
+                value={formData.dueDate}
+                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Description"
+                required
+                fullWidth
+                multiline
+                rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setShowCreateModal(false)}
+              color="inherit"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+            >
+              Create Activity
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       {/* Approval Modal */}
-      {showApprovalModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <h3 className="text-lg font-medium text-gray-900">Approve Activity</h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  Do you want to approve or reject this capital activity?
-                </p>
-              </div>
-              <div className="flex justify-center space-x-3 pt-4">
-                <button
-                  onClick={() => setShowApprovalModal(null)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => showApprovalModal && handleApproval(showApprovalModal, false)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
-                >
-                  Reject
-                </button>
-                <button
-                  onClick={() => showApprovalModal && handleApproval(showApprovalModal, true)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
-                >
-                  Approve
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <Dialog
+        open={showApprovalModal !== null}
+        onClose={() => setShowApprovalModal(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Approve Activity</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Do you want to approve or reject this capital activity?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setShowApprovalModal(null)}
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => showApprovalModal && handleApproval(showApprovalModal, false)}
+            color="error"
+            variant="contained"
+          >
+            Reject
+          </Button>
+          <Button
+            onClick={() => showApprovalModal && handleApproval(showApprovalModal, true)}
+            color="success"
+            variant="contained"
+          >
+            Approve
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

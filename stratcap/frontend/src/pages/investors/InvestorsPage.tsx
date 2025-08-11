@@ -9,21 +9,52 @@ import {
   clearError
 } from '../../store/slices/investorSlice';
 import {
-  PlusIcon,
-  MagnifyingGlassIcon,
-  EyeIcon,
-  PencilIcon,
-  TrashIcon,
-  FunnelIcon,
-  DocumentArrowDownIcon,
-  DocumentArrowUpIcon,
-  UserIcon,
-  BuildingOfficeIcon,
-  ShieldCheckIcon,
-  ExclamationTriangleIcon,
-  CheckCircleIcon,
-  ClockIcon
-} from '@heroicons/react/24/outline';
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControlLabel,
+  Checkbox
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import {
+  Add as PlusIcon,
+  Search as MagnifyingGlassIcon,
+  Visibility as EyeIcon,
+  Edit as PencilIcon,
+  Delete as TrashIcon,
+  FilterList as FunnelIcon,
+  FileDownload as DocumentArrowDownIcon,
+  FileUpload as DocumentArrowUpIcon,
+  Person as UserIcon,
+  Business as BuildingOfficeIcon,
+  Security as ShieldCheckIcon,
+  Warning as ExclamationTriangleIcon,
+  CheckCircle as CheckCircleIcon,
+  AccessTime as ClockIcon
+} from '@mui/icons-material';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 interface InvestorFormData {
@@ -44,6 +75,17 @@ const InvestorsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterKycStatus, setFilterKycStatus] = useState('');
+  
+  // Ensure investors is an array before filtering
+  const investorsArray = Array.isArray(investors) ? investors : [];
+  
+  // Debug logging
+  console.log('Debug - investors from Redux:', investors);
+  console.log('Debug - typeof investors:', typeof investors);
+  console.log('Debug - Array.isArray(investors):', Array.isArray(investors));
+  console.log('Debug - investors length:', investorsArray.length);
+  console.log('Debug - isLoading:', isLoading);
+  console.log('Debug - error:', error);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
   const [formData, setFormData] = useState<InvestorFormData>({
@@ -63,8 +105,30 @@ const InvestorsPage: React.FC = () => {
 
   const handleCreateInvestor = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.name || !formData.legalName || !formData.primaryEmail || !formData.primaryPhone) {
+      console.error('All required fields must be filled');
+      return;
+    }
+    
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(formData.primaryEmail)) {
+      console.error('Please enter a valid email address');
+      return;
+    }
+    
     try {
-      await dispatch(createInvestor(formData)).unwrap();
+      // Prepare the data with all required fields
+      const investorData = {
+        ...formData,
+        kycStatus: 'pending', // Required by backend
+        amlStatus: 'pending', // Required by backend
+      };
+      
+      console.log('Sending investor data:', investorData); // Debug log
+      
+      await dispatch(createInvestor(investorData)).unwrap();
       setShowCreateModal(false);
       setFormData({
         name: '',
@@ -90,493 +154,658 @@ const InvestorsPage: React.FC = () => {
     }
   };
 
-  const filteredInvestors = investors.filter(investor => {
-    const matchesSearch = investor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         investor.legalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (investor.primaryEmail && investor.primaryEmail.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredInvestors = investorsArray.filter(investor => {
+    const matchesSearch = (investor.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (investor.legalName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (investor.primaryEmail?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesType = !filterType || investor.type === filterType;
     const matchesKyc = !filterKycStatus || investor.kycStatus === filterKycStatus;
     return matchesSearch && matchesType && matchesKyc;
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      case 'expired': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'approved': return <CheckCircleIcon className="h-4 w-4" />;
-      case 'pending': return <ClockIcon className="h-4 w-4" />;
-      case 'rejected': return <ExclamationTriangleIcon className="h-4 w-4" />;
-      case 'expired': return <ExclamationTriangleIcon className="h-4 w-4" />;
-      default: return <ClockIcon className="h-4 w-4" />;
+      case 'approved': return <CheckCircleIcon sx={{ fontSize: 16 }} />;
+      case 'pending': return <ClockIcon sx={{ fontSize: 16 }} />;
+      case 'rejected': return <ExclamationTriangleIcon sx={{ fontSize: 16 }} />;
+      case 'expired': return <ExclamationTriangleIcon sx={{ fontSize: 16 }} />;
+      default: return <ClockIcon sx={{ fontSize: 16 }} />;
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'individual': return <UserIcon className="h-5 w-5 text-blue-500" />;
-      case 'institution': return <BuildingOfficeIcon className="h-5 w-5 text-green-500" />;
-      case 'fund': return <BuildingOfficeIcon className="h-5 w-5 text-purple-500" />;
-      case 'trust': return <ShieldCheckIcon className="h-5 w-5 text-orange-500" />;
-      default: return <UserIcon className="h-5 w-5 text-gray-500" />;
+      case 'individual': return <UserIcon sx={{ fontSize: 20, color: 'primary.main' }} />;
+      case 'institution': return <BuildingOfficeIcon sx={{ fontSize: 20, color: 'success.main' }} />;
+      case 'fund': return <BuildingOfficeIcon sx={{ fontSize: 20, color: 'secondary.main' }} />;
+      case 'trust': return <ShieldCheckIcon sx={{ fontSize: 20, color: 'warning.main' }} />;
+      default: return <UserIcon sx={{ fontSize: 20, color: 'text.secondary' }} />;
     }
   };
 
-  // Sample data for charts
-  const investorTypeData = [
-    { name: 'Institution', value: 45, color: '#10B981' },
-    { name: 'Individual', value: 30, color: '#3B82F6' },
-    { name: 'Fund', value: 20, color: '#8B5CF6' },
-    { name: 'Trust', value: 5, color: '#F59E0B' }
-  ];
+  // Generate chart data from actual investors
+  const generateChartData = () => {
+    // Always generate data based on actual investors array, even if empty
+    const typeCounts = investorsArray.reduce((acc, investor) => {
+      acc[investor.type] = (acc[investor.type] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
 
-  const kycStatusData = [
-    { status: 'Approved', count: 45, color: '#10B981' },
-    { status: 'Pending', count: 12, color: '#F59E0B' },
-    { status: 'Rejected', count: 3, color: '#EF4444' },
-    { status: 'Expired', count: 2, color: '#6B7280' }
-  ];
+    const kycCounts = investorsArray.reduce((acc, investor) => {
+      const kycStatus = investor.kycStatus || 'pending'; // Default to pending if no status
+      acc[kycStatus] = (acc[kycStatus] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
 
-  const geographicData = [
-    { region: 'North America', count: 35 },
-    { region: 'Europe', count: 20 },
-    { region: 'Asia Pacific', count: 15 },
-    { region: 'Middle East', count: 8 },
-    { region: 'Other', count: 4 }
-  ];
+    // Generate geographic data from actual investors
+    const geoCounts = investorsArray.reduce((acc, investor) => {
+      const region = getRegionFromDomicile(investor.domicile || 'Unknown');
+      acc[region] = (acc[region] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    console.log('Debug - Actual investor count:', investorsArray.length);
+    console.log('Debug - typeCounts:', typeCounts);
+    console.log('Debug - kycCounts:', kycCounts);
+    console.log('Debug - geoCounts:', geoCounts);
+
+    const investorTypeData = [
+      { name: 'Institution', value: typeCounts.institution || 0, color: '#10B981' },
+      { name: 'Individual', value: typeCounts.individual || 0, color: '#3B82F6' },
+      { name: 'Fund', value: typeCounts.fund || 0, color: '#8B5CF6' },
+      { name: 'Trust', value: typeCounts.trust || 0, color: '#F59E0B' },
+      { name: 'Other', value: typeCounts.other || 0, color: '#6B7280' }
+    ].filter(item => item.value > 0); // Only show types that exist
+
+    const kycStatusData = [
+      { name: 'Approved', value: kycCounts.approved || 0, fill: '#10B981' },
+      { name: 'Pending', value: kycCounts.pending || 0, fill: '#F59E0B' },
+      { name: 'Rejected', value: kycCounts.rejected || 0, fill: '#EF4444' },
+      { name: 'Expired', value: kycCounts.expired || 0, fill: '#6B7280' }
+    ];
+
+    const geographicData = Object.entries(geoCounts).map(([region, count]) => ({
+      region,
+      count: count as number
+    }));
+
+    return { 
+      investorTypeData, 
+      kycStatusData,
+      geographicData,
+      hasData: investorsArray.length > 0
+    };
+  };
+
+  // Helper function to map domicile to regions
+  const getRegionFromDomicile = (domicile: string): string => {
+    const regionMap: Record<string, string> = {
+      'US': 'North America',
+      'CA': 'North America',
+      'MX': 'North America',
+      'GB': 'Europe',
+      'DE': 'Europe',
+      'FR': 'Europe',
+      'IT': 'Europe',
+      'ES': 'Europe',
+      'NL': 'Europe',
+      'CH': 'Europe',
+      'JP': 'Asia Pacific',
+      'CN': 'Asia Pacific',
+      'HK': 'Asia Pacific',
+      'SG': 'Asia Pacific',
+      'AU': 'Asia Pacific',
+      'KR': 'Asia Pacific',
+      'AE': 'Middle East',
+      'SA': 'Middle East',
+      'QA': 'Middle East',
+      'KW': 'Middle East'
+    };
+    return regionMap[domicile] || 'Other';
+  };
+
+  const { investorTypeData, kycStatusData, geographicData, hasData } = generateChartData();
+  
+  console.log('Debug - Generated investorTypeData:', investorTypeData);
+  console.log('Debug - Generated kycStatusData:', kycStatusData);
+  console.log('Debug - Generated geographicData:', geographicData);
+  console.log('Debug - hasData:', hasData);
 
   return (
-    <div className="space-y-6">
+    <Box sx={{ p: 2 }}>
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Investor Management</h1>
-        <div className="flex space-x-3">
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-            <DocumentArrowUpIcon className="h-4 w-4 mr-2" />
-            Import
-          </button>
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-            <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
-            Export
-          </button>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+          Investor Management
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<DocumentArrowUpIcon />}
           >
-            <PlusIcon className="h-4 w-4 mr-2" />
+            Import
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<DocumentArrowDownIcon />}
+          >
+            Export
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<PlusIcon />}
+            onClick={() => setShowCreateModal(true)}
+          >
             Add Investor
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Box>
+      </Box>
 
       {/* Error Alert */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <div className="flex">
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Error</h3>
-              <div className="mt-2 text-sm text-red-700">
-                <p>{error}</p>
-              </div>
-              <div className="mt-4">
-                <button
-                  onClick={() => dispatch(clearError())}
-                  className="text-red-800 bg-red-50 hover:bg-red-100 focus:ring-2 focus:ring-red-500 font-medium rounded-lg text-sm px-3 py-1.5"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Alert
+          severity="error"
+          onClose={() => dispatch(clearError())}
+          sx={{ mb: 3 }}
+        >
+          {error}
+        </Alert>
       )}
 
       {/* Analytics Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Investor Types</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie
-                data={investorTypeData}
-                cx="50%"
-                cy="50%"
-                outerRadius={70}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              >
-                {investorTypeData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+      <Grid container spacing={4} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={6} xl={4}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent sx={{ pb: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>Investor Types</Typography>
+              {!hasData || investorTypeData.length === 0 ? (
+                <Box sx={{ height: 200, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    No investor data available
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center', mt: 1 }}>
+                    Add investors to see type distribution
+                  </Typography>
+                </Box>
+              ) : (
+                <>
+                  <Box sx={{ height: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                        <Pie
+                          data={investorTypeData}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={65}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={false}
+                        >
+                          {investorTypeData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value, name) => [`${value}`, name]} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Box>
+                  {/* Legend */}
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mt: 2 }}>
+                    {investorTypeData.map((entry, index) => (
+                      <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Box sx={{ width: 12, height: 12, bgcolor: entry.color, borderRadius: '50%' }} />
+                        <Typography variant="caption">{entry.name}: {entry.value}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">KYC Status</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={kycStatusData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="status" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count">
-                {kycStatusData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color || '#8884d8'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <Grid item xs={12} md={6} xl={4}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent sx={{ pb: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>KYC Status</Typography>
+              {!hasData ? (
+                <Box sx={{ height: 200, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', p: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    No KYC data available
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center', mt: 1 }}>
+                    Add investors to see KYC status distribution
+                  </Typography>
+                </Box>
+              ) : (
+                <Box sx={{ p: 2 }}>
+                  {kycStatusData.map((item, index) => {
+                    const maxValue = Math.max(...kycStatusData.map(d => d.value), 1);
+                    const widthPercentage = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
+                    
+                    return (
+                      <Box key={index} sx={{ mb: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {item.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {item.value}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ height: 20, bgcolor: 'grey.200', borderRadius: 1, overflow: 'hidden' }}>
+                          <Box
+                            sx={{
+                              height: '100%',
+                              width: item.value > 0 ? `${Math.max(widthPercentage, 5)}%` : '0%',
+                              bgcolor: item.fill,
+                              transition: 'width 0.3s ease'
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Geographic Distribution</h3>
-          <div className="space-y-3">
-            {geographicData.map((region, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-900">{region.region}</span>
-                <div className="flex items-center space-x-2">
-                  <div className="w-16 bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-indigo-600 h-2 rounded-full" 
-                      style={{ width: `${(region.count / 35) * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-sm text-gray-500">{region.count}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+        <Grid item xs={12} md={12} xl={4}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent sx={{ pb: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>Geographic Distribution</Typography>
+              {!hasData || geographicData.length === 0 ? (
+                <Box sx={{ height: 200, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    No geographic data available
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center', mt: 1 }}>
+                    Add investors to see geographic distribution
+                  </Typography>
+                </Box>
+              ) : (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {geographicData.map((region, index) => {
+                    const maxCount = Math.max(...geographicData.map(r => r.count), 1);
+                    const widthPercentage = maxCount > 0 ? (region.count / maxCount) * 100 : 0;
+                    
+                    return (
+                      <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, minWidth: 100 }}>
+                          {region.region}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
+                          <Box sx={{ width: 80, height: 8, bgcolor: 'grey.200', borderRadius: 1 }}>
+                            <Box 
+                              sx={{ 
+                                height: 8, 
+                                bgcolor: 'primary.main', 
+                                borderRadius: 1,
+                                width: region.count > 0 ? `${Math.max(widthPercentage, 10)}%` : '0%',
+                                transition: 'width 0.3s ease'
+                              }} 
+                            />
+                          </Box>
+                          <Typography variant="body2" color="text.secondary" sx={{ minWidth: 20 }}>
+                            {region.count}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="relative">
-            <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-3 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search investors..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">All Types</option>
-            <option value="individual">Individual</option>
-            <option value="institution">Institution</option>
-            <option value="fund">Fund</option>
-            <option value="trust">Trust</option>
-            <option value="other">Other</option>
-          </select>
-          <select
-            value={filterKycStatus}
-            onChange={(e) => setFilterKycStatus(e.target.value)}
-            className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">All KYC Status</option>
-            <option value="approved">Approved</option>
-            <option value="pending">Pending</option>
-            <option value="rejected">Rejected</option>
-            <option value="expired">Expired</option>
-          </select>
-          <div className="flex items-center text-sm text-gray-500">
-            <FunnelIcon className="h-4 w-4 mr-1" />
-            {filteredInvestors.length} of {investors.length} investors
-          </div>
-        </div>
-      </div>
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Grid container spacing={3} alignItems="center">
+            <Grid item xs={12} md={3}>
+              <TextField
+                fullWidth
+                placeholder="Search investors..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MagnifyingGlassIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Investor Type</InputLabel>
+                <Select
+                  value={filterType}
+                  label="Investor Type"
+                  onChange={(e) => setFilterType(e.target.value)}
+                >
+                  <MenuItem value="">All Types</MenuItem>
+                  <MenuItem value="individual">Individual</MenuItem>
+                  <MenuItem value="institution">Institution</MenuItem>
+                  <MenuItem value="fund">Fund</MenuItem>
+                  <MenuItem value="trust">Trust</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth size="small">
+                <InputLabel>KYC Status</InputLabel>
+                <Select
+                  value={filterKycStatus}
+                  label="KYC Status"
+                  onChange={(e) => setFilterKycStatus(e.target.value)}
+                >
+                  <MenuItem value="">All KYC Status</MenuItem>
+                  <MenuItem value="approved">Approved</MenuItem>
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="rejected">Rejected</MenuItem>
+                  <MenuItem value="expired">Expired</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <FunnelIcon sx={{ fontSize: 16 }} />
+                <Typography variant="body2" color="text.secondary">
+                  {filteredInvestors.length} of {investorsArray.length} investors
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       {/* Investors Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Investor
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Domicile
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  KYC Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  AML Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Accredited
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Investor</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Domicile</TableCell>
+              <TableCell>KYC Status</TableCell>
+              <TableCell>AML Status</TableCell>
+              <TableCell>Accredited</TableCell>
+              <TableCell>Contact</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
               {isLoading ? (
-                <tr>
-                  <td colSpan={8} className="px-6 py-4 text-center">
-                    <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
-                    </div>
-                  </td>
-                </tr>
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                    <CircularProgress />
+                  </TableCell>
+                </TableRow>
               ) : filteredInvestors.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
-                    No investors found
-                  </td>
-                </tr>
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                    <Typography color="text.secondary">No investors found</Typography>
+                  </TableCell>
+                </TableRow>
               ) : (
                 filteredInvestors.map((investor) => (
-                  <tr key={investor.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
+                  <TableRow key={investor.id} hover>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {getTypeIcon(investor.type)}
-                        <div className="ml-3">
-                          <div className="text-sm font-medium text-gray-900">{investor.name}</div>
-                          <div className="text-sm text-gray-500">{investor.legalName}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {investor.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {investor.domicile}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(investor.kycStatus)}`}>
-                        {getStatusIcon(investor.kycStatus)}
-                        <span className="ml-1">{investor.kycStatus}</span>
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(investor.amlStatus)}`}>
-                        {getStatusIcon(investor.amlStatus)}
-                        <span className="ml-1">{investor.amlStatus}</span>
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex flex-col space-y-1">
+                        <Box sx={{ ml: 2 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {investor.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {investor.legalName}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={investor.type} 
+                        size="small" 
+                        color="primary" 
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{investor.domicile}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={investor.kycStatus}
+                        size="small"
+                        color={investor.kycStatus === 'approved' ? 'success' : investor.kycStatus === 'pending' ? 'warning' : 'error'}
+                        icon={getStatusIcon(investor.kycStatus)}
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={investor.amlStatus}
+                        size="small"
+                        color={investor.amlStatus === 'approved' ? 'success' : investor.amlStatus === 'pending' ? 'warning' : 'error'}
+                        icon={getStatusIcon(investor.amlStatus)}
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                         {investor.accreditedInvestor && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                            Accredited
-                          </span>
+                          <Chip 
+                            label="Accredited" 
+                            size="small" 
+                            color="success"
+                            variant="outlined"
+                          />
                         )}
                         {investor.qualifiedPurchaser && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                            Qualified
-                          </span>
+                          <Chip 
+                            label="Qualified" 
+                            size="small" 
+                            color="secondary"
+                            variant="outlined"
+                          />
                         )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box>
                         {investor.primaryEmail && (
-                          <div className="text-sm text-gray-900">{investor.primaryEmail}</div>
+                          <Typography variant="body2">{investor.primaryEmail}</Typography>
                         )}
                         {investor.primaryPhone && (
-                          <div className="text-sm text-gray-500">{investor.primaryPhone}</div>
+                          <Typography variant="body2" color="text.secondary">{investor.primaryPhone}</Typography>
                         )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
-                        <Link
+                      </Box>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <IconButton
+                          size="small"
+                          component={Link}
                           to={`/investors/${investor.id}`}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          color="primary"
                         >
-                          <EyeIcon className="h-4 w-4" />
-                        </Link>
-                        <Link
+                          <EyeIcon />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          component={Link}
                           to={`/investors/${investor.id}/edit`}
-                          className="text-green-600 hover:text-green-900"
+                          color="success"
                         >
-                          <PencilIcon className="h-4 w-4" />
-                        </Link>
-                        <button
+                          <PencilIcon />
+                        </IconButton>
+                        <IconButton
+                          size="small"
                           onClick={() => setShowDeleteModal(investor.id)}
-                          className="text-red-600 hover:text-red-900"
+                          color="error"
                         >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                          <TrashIcon />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       {/* Create Investor Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Investor</h3>
-              <form onSubmit={handleCreateInvestor} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Legal Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.legalName}
-                    onChange={(e) => setFormData({ ...formData, legalName: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="individual">Individual</option>
-                    <option value="institution">Institution</option>
-                    <option value="fund">Fund</option>
-                    <option value="trust">Trust</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Domicile</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.domicile}
-                    onChange={(e) => setFormData({ ...formData, domicile: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.primaryEmail}
-                    onChange={(e) => setFormData({ ...formData, primaryEmail: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Phone</label>
-                  <input
-                    type="tel"
-                    value={formData.primaryPhone}
-                    onChange={(e) => setFormData({ ...formData, primaryPhone: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div className="flex items-center space-x-4">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
+      <Dialog
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Add New Investor</DialogTitle>
+        <form onSubmit={handleCreateInvestor}>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
+              <TextField
+                label="Name"
+                required
+                fullWidth
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+              <TextField
+                label="Legal Name"
+                required
+                fullWidth
+                value={formData.legalName}
+                onChange={(e) => setFormData({ ...formData, legalName: e.target.value })}
+              />
+              <FormControl fullWidth>
+                <InputLabel>Type</InputLabel>
+                <Select
+                  value={formData.type}
+                  label="Type"
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                >
+                  <MenuItem value="individual">Individual</MenuItem>
+                  <MenuItem value="institution">Institution</MenuItem>
+                  <MenuItem value="fund">Fund</MenuItem>
+                  <MenuItem value="trust">Trust</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                label="Domicile"
+                required
+                fullWidth
+                value={formData.domicile}
+                onChange={(e) => setFormData({ ...formData, domicile: e.target.value })}
+              />
+              <TextField
+                label="Primary Email"
+                type="email"
+                required
+                fullWidth
+                value={formData.primaryEmail}
+                onChange={(e) => setFormData({ ...formData, primaryEmail: e.target.value })}
+                helperText="Primary contact email address"
+                error={formData.primaryEmail.length > 0 && !/\S+@\S+\.\S+/.test(formData.primaryEmail)}
+              />
+              <TextField
+                label="Primary Phone"
+                type="tel"
+                required
+                fullWidth
+                value={formData.primaryPhone}
+                onChange={(e) => setFormData({ ...formData, primaryPhone: e.target.value })}
+                helperText="Primary contact phone number"
+                placeholder="+1 (555) 123-4567"
+              />
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
                       checked={formData.accreditedInvestor}
                       onChange={(e) => setFormData({ ...formData, accreditedInvestor: e.target.checked })}
-                      className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
-                    <span className="ml-2 text-sm text-gray-700">Accredited</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
+                  }
+                  label="Accredited Investor"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
                       checked={formData.qualifiedPurchaser}
                       onChange={(e) => setFormData({ ...formData, qualifiedPurchaser: e.target.checked })}
-                      className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
-                    <span className="ml-2 text-sm text-gray-700">Qualified</span>
-                  </label>
-                </div>
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowCreateModal(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700"
-                  >
-                    Add Investor
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+                  }
+                  label="Qualified Purchaser"
+                />
+              </Box>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setShowCreateModal(false)}
+              color="inherit"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={
+                !formData.name || 
+                !formData.legalName || 
+                !formData.primaryEmail || 
+                !formData.primaryPhone ||
+                !/\S+@\S+\.\S+/.test(formData.primaryEmail)
+              }
+            >
+              Add Investor
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <h3 className="text-lg font-medium text-gray-900">Delete Investor</h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  Are you sure you want to delete this investor? This action cannot be undone.
-                </p>
-              </div>
-              <div className="flex justify-center space-x-3 pt-4">
-                <button
-                  onClick={() => setShowDeleteModal(null)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => showDeleteModal && handleDeleteInvestor(showDeleteModal)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <Dialog
+        open={showDeleteModal !== null}
+        onClose={() => setShowDeleteModal(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Delete Investor</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this investor? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setShowDeleteModal(null)}
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => showDeleteModal && handleDeleteInvestor(showDeleteModal)}
+            color="error"
+            variant="contained"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

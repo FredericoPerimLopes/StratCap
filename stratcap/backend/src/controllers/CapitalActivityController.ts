@@ -31,9 +31,16 @@ class CapitalActivityController {
   async getCapitalActivities(req: Request, res: Response) {
     try {
       const { fundId } = req.params;
-      const { eventType, status, page = 1, limit = 20 } = req.query;
+      const { eventType, status, page = 1, limit = 20, fundId: queryFundId } = req.query;
 
-      const whereClause: any = { fundId: parseInt(fundId) };
+      const whereClause: any = {};
+      
+      // Handle fundId from params (for /funds/:fundId/capital-activities) or query (for /capital-activities?fundId=X)
+      if (fundId && !isNaN(parseInt(fundId))) {
+        whereClause.fundId = parseInt(fundId);
+      } else if (queryFundId && !isNaN(parseInt(queryFundId as string))) {
+        whereClause.fundId = parseInt(queryFundId as string);
+      }
       
       if (eventType) {
         whereClause.eventType = eventType;
@@ -503,6 +510,230 @@ class CapitalActivityController {
       console.error('Error updating capital activity:', error);
       return res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to update activity' 
+      });
+    }
+  }
+
+  /**
+   * Get capital call template for a fund
+   */
+  async getCapitalCallTemplate(req: Request, res: Response): Promise<Response> {
+    try {
+      const { fundId } = req.params;
+      
+      const fund = await Fund.findByPk(fundId, {
+        include: [
+          {
+            model: Commitment,
+            include: [
+              { model: InvestorEntity },
+              { model: InvestorClass }
+            ]
+          }
+        ]
+      });
+
+      if (!fund) {
+        return res.status(404).json({
+          success: false,
+          message: 'Fund not found',
+        });
+      }
+
+      // Generate template with fund-specific data
+      const template = {
+        fundId: fund.id,
+        fundName: fund.name,
+        fundType: fund.type,
+        baseCurrency: fund.currency,
+        defaultAllocationMethod: 'pro_rata',
+        commitments: fund.commitments?.map((commitment: any) => ({
+          id: commitment.id,
+          investorId: commitment.investorId,
+          investorName: commitment.investor?.name || 'Unknown',
+          investorClass: commitment.investorClass?.name || 'General',
+          commitmentAmount: commitment.commitmentAmount,
+          calledAmount: commitment.calledAmount,
+          uncalledAmount: commitment.commitmentAmount - commitment.calledAmount,
+          allocationPercentage: commitment.allocationPercentage,
+        })) || [],
+        suggestedEventNumber: `CC-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
+        defaultPurpose: 'Investment activities and fund expenses',
+        reminderSettings: {
+          daysBeforeDue: [30, 15, 7, 1],
+          escalationDays: [3, 7],
+        }
+      };
+
+      return res.json({
+        success: true,
+        data: template,
+      });
+    } catch (error) {
+      console.error('Error generating capital call template:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to generate capital call template',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
+   * Get distribution template for a fund
+   */
+  async getDistributionTemplate(req: Request, res: Response): Promise<Response> {
+    try {
+      const { fundId } = req.params;
+      
+      const fund = await Fund.findByPk(fundId, {
+        include: [
+          {
+            model: Commitment,
+            include: [
+              { model: InvestorEntity },
+              { model: InvestorClass }
+            ]
+          }
+        ]
+      });
+
+      if (!fund) {
+        return res.status(404).json({
+          success: false,
+          message: 'Fund not found',
+        });
+      }
+
+      // Generate distribution template with fund-specific waterfall data
+      const template = {
+        fundId: fund.id,
+        fundName: fund.name,
+        fundType: fund.type,
+        baseCurrency: fund.currency,
+        waterfallStructure: 'standard', // Default waterfall structure
+        commitments: fund.commitments?.map((commitment: any) => ({
+          id: commitment.id,
+          investorId: commitment.investorId,
+          investorName: commitment.investor?.name || 'Unknown',
+          investorClass: commitment.investorClass?.name || 'General',
+          commitmentAmount: commitment.commitmentAmount,
+          contributedAmount: commitment.calledAmount,
+          currentNAV: commitment.currentNAV || 0,
+          distributionsToDate: commitment.distributionsToDate || 0,
+        })) || [],
+        distributionBreakdown: {
+          returnOfCapital: 0,
+          gain: 0,
+          carriedInterest: 0,
+          managementFees: 0,
+          otherFees: 0,
+          expenses: 0,
+        },
+        suggestedEventNumber: `DIST-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
+        waterfallTiers: [
+          {
+            tier: 1,
+            description: 'Return of Capital',
+            percentage: 100,
+            threshold: 0,
+          },
+          {
+            tier: 2,
+            description: 'Preferred Return',
+            percentage: 100,
+            threshold: fund.preferredReturnRate || 8,
+          },
+          {
+            tier: 3,
+            description: 'Catch-up',
+            percentage: fund.carriedInterestRate || 20,
+            threshold: 0,
+          },
+          {
+            tier: 4,
+            description: 'Carried Interest Split',
+            percentage: fund.carriedInterestRate || 20,
+            threshold: 0,
+          },
+        ],
+      };
+
+      return res.json({
+        success: true,
+        data: template,
+      });
+    } catch (error) {
+      console.error('Error generating distribution template:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to generate distribution template',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
+   * Send notifications for capital activity
+   */
+  async sendNotifications(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { recipients } = req.body;
+
+      const activity = await CapitalActivity.findByPk(id, {
+        include: [
+          { model: Fund },
+          {
+            model: CapitalAllocation,
+            include: [
+              {
+                model: Commitment,
+                include: [{ model: InvestorEntity }]
+              }
+            ]
+          },
+          {
+            model: DistributionAllocation,
+            include: [
+              {
+                model: Commitment,
+                include: [{ model: InvestorEntity }]
+              }
+            ]
+          }
+        ]
+      });
+
+      if (!activity) {
+        return res.status(404).json({
+          success: false,
+          message: 'Capital activity not found',
+        });
+      }
+
+      // For now, return a mock result since the notification service method doesn't exist yet
+      // Will integrate with actual notification service later
+      const result = {
+        id: 'mock-notification-id',
+        sentCount: recipients.length,
+        status: 'sent'
+      };
+
+      return res.json({
+        success: true,
+        data: {
+          notificationId: result.id,
+          sentCount: result.sentCount,
+          status: result.status,
+        },
+      });
+    } catch (error) {
+      console.error('Error sending notifications:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send notifications',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }

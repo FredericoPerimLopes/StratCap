@@ -53,20 +53,22 @@ const Dashboard: React.FC = () => {
     setError(null);
     
     try {
-      const [fundsRes, investorsRes, activitiesRes, feesRes] = await Promise.all([
+      // Get core dashboard data (fees API temporarily disabled due to missing endpoints)
+      const [fundsRes, investorsRes, activitiesRes] = await Promise.all([
         fundAPI.getAll({ limit: 100 }),
         investorAPI.getAll({ limit: 100 }),
-        capitalActivityAPI.getAll({ page: 1, limit: 100 }),
-        feeAPI.getFeeCalculations(0, {
-          startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
-          endDate: format(endOfMonth(new Date()), 'yyyy-MM-dd')
-        })
+        capitalActivityAPI.getAll({ page: 1, limit: 100 })
       ]);
 
-      const funds = fundsRes.data.data || [];
-      const investors = investorsRes.data.data || [];
-      const activities = activitiesRes.data.data || [];
-      const fees = feesRes.data.data || [];
+      // TODO: Re-enable when fee endpoints are implemented
+      // const feesRes = await feeAPI.getFeeCalculations(fundId, {...});
+      const feesRes = { data: { data: { fees: [] } } }; // Mock empty response
+
+      // Extract data from nested backend response structure
+      const funds = fundsRes.data.data?.funds || fundsRes.data.funds || [];
+      const investors = investorsRes.data.data?.investors || investorsRes.data.investors || [];
+      const activities = activitiesRes.data?.activities || activitiesRes.data || [];
+      const fees = feesRes.data.data?.fees || feesRes.data.fees || [];
 
       const totalAUM = funds.reduce((sum, fund) => sum + (fund.currentNAV || 0), 0);
       const previousAUM = funds.reduce((sum, fund) => sum + (fund.previousNAV || fund.currentNAV || 0), 0);

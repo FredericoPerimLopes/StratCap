@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/50</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/50</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -145,7 +145,22 @@
 <a name='L80'></a><a href='#L80'>80</a>
 <a name='L81'></a><a href='#L81'>81</a>
 <a name='L82'></a><a href='#L82'>82</a>
-<a name='L83'></a><a href='#L83'>83</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -169,6 +184,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -197,6 +217,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -204,6 +229,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -251,6 +281,11 @@
 <span class="cstat-no" title="statement not covered" >import D</span>istributionEvent from './DistributionEvent';
 <span class="cstat-no" title="statement not covered" >import T</span>ierAudit from './TierAudit';
 <span class="cstat-no" title="statement not covered" >import I</span>nvestorTransfer from './InvestorTransfer';
+<span class="cstat-no" title="statement not covered" >import D</span>ocument from './Document';
+<span class="cstat-no" title="statement not covered" >import G</span>lobalEntity from './GlobalEntity';
+<span class="cstat-no" title="statement not covered" >import A</span>uditLog from './AuditLog';
+<span class="cstat-no" title="statement not covered" >import N</span>otificationQueue from './NotificationQueue';
+<span class="cstat-no" title="statement not covered" >import S</span>ystemConfiguration from './SystemConfiguration';
 &nbsp;
 const models = <span class="cstat-no" title="statement not covered" >{</span>
   User,
@@ -258,11 +293,12 @@ const models = <span class="cstat-no" title="statement not covered" >{</span>
   Fund,
   InvestorEntity,
   InvestorClass,
+  SystemConfiguration,
+  NotificationTemplate,
   Commitment,
   CapitalActivity,
   CapitalAllocation,
   DistributionAllocation,
-  NotificationTemplate,
   Transaction,
   Investment,
   Closing,
@@ -276,6 +312,10 @@ const models = <span class="cstat-no" title="statement not covered" >{</span>
   DistributionEvent,
   TierAudit,
   InvestorTransfer,
+  Document,
+  GlobalEntity,
+  AuditLog,
+  NotificationQueue,
 };
 &nbsp;
 // Initialize associations
@@ -307,6 +347,11 @@ export {
 <span class="cstat-no" title="statement not covered" >  DistributionEvent,</span>
 <span class="cstat-no" title="statement not covered" >  TierAudit,</span>
 <span class="cstat-no" title="statement not covered" >  InvestorTransfer,</span>
+<span class="cstat-no" title="statement not covered" >  Document,</span>
+<span class="cstat-no" title="statement not covered" >  GlobalEntity,</span>
+<span class="cstat-no" title="statement not covered" >  AuditLog,</span>
+<span class="cstat-no" title="statement not covered" >  NotificationQueue,</span>
+<span class="cstat-no" title="statement not covered" >  SystemConfiguration,</span>
 };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export default models;</span></pre></td></tr></table></pre>
@@ -316,7 +361,7 @@ export {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-11T19:17:25.078Z
+                at 2025-08-11T03:56:18.197Z
             </div>
         <script src="../prettify.js"></script>
         <script>

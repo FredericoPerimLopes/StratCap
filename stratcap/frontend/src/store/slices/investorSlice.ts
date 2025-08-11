@@ -113,7 +113,8 @@ const investorSlice = createSlice({
       })
       .addCase(fetchInvestors.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.investors = action.payload.data;
+        // action.payload is the APIResponse from response.data
+        state.investors = Array.isArray(action.payload.data) ? action.payload.data : [];
         state.pagination = action.payload.pagination || null;
       })
       .addCase(fetchInvestors.rejected, (state, action) => {
@@ -128,7 +129,7 @@ const investorSlice = createSlice({
       })
       .addCase(fetchInvestorById.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentInvestor = action.payload.data;
+        state.currentInvestor = action.payload.data || null;
       })
       .addCase(fetchInvestorById.rejected, (state, action) => {
         state.isLoading = false;
@@ -142,7 +143,9 @@ const investorSlice = createSlice({
       })
       .addCase(createInvestor.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.investors.unshift(action.payload.data);
+        if (action.payload.data) {
+          state.investors.unshift(action.payload.data);
+        }
       })
       .addCase(createInvestor.rejected, (state, action) => {
         state.isLoading = false;
@@ -156,14 +159,16 @@ const investorSlice = createSlice({
       })
       .addCase(updateInvestor.fulfilled, (state, action) => {
         state.isLoading = false;
-        const index = state.investors.findIndex(
-          (investor) => investor.id === action.payload.data.id
-        );
-        if (index !== -1) {
-          state.investors[index] = action.payload.data;
-        }
-        if (state.currentInvestor?.id === action.payload.data.id) {
-          state.currentInvestor = action.payload.data;
+        if (action.payload.data) {
+          const index = state.investors.findIndex(
+            (investor) => investor.id === action.payload.data.id
+          );
+          if (index !== -1) {
+            state.investors[index] = action.payload.data;
+          }
+          if (state.currentInvestor?.id === action.payload.data.id) {
+            state.currentInvestor = action.payload.data;
+          }
         }
       })
       .addCase(updateInvestor.rejected, (state, action) => {

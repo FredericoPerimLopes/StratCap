@@ -4,17 +4,38 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchFundFamilyById, fetchFundFamilySummary } from '../../store/slices/fundFamilySlice';
 import {
-  BuildingOfficeIcon,
-  CurrencyDollarIcon,
-  BanknotesIcon,
-  UsersIcon,
-  ChartBarIcon,
-  PencilIcon,
-  Cog6ToothIcon,
-  ArrowLeftIcon,
-  CheckCircleIcon,
-  XCircleIcon
-} from '@heroicons/react/24/outline';
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Tab,
+  Tabs,
+  CircularProgress,
+  Alert,
+  LinearProgress
+} from '@mui/material';
+import {
+  Business as BuildingOfficeIcon,
+  AttachMoney as CurrencyDollarIcon,
+  MonetizationOn as BanknotesIcon,
+  People as UsersIcon,
+  BarChart as ChartBarIcon,
+  Edit as PencilIcon,
+  Settings as Cog6ToothIcon,
+  ArrowBack as ArrowLeftIcon,
+  CheckCircle as CheckCircleIcon,
+  Cancel as XCircleIcon
+} from '@mui/icons-material';
 import {
   PieChart,
   Pie,
@@ -116,24 +137,7 @@ const FundFamilyDetails: React.FC = () => {
     }).format(amount);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      case 'archived': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
-  const getFundStatusColor = (status: string) => {
-    switch (status) {
-      case 'fundraising': return 'bg-blue-100 text-blue-800';
-      case 'investing': return 'bg-green-100 text-green-800';
-      case 'harvesting': return 'bg-orange-100 text-orange-800';
-      case 'closed': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   // Generate performance data from actual funds
   const performanceData = funds.map(fund => ({
@@ -187,478 +191,513 @@ const FundFamilyDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <CircularProgress size={48} />
+      </Box>
     );
   }
 
   if (error || !currentFundFamily) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-        Error loading fund family details
-      </div>
+      <Box sx={{ p: 2 }}>
+        <Alert severity="error">Error loading fund family details</Alert>
+      </Box>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <Box sx={{ p: 2 }}>
       {/* Header */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate('/fund-families')}
-              className="mr-4 text-gray-400 hover:text-gray-600"
-            >
-              <ArrowLeftIcon className="h-5 w-5" />
-            </button>
-            <BuildingOfficeIcon className="h-8 w-8 text-gray-400 mr-3" />
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{currentFundFamily.name}</h1>
-              <p className="text-sm text-gray-500">Code: {currentFundFamily.code}</p>
-            </div>
-          </div>
-          <div className="flex space-x-3">
-            <Link
-              to={`/fund-families/${id}/edit`}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-            >
-              <PencilIcon className="h-4 w-4 mr-2" />
-              Edit
-            </Link>
-            <Link
-              to={`/fund-families/${id}/configuration`}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-            >
-              <Cog6ToothIcon className="h-4 w-4 mr-2" />
-              Configuration
-            </Link>
-          </div>
-        </div>
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Button
+                startIcon={<ArrowLeftIcon />}
+                onClick={() => navigate('/fund-families')}
+                sx={{ mr: 2 }}
+              >
+                Back
+              </Button>
+              <BuildingOfficeIcon sx={{ mr: 2, fontSize: 32, color: 'primary.main' }} />
+              <Box>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+                  {currentFundFamily.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Code: {currentFundFamily.code}
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                component={Link}
+                to={`/fund-families/${id}/edit`}
+                variant="outlined"
+                startIcon={<PencilIcon />}
+              >
+                Edit
+              </Button>
+              <Button
+                component={Link}
+                to={`/fund-families/${id}/configuration`}
+                variant="contained"
+                startIcon={<Cog6ToothIcon />}
+              >
+                Configuration
+              </Button>
+            </Box>
+          </Box>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          <div className="border-l-4 border-blue-500 pl-4">
-            <p className="text-sm font-medium text-gray-500">Status</p>
-            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(currentFundFamily.status)}`}>
-              {currentFundFamily.status}
-            </span>
-          </div>
-          <div className="border-l-4 border-green-500 pl-4">
-            <p className="text-sm font-medium text-gray-500">Management Company</p>
-            <p className="text-sm font-semibold text-gray-900">{currentFundFamily.managementCompany}</p>
-          </div>
-          <div className="border-l-4 border-purple-500 pl-4">
-            <p className="text-sm font-medium text-gray-500">Primary Currency</p>
-            <p className="text-sm font-semibold text-gray-900">{currentFundFamily.primaryCurrency}</p>
-          </div>
-          <div className="border-l-4 border-orange-500 pl-4">
-            <p className="text-sm font-medium text-gray-500">Fiscal Year End</p>
-            <p className="text-sm font-semibold text-gray-900">
-              {new Date(currentFundFamily.fiscalYearEnd).toLocaleDateString()}
-            </p>
-          </div>
-        </div>
-      </div>
+          <Grid container spacing={3} sx={{ mt: 2 }}>
+            <Grid xs={12} md={3}>
+              <Box sx={{ borderLeft: 4, borderColor: 'primary.main', pl: 2 }}>
+                <Typography variant="body2" color="text.secondary">Status</Typography>
+                <Chip 
+                  label={currentFundFamily.status} 
+                  size="small" 
+                  color="primary"
+                  variant="outlined"
+                />
+              </Box>
+            </Grid>
+            <Grid xs={12} md={3}>
+              <Box sx={{ borderLeft: 4, borderColor: 'success.main', pl: 2 }}>
+                <Typography variant="body2" color="text.secondary">Management Company</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {currentFundFamily.managementCompany}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid xs={12} md={3}>
+              <Box sx={{ borderLeft: 4, borderColor: 'secondary.main', pl: 2 }}>
+                <Typography variant="body2" color="text.secondary">Primary Currency</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {currentFundFamily.primaryCurrency}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid xs={12} md={3}>
+              <Box sx={{ borderLeft: 4, borderColor: 'warning.main', pl: 2 }}>
+                <Typography variant="body2" color="text.secondary">Fiscal Year End</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {new Date(currentFundFamily.fiscalYearEnd).toLocaleDateString()}
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       {/* Summary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <CurrencyDollarIcon className="h-8 w-8 text-blue-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total Committed</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {formatCurrency(summaryMetrics.totalCommitted)}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <BanknotesIcon className="h-8 w-8 text-green-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total Funds</p>
-              <p className="text-2xl font-semibold text-gray-900">{summaryMetrics.totalFunds}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <UsersIcon className="h-8 w-8 text-purple-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total Called</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {formatCurrency(summaryMetrics.totalCalled)}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <ChartBarIcon className="h-8 w-8 text-orange-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Avg IRR</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {summaryMetrics.averageIRR.toFixed(1)}%
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <CurrencyDollarIcon className="h-8 w-8 text-indigo-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total Distributed</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {formatCurrency(summaryMetrics.totalDistributed)}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <ChartBarIcon className="h-8 w-8 text-yellow-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Avg Multiple</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {summaryMetrics.averageMultiple.toFixed(2)}x
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <CurrencyDollarIcon sx={{ fontSize: 32, color: 'primary.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Total Committed</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {formatCurrency(summaryMetrics.totalCommitted)}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <BanknotesIcon sx={{ fontSize: 32, color: 'success.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Total Funds</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {summaryMetrics.totalFunds}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <UsersIcon sx={{ fontSize: 32, color: 'secondary.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Total Called</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {formatCurrency(summaryMetrics.totalCalled)}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ChartBarIcon sx={{ fontSize: 32, color: 'warning.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Avg IRR</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {summaryMetrics.averageIRR.toFixed(1)}%
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <CurrencyDollarIcon sx={{ fontSize: 32, color: 'info.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Total Distributed</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {formatCurrency(summaryMetrics.totalDistributed)}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid xs={12} sm={6} lg={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ChartBarIcon sx={{ fontSize: 32, color: 'error.main', mr: 2 }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Avg Multiple</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {summaryMetrics.averageMultiple.toFixed(2)}x
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Tabs */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`py-2 px-6 border-b-2 font-medium text-sm ${
-                activeTab === 'overview'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Overview
-            </button>
-            <button
-              onClick={() => setActiveTab('funds')}
-              className={`py-2 px-6 border-b-2 font-medium text-sm ${
-                activeTab === 'funds'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Funds
-            </button>
-            <button
-              onClick={() => setActiveTab('performance')}
-              className={`py-2 px-6 border-b-2 font-medium text-sm ${
-                activeTab === 'performance'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Performance
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`py-2 px-6 border-b-2 font-medium text-sm ${
-                activeTab === 'settings'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Settings
-            </button>
-          </nav>
-        </div>
+      <Card>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs 
+            value={activeTab} 
+            onChange={(event, newValue) => setActiveTab(newValue)}
+            aria-label="fund family details tabs"
+          >
+            <Tab label="Overview" value="overview" />
+            <Tab label="Funds" value="funds" />
+            <Tab label="Performance" value="performance" />
+            <Tab label="Settings" value="settings" />
+          </Tabs>
+        </Box>
 
-        <div className="p-6">
+        <CardContent>
           {/* Overview Tab */}
           {activeTab === 'overview' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Vintage Distribution</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={vintageData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="year" />
-                      <YAxis />
-                      <Tooltip 
-                        formatter={(value, name) => [
-                          name === 'count' ? value : formatCurrency(value as number),
-                          name === 'count' ? 'Funds' : name === 'totalSize' ? 'Total Size' : 'Avg IRR'
-                        ]}
-                      />
-                      <Bar dataKey="count" fill="#3B82F6" name="Number of Funds" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Fund Status Distribution</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={statusDistribution}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {statusDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        formatter={(value) => [value, 'Funds']}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Grid container spacing={3}>
+                <Grid xs={12} lg={6}>
+                  <Typography variant="h6" sx={{ mb: 2 }}>Vintage Distribution</Typography>
+                  <Box sx={{ width: '100%', height: 300 }}>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={vintageData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="year" />
+                        <YAxis />
+                        <Tooltip 
+                          formatter={(value, name) => [
+                            name === 'count' ? value : formatCurrency(value as number),
+                            name === 'count' ? 'Funds' : name === 'totalSize' ? 'Total Size' : 'Avg IRR'
+                          ]}
+                        />
+                        <Bar dataKey="count" fill="#3B82F6" name="Number of Funds" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </Grid>
+                <Grid xs={12} lg={6}>
+                  <Typography variant="h6" sx={{ mb: 2 }}>Fund Status Distribution</Typography>
+                  <Box sx={{ width: '100%', height: 300 }}>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={statusDistribution}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {statusDistribution.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          formatter={(value) => [value, 'Funds']}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </Grid>
+              </Grid>
 
               {currentFundFamily.description && (
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Description</h3>
-                  <p className="text-gray-700">{currentFundFamily.description}</p>
-                </div>
+                <Card sx={{ bgcolor: 'grey.50' }}>
+                  <CardContent>
+                    <Typography variant="h6" sx={{ mb: 2 }}>Description</Typography>
+                    <Typography color="text.secondary">{currentFundFamily.description}</Typography>
+                  </CardContent>
+                </Card>
               )}
-            </div>
+            </Box>
           )}
 
           {/* Funds Tab */}
           {activeTab === 'funds' && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Fund Portfolio</h3>
-                <Link
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6">Fund Portfolio</Typography>
+                <Button
+                  component={Link}
                   to="/funds/new"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                  variant="contained"
+                  sx={{ minWidth: 120 }}
                 >
                   Add Fund
-                </Link>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Fund Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Vintage
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Size
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Called / Committed
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Distributed
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Performance
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                </Button>
+              </Box>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Fund Name</TableCell>
+                      <TableCell>Vintage</TableCell>
+                      <TableCell>Size</TableCell>
+                      <TableCell>Called / Committed</TableCell>
+                      <TableCell>Distributed</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Performance</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
                     {funds.map((fund) => (
-                      <tr key={fund.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Link to={`/funds/${fund.id}`} className="text-indigo-600 hover:text-indigo-900">
+                      <TableRow key={fund.id} hover>
+                        <TableCell>
+                          <Button
+                            component={Link}
+                            to={`/funds/${fund.id}`}
+                            color="primary"
+                            sx={{ textTransform: 'none', p: 0, minWidth: 'auto' }}
+                          >
                             {fund.name}
-                          </Link>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {fund.vintage}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatCurrency(fund.targetSize)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {formatCurrency(fund.calledCapital)} / {formatCurrency(fund.committedCapital)}
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
-                            <div 
-                              className="bg-blue-600 h-1.5 rounded-full" 
-                              style={{ width: `${(fund.calledCapital / fund.committedCapital) * 100}%` }}
-                            ></div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatCurrency(fund.distributedCapital)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getFundStatusColor(fund.status)}`}>
-                            {fund.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            IRR: {fund.irr > 0 ? `${fund.irr}%` : '-'}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            Multiple: {fund.multiple}x
-                          </div>
-                        </td>
-                      </tr>
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">{fund.vintage}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">{formatCurrency(fund.targetSize)}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Box>
+                            <Typography variant="body2">
+                              {formatCurrency(fund.calledCapital)} / {formatCurrency(fund.committedCapital)}
+                            </Typography>
+                            <LinearProgress
+                              variant="determinate"
+                              value={(fund.calledCapital / fund.committedCapital) * 100}
+                              sx={{ mt: 1, height: 6, borderRadius: 1 }}
+                            />
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">{formatCurrency(fund.distributedCapital)}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Chip 
+                            label={fund.status} 
+                            size="small" 
+                            color={fund.status === 'investing' ? 'success' : fund.status === 'fundraising' ? 'info' : fund.status === 'harvesting' ? 'warning' : 'default'}
+                            variant="outlined"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Box>
+                            <Typography variant="body2">
+                              IRR: {fund.irr > 0 ? `${fund.irr}%` : '-'}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Multiple: {fund.multiple}x
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
           )}
 
           {/* Performance Tab */}
           {activeTab === 'performance' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Historical Performance</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={performanceData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="vintage" />
-                      <YAxis yAxisId="left" />
-                      <YAxis yAxisId="right" orientation="right" />
-                      <Tooltip 
-                        formatter={(value, name) => [
-                          name === 'irr' ? `${value}%` : `${value}x`,
-                          name === 'irr' ? 'IRR' : 'Multiple'
-                        ]}
-                        labelFormatter={(label) => `Vintage ${label}`}
-                      />
-                      <Line yAxisId="left" type="monotone" dataKey="irr" stroke="#3B82F6" name="IRR %" />
-                      <Line yAxisId="right" type="monotone" dataKey="multiple" stroke="#10B981" name="Multiple" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Key Metrics</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">Average IRR</p>
-                        <p className="text-2xl font-semibold text-gray-900">
-                          {summaryMetrics.averageIRR.toFixed(1)}%
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">Average Multiple</p>
-                        <p className="text-2xl font-semibold text-gray-900">
-                          {summaryMetrics.averageMultiple.toFixed(2)}x
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">Total Called</p>
-                        <p className="text-2xl font-semibold text-gray-900">
-                          {formatCurrency(summaryMetrics.totalCalled)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">Total Distributed</p>
-                        <p className="text-2xl font-semibold text-gray-900">
-                          {formatCurrency(summaryMetrics.totalDistributed)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-sm font-medium text-blue-900 mb-2">Performance Note</p>
-                    <p className="text-sm text-blue-700">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Grid container spacing={3}>
+                <Grid xs={12} lg={6}>
+                  <Typography variant="h6" sx={{ mb: 2 }}>Historical Performance</Typography>
+                  <Box sx={{ width: '100%', height: 300 }}>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={performanceData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="vintage" />
+                        <YAxis yAxisId="left" />
+                        <YAxis yAxisId="right" orientation="right" />
+                        <Tooltip 
+                          formatter={(value, name) => [
+                            name === 'irr' ? `${value}%` : `${value}x`,
+                            name === 'irr' ? 'IRR' : 'Multiple'
+                          ]}
+                          labelFormatter={(label) => `Vintage ${label}`}
+                        />
+                        <Line yAxisId="left" type="monotone" dataKey="irr" stroke="#3B82F6" name="IRR %" />
+                        <Line yAxisId="right" type="monotone" dataKey="multiple" stroke="#10B981" name="Multiple" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </Grid>
+                <Grid xs={12} lg={6}>
+                  <Typography variant="h6" sx={{ mb: 2 }}>Key Metrics</Typography>
+                  <Card sx={{ bgcolor: 'grey.50', mb: 2 }}>
+                    <CardContent>
+                      <Grid container spacing={2}>
+                        <Grid xs={6}>
+                          <Typography variant="body2" color="text.secondary">Average IRR</Typography>
+                          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                            {summaryMetrics.averageIRR.toFixed(1)}%
+                          </Typography>
+                        </Grid>
+                        <Grid xs={6}>
+                          <Typography variant="body2" color="text.secondary">Average Multiple</Typography>
+                          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                            {summaryMetrics.averageMultiple.toFixed(2)}x
+                          </Typography>
+                        </Grid>
+                        <Grid xs={6}>
+                          <Typography variant="body2" color="text.secondary">Total Called</Typography>
+                          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                            {formatCurrency(summaryMetrics.totalCalled)}
+                          </Typography>
+                        </Grid>
+                        <Grid xs={6}>
+                          <Typography variant="body2" color="text.secondary">Total Distributed</Typography>
+                          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                            {formatCurrency(summaryMetrics.totalDistributed)}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                  <Alert severity="info">
+                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                      Performance Note
+                    </Typography>
+                    <Typography variant="body2">
                       Performance figures are as of last quarter end and subject to change. 
                       Past performance is not indicative of future results.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+                    </Typography>
+                  </Alert>
+                </Grid>
+              </Grid>
+            </Box>
           )}
 
           {/* Settings Tab */}
           {activeTab === 'settings' && (
-            <div className="space-y-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Fund Family Settings</h3>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Typography variant="h6">Fund Family Settings</Typography>
               
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="text-md font-medium text-gray-900 mb-3">Financial Settings</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Management Fee</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {currentFundFamily.settings?.defaultManagementFeeRate || 2}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Carried Interest</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {currentFundFamily.settings?.defaultCarriedInterestRate || 20}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Preferred Return</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {currentFundFamily.settings?.defaultPreferredReturn || 8}%
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <Card sx={{ bgcolor: 'grey.50' }}>
+                <CardContent>
+                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>Financial Settings</Typography>
+                  <Grid container spacing={3}>
+                    <Grid xs={12} md={4}>
+                      <Typography variant="body2" color="text.secondary">Management Fee</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        {currentFundFamily.settings?.defaultManagementFeeRate || 2}%
+                      </Typography>
+                    </Grid>
+                    <Grid xs={12} md={4}>
+                      <Typography variant="body2" color="text.secondary">Carried Interest</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        {currentFundFamily.settings?.defaultCarriedInterestRate || 20}%
+                      </Typography>
+                    </Grid>
+                    <Grid xs={12} md={4}>
+                      <Typography variant="body2" color="text.secondary">Preferred Return</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        {currentFundFamily.settings?.defaultPreferredReturn || 8}%
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
 
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="text-md font-medium text-gray-900 mb-3">Operational Settings</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Auto-approve capital calls</span>
-                    {currentFundFamily.settings?.autoApproveCapitalCalls ? (
-                      <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <XCircleIcon className="h-5 w-5 text-gray-400" />
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Require dual approval</span>
-                    {currentFundFamily.settings?.requireDualApproval ? (
-                      <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <XCircleIcon className="h-5 w-5 text-gray-400" />
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Enable notifications</span>
-                    {currentFundFamily.settings?.enableNotifications ? (
-                      <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <XCircleIcon className="h-5 w-5 text-gray-400" />
-                    )}
-                  </div>
-                </div>
-              </div>
+              <Card sx={{ bgcolor: 'grey.50' }}>
+                <CardContent>
+                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>Operational Settings</Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>Auto-approve capital calls</Typography>
+                      {currentFundFamily.settings?.autoApproveCapitalCalls ? (
+                        <CheckCircleIcon sx={{ color: 'success.main' }} />
+                      ) : (
+                        <XCircleIcon sx={{ color: 'text.disabled' }} />
+                      )}
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>Require dual approval</Typography>
+                      {currentFundFamily.settings?.requireDualApproval ? (
+                        <CheckCircleIcon sx={{ color: 'success.main' }} />
+                      ) : (
+                        <XCircleIcon sx={{ color: 'text.disabled' }} />
+                      )}
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>Enable notifications</Typography>
+                      {currentFundFamily.settings?.enableNotifications ? (
+                        <CheckCircleIcon sx={{ color: 'success.main' }} />
+                      ) : (
+                        <XCircleIcon sx={{ color: 'text.disabled' }} />
+                      )}
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
 
-              <div className="flex justify-end">
-                <Link
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  component={Link}
                   to={`/fund-families/${id}/configuration`}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                  variant="contained"
+                  startIcon={<Cog6ToothIcon />}
+                  sx={{ minWidth: 200 }}
                 >
-                  <Cog6ToothIcon className="h-4 w-4 mr-2" />
                   Advanced Configuration
-                </Link>
-              </div>
-            </div>
+                </Button>
+              </Box>
+            </Box>
           )}
-        </div>
-      </div>
-    </div>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 

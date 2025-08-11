@@ -22,20 +22,19 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          ml: sidebarOpen ? `${drawerWidth}px` : `${collapsedWidth}px`,
-          transition: 'margin-left 0.3s ease-in-out',
-          minWidth: 0, // Prevents flex item from overflowing
+          minWidth: 0,
+          overflow: 'hidden',
         }}
       >
         <Header />
         <Box
           sx={{
-            flexGrow: 1,
+            flex: 1,
             overflow: 'auto',
-            backgroundColor: theme.palette.grey[50],
+            backgroundColor: 'background.default',
           }}
         >
           {children}

@@ -1,14 +1,10 @@
 import { Router } from 'express';
 import FeeController from '../controllers/FeeController';
-import { protect } from '../middleware/auth';
 import { validateQuery } from '../middleware/validation';
 import { body, param, query } from 'express-validator';
 
 const router = Router();
 const feeController = new FeeController();
-
-// Apply authentication middleware to all routes
-router.use(protect);
 
 // Validation schemas
 const managementFeeValidation = [

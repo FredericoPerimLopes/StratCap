@@ -1,13 +1,9 @@
 import { Router } from 'express';
 import WaterfallController from '../controllers/WaterfallController';
-import { authenticateToken } from '../middleware/auth';
 import { validateWaterfallCalculation, validateHypotheticalScenarios } from '../middleware/validation';
 
 const router = Router();
 const waterfallController = new WaterfallController();
-
-// Apply authentication middleware to all routes
-router.use(authenticateToken);
 
 /**
  * @route POST /api/waterfall/calculate

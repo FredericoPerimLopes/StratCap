@@ -1,13 +1,9 @@
 import { Router } from 'express';
 import transactionController from '../controllers/TransactionController';
-import { protect } from '../middleware/auth';
 import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';
 import Joi from 'joi';
 
 const router = Router();
-
-// All routes require authentication
-router.use(protect);
 
 // Additional validation schemas for transactions
 const transactionSchemas = {

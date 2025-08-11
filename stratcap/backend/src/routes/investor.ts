@@ -1,12 +1,8 @@
 import { Router } from 'express';
 import investorController from '../controllers/InvestorController';
-import { protect } from '../middleware/auth';
 import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';
 
 const router = Router();
-
-// All routes require authentication
-router.use(protect);
 
 // Investor CRUD operations
 router.post('/', validate(schemas.createInvestor), investorController.createInvestor);

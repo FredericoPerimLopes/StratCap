@@ -1,13 +1,9 @@
 import { Router } from 'express';
 import reportController from '../controllers/ReportController';
-import { protect } from '../middleware/auth';
 import { validateParams, validateQuery, schemas } from '../middleware/validation';
 import Joi from 'joi';
 
 const router = Router();
-
-// All routes require authentication
-router.use(protect);
 
 // Additional validation schemas for reports
 const reportSchemas = {

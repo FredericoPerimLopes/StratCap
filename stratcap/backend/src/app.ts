@@ -86,7 +86,7 @@ app.get('/health/secrets', (_req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/fund-families', fundFamilyRoutes);
-app.use('/api', capitalActivityRoutes);
+app.use('/api', capitalActivityRoutes); // Keep for backward compatibility but will be deprecated
 app.use('/api/funds', fundRoutes);
 app.use('/api/investors', investorRoutes);
 app.use('/api/commitments', commitmentRoutes);

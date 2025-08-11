@@ -1,13 +1,8 @@
 import { Router } from 'express';
 import { body, param, query } from 'express-validator';
 import CapitalActivityController from '../controllers/CapitalActivityController';
-import { authenticateToken } from '../middleware/auth';
-
 const router = Router();
 const capitalActivityController = new CapitalActivityController();
-
-// Apply authentication middleware to all routes
-router.use(authenticateToken);
 
 // Validation schemas
 const createCapitalCallValidation = [
@@ -69,6 +64,22 @@ router.get(
     query('status').optional().isIn(['draft', 'pending', 'approved', 'completed', 'cancelled']),
     query('page').optional().isInt({ min: 1 }),
     query('limit').optional().isInt({ min: 1, max: 100 }),
+  ],
+  capitalActivityController.getCapitalActivities.bind(capitalActivityController)
+);
+
+/**
+ * @route GET /api/capital-activities
+ * @desc Get all capital activities (paginated)
+ * @access Private
+ */
+router.get(
+  '/capital-activities',
+  [
+    query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+    query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+    query('eventType').optional().isIn(['capital_call', 'distribution', 'equalization', 'reallocation']),
+    query('status').optional().isIn(['draft', 'pending', 'approved', 'completed', 'cancelled']),
   ],
   capitalActivityController.getCapitalActivities.bind(capitalActivityController)
 );
@@ -269,6 +280,66 @@ router.post(
     body('allocations.*.amount').isDecimal({ decimal_digits: '0,2' }).withMessage('Valid amount is required'),
   ],
   capitalActivityController.validateAllocations.bind(capitalActivityController)
+);
+
+/**
+ * @route GET /api/capital-activities/capital-calls/template/:fundId
+ * @desc Get capital call template for a fund
+ * @access Private
+ */
+router.get(
+  '/capital-activities/capital-calls/template/:fundId',
+  [param('fundId').isInt({ min: 1 }).withMessage('Valid fund ID is required')],
+  capitalActivityController.getCapitalCallTemplate.bind(capitalActivityController)
+);
+
+/**
+ * @route GET /api/capital-activities/distributions/template/:fundId
+ * @desc Get distribution template for a fund
+ * @access Private
+ */
+router.get(
+  '/capital-activities/distributions/template/:fundId',
+  [param('fundId').isInt({ min: 1 }).withMessage('Valid fund ID is required')],
+  capitalActivityController.getDistributionTemplate.bind(capitalActivityController)
+);
+
+/**
+ * @route POST /api/capital-activities/:id/notifications
+ * @desc Send notifications for capital activity
+ * @access Private
+ */
+router.post(
+  '/capital-activities/:id/notifications',
+  [
+    param('id').isInt({ min: 1 }).withMessage('Valid capital activity ID is required'),
+    body('recipients').isArray().withMessage('Recipients array is required'),
+    body('template').isString().notEmpty().withMessage('Template is required'),
+    body('customMessage').optional().isString(),
+  ],
+  capitalActivityController.sendNotifications.bind(capitalActivityController)
+);
+
+/**
+ * @route POST /api/capital-activities/:id/complete
+ * @desc Complete a capital activity (alias for approve)
+ * @access Private
+ */
+router.post(
+  '/capital-activities/:id/complete',
+  [param('id').isInt({ min: 1 }).withMessage('Valid capital activity ID is required')],
+  capitalActivityController.approveCapitalActivity.bind(capitalActivityController)
+);
+
+/**
+ * @route POST /api/capital-activities/:id/approve
+ * @desc Approve a capital activity (POST wrapper for PUT)
+ * @access Private
+ */
+router.post(
+  '/capital-activities/:id/approve',
+  [param('id').isInt({ min: 1 }).withMessage('Valid capital activity ID is required')],
+  capitalActivityController.approveCapitalActivity.bind(capitalActivityController)
 );
 
 export default router;

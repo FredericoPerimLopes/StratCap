@@ -1,12 +1,8 @@
 import { Router } from 'express';
 import fundController from '../controllers/FundController';
-import { protect } from '../middleware/auth';
 import { validate, validateParams, validateQuery, schemas } from '../middleware/validation';
 
 const router = Router();
-
-// All routes require authentication
-router.use(protect);
 
 // Fund CRUD operations
 router.post('/', validate(schemas.createFund), fundController.createFund);

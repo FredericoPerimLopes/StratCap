@@ -20,7 +20,7 @@ import MFASetup from '../components/Auth/MFASetup';
 import Dashboard from '../components/Dashboard/Dashboard';
 
 // Fund Management
-import FundList from '../components/Funds/FundList';
+import FundsPage from '../pages/funds/FundsPage';
 import FundForm from '../components/Funds/FundForm';
 import FundDetails from '../components/Funds/FundDetails';
 
@@ -34,7 +34,7 @@ import { FeeManagementDashboard, FeeCalculationForm } from '../components/FeeMan
 import { FundConfigurationWizard, FundConfigurationList } from '../components/FundConfiguration';
 
 // Investor Management
-import InvestorList from '../components/Investors/InvestorList';
+import InvestorsPage from '../pages/investors/InvestorsPage';
 import InvestorForm from '../components/Investors/InvestorForm';
 import InvestorDetails from '../components/Investors/InvestorDetails';
 
@@ -137,11 +137,28 @@ const AppRoutes: React.FC = () => {
             <Route path="new" element={<FundFamilyForm />} />
             <Route path=":id" element={<FundFamilyDetails />} />
             <Route path=":id/edit" element={<FundFamilyForm />} />
+            <Route path=":id/configuration" element={
+              <div style={{ padding: '16px' }}>
+                <div style={{ 
+                  backgroundColor: 'white', 
+                  padding: '24px', 
+                  borderRadius: '8px', 
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.12)' 
+                }}>
+                  <h2 style={{ margin: '0 0 16px 0', fontSize: '24px', fontWeight: 'bold' }}>
+                    Fund Family Configuration
+                  </h2>
+                  <p style={{ color: '#666', margin: 0 }}>
+                    Advanced configuration settings will be available here soon...
+                  </p>
+                </div>
+              </div>
+            } />
           </Route>
 
           {/* Fund Management */}
           <Route path="funds">
-            <Route index element={<FundList />} />
+            <Route index element={<FundsPage />} />
             <Route path="new" element={<FundForm />} />
             <Route path=":id" element={<FundDetails />} />
             <Route path=":id/edit" element={<FundForm />} />
@@ -162,7 +179,7 @@ const AppRoutes: React.FC = () => {
 
           {/* Investor Management */}
           <Route path="investors">
-            <Route index element={<InvestorList />} />
+            <Route index element={<InvestorsPage />} />
             <Route path="new" element={<InvestorForm />} />
             <Route path=":id" element={<InvestorDetails />} />
             <Route path=":id/edit" element={<InvestorForm />} />
