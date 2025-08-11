@@ -31,16 +31,9 @@ class CapitalActivityController {
   async getCapitalActivities(req: Request, res: Response) {
     try {
       const { fundId } = req.params;
-      const { eventType, status, page = 1, limit = 20, fundId: queryFundId } = req.query;
+      const { eventType, status, page = 1, limit = 20 } = req.query;
 
-      const whereClause: any = {};
-      
-      // Handle fundId from params (for /funds/:fundId/capital-activities) or query (for /capital-activities?fundId=X)
-      if (fundId && !isNaN(parseInt(fundId))) {
-        whereClause.fundId = parseInt(fundId);
-      } else if (queryFundId && !isNaN(parseInt(queryFundId as string))) {
-        whereClause.fundId = parseInt(queryFundId as string);
-      }
+      const whereClause: any = { fundId: parseInt(fundId) };
       
       if (eventType) {
         whereClause.eventType = eventType;
@@ -517,7 +510,7 @@ class CapitalActivityController {
   /**
    * Get capital call template for a fund
    */
-  async getCapitalCallTemplate(req: Request, res: Response): Promise<Response> {
+  async getCapitalCallTemplate(req: Request, res: Response) {
     try {
       const { fundId } = req.params;
       
@@ -565,13 +558,13 @@ class CapitalActivityController {
         }
       };
 
-      return res.json({
+      res.json({
         success: true,
         data: template,
       });
     } catch (error) {
       console.error('Error generating capital call template:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: 'Failed to generate capital call template',
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -582,7 +575,7 @@ class CapitalActivityController {
   /**
    * Get distribution template for a fund
    */
-  async getDistributionTemplate(req: Request, res: Response): Promise<Response> {
+  async getDistributionTemplate(req: Request, res: Response) {
     try {
       const { fundId } = req.params;
       
@@ -611,7 +604,7 @@ class CapitalActivityController {
         fundName: fund.name,
         fundType: fund.type,
         baseCurrency: fund.currency,
-        waterfallStructure: 'standard', // Default waterfall structure
+        waterfallStructure: fund.structure || 'standard',
         commitments: fund.commitments?.map((commitment: any) => ({
           id: commitment.id,
           investorId: commitment.investorId,
@@ -659,13 +652,13 @@ class CapitalActivityController {
         ],
       };
 
-      return res.json({
+      res.json({
         success: true,
         data: template,
       });
     } catch (error) {
       console.error('Error generating distribution template:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: 'Failed to generate distribution template',
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -676,10 +669,10 @@ class CapitalActivityController {
   /**
    * Send notifications for capital activity
    */
-  async sendNotifications(req: Request, res: Response): Promise<Response> {
+  async sendNotifications(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { recipients } = req.body;
+      const { recipients, template, customMessage } = req.body;
 
       const activity = await CapitalActivity.findByPk(id, {
         include: [
@@ -712,15 +705,21 @@ class CapitalActivityController {
         });
       }
 
+      // Send notifications using the notification service
+      const notificationOptions = {
+        recipients,
+        template,
+        customMessage,
+      };
+
       // For now, return a mock result since the notification service method doesn't exist yet
-      // Will integrate with actual notification service later
       const result = {
         id: 'mock-notification-id',
         sentCount: recipients.length,
         status: 'sent'
       };
 
-      return res.json({
+      res.json({
         success: true,
         data: {
           notificationId: result.id,
@@ -730,7 +729,7 @@ class CapitalActivityController {
       });
     } catch (error) {
       console.error('Error sending notifications:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: 'Failed to send notifications',
         error: error instanceof Error ? error.message : 'Unknown error',
