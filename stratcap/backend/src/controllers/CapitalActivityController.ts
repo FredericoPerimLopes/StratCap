@@ -33,7 +33,15 @@ class CapitalActivityController {
       const { fundId } = req.params;
       const { eventType, status, page = 1, limit = 20 } = req.query;
 
-      const whereClause: any = { fundId: parseInt(fundId) };
+      const parsedFundId = parseInt(fundId);
+      if (isNaN(parsedFundId)) {
+        return res.status(400).json({ 
+          success: false,
+          error: 'Invalid fund ID provided' 
+        });
+      }
+
+      const whereClause: any = { fundId: parsedFundId };
       
       if (eventType) {
         whereClause.eventType = eventType;
@@ -558,13 +566,13 @@ class CapitalActivityController {
         }
       };
 
-      res.json({
+      return res.json({
         success: true,
         data: template,
       });
     } catch (error) {
       console.error('Error generating capital call template:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: 'Failed to generate capital call template',
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -604,7 +612,7 @@ class CapitalActivityController {
         fundName: fund.name,
         fundType: fund.type,
         baseCurrency: fund.currency,
-        waterfallStructure: fund.structure || 'standard',
+        waterfallStructure: fund.type || 'standard',
         commitments: fund.commitments?.map((commitment: any) => ({
           id: commitment.id,
           investorId: commitment.investorId,
@@ -652,13 +660,13 @@ class CapitalActivityController {
         ],
       };
 
-      res.json({
+      return res.json({
         success: true,
         data: template,
       });
     } catch (error) {
       console.error('Error generating distribution template:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: 'Failed to generate distribution template',
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -705,21 +713,16 @@ class CapitalActivityController {
         });
       }
 
-      // Send notifications using the notification service
-      const notificationOptions = {
-        recipients,
-        template,
-        customMessage,
-      };
-
       // For now, return a mock result since the notification service method doesn't exist yet
+      // TODO: Implement actual notification service
+      console.log('Notification request:', { recipients, template, customMessage });
       const result = {
         id: 'mock-notification-id',
         sentCount: recipients.length,
         status: 'sent'
       };
 
-      res.json({
+      return res.json({
         success: true,
         data: {
           notificationId: result.id,
@@ -729,7 +732,7 @@ class CapitalActivityController {
       });
     } catch (error) {
       console.error('Error sending notifications:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: 'Failed to send notifications',
         error: error instanceof Error ? error.message : 'Unknown error',
