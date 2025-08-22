@@ -59,75 +59,94 @@ import {
 
 interface CapitalActivity {
   id: number;
-  fund: string;
-  type: 'capital_call' | 'distribution' | 'transfer';
-  amount: number;
-  callDate: string;
-  dueDate: string;
-  status: 'draft' | 'pending' | 'approved' | 'completed' | 'cancelled';
+  fundId: number;
+  eventType: 'capital_call' | 'distribution' | 'equalization' | 'reallocation';
+  eventNumber: string;
+  eventDate: string;
+  dueDate?: string;
   description: string;
-  investorCount: number;
-  approvedBy?: string;
-  completedDate?: string;
+  status: 'draft' | 'pending' | 'approved' | 'completed' | 'cancelled';
+  totalAmount: string;
+  baseAmount?: string;
+  feeAmount?: string;
+  expenseAmount?: string;
+  currency: string;
+  purpose?: string;
+  notices?: Record<string, any>;
+  calculations?: Record<string, any>;
+  approvedBy?: number;
+  approvedAt?: string;
+  completedAt?: string;
+  notes?: string;
+  metadata?: Record<string, any>;
+  // Display fields
+  fundName?: string;
+  approverName?: string;
 }
 
 interface ActivityFormData {
-  fund: string;
-  type: 'capital_call' | 'distribution' | 'transfer';
-  amount: string;
-  callDate: string;
-  dueDate: string;
+  fundId: number;
+  eventType: 'capital_call' | 'distribution' | 'equalization' | 'reallocation';
+  eventNumber: string;
+  eventDate: string;
+  dueDate?: string;
   description: string;
+  totalAmount: string;
+  baseAmount?: string;
+  feeAmount?: string;
+  expenseAmount?: string;
+  currency: string;
+  purpose?: string;
+  notices?: Record<string, any>;
+  calculations?: Record<string, any>;
+  notes?: string;
+  metadata?: Record<string, any>;
 }
 
 const CapitalActivitiesPage: React.FC = () => {
   const [activities, setActivities] = useState<CapitalActivity[]>([
     {
       id: 1,
-      fund: 'Growth Fund III',
-      type: 'capital_call',
-      amount: 25000000,
-      callDate: '2024-06-15',
+      fundId: 1,
+      eventType: 'capital_call',
+      eventNumber: 'CC-001',
+      eventDate: '2024-06-15',
       dueDate: '2024-07-15',
-      status: 'completed',
       description: 'Investment in TechStart Inc.',
-      investorCount: 45,
-      completedDate: '2024-07-10'
+      status: 'completed',
+      totalAmount: '25000000',
+      currency: 'USD',
+      fundName: 'Growth Fund III',
+      completedAt: '2024-07-10'
     },
     {
       id: 2,
-      fund: 'Growth Fund III',
-      type: 'distribution',
-      amount: 15000000,
-      callDate: '2024-05-20',
+      fundId: 1,
+      eventType: 'distribution',
+      eventNumber: 'DIST-001',
+      eventDate: '2024-05-20',
       dueDate: '2024-06-05',
-      status: 'completed',
       description: 'Exit proceeds from MediCorp',
-      investorCount: 45,
-      completedDate: '2024-06-03'
+      status: 'completed',
+      totalAmount: '15000000',
+      currency: 'USD',
+      fundName: 'Growth Fund III',
+      completedAt: '2024-06-03'
     },
     {
       id: 3,
-      fund: 'Venture Fund II',
-      type: 'capital_call',
-      amount: 18000000,
-      callDate: '2024-07-01',
+      fundId: 2,
+      eventType: 'capital_call',
+      eventNumber: 'CC-002',
+      eventDate: '2024-07-01',
       dueDate: '2024-07-31',
-      status: 'pending',
       description: 'Follow-on investment series',
-      investorCount: 32,
-      approvedBy: 'John Smith'
-    },
-    {
-      id: 4,
-      fund: 'Growth Fund III',
-      type: 'transfer',
-      amount: 5000000,
-      callDate: '2024-06-28',
-      dueDate: '2024-07-28',
-      status: 'draft',
-      description: 'Portfolio company transfer',
-      investorCount: 45
+      status: 'pending',
+      totalAmount: '18000000',
+      currency: 'USD',
+      fundName: 'Venture Fund II',
+      approvedBy: 1,
+      approverName: 'John Smith'
     }
   ]);
   
@@ -138,43 +157,64 @@ const CapitalActivitiesPage: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState<number | null>(null);
   const [formData, setFormData] = useState<ActivityFormData>({
-    fund: '',
-    type: 'capital_call',
-    amount: '',
-    callDate: '',
+    fundId: 0,
+    eventType: 'capital_call',
+    eventNumber: '',
+    eventDate: '',
     dueDate: '',
-    description: ''
+    description: '',
+    totalAmount: '',
+    currency: 'USD',
+    purpose: '',
+    notices: {},
+    calculations: {},
+    notes: '',
+    metadata: {}
   });
 
   const handleCreateActivity = async (e: React.FormEvent) => {
     e.preventDefault();
     const newActivity: CapitalActivity = {
       id: Date.now(),
-      fund: formData.fund,
-      type: formData.type,
-      amount: parseFloat(formData.amount),
-      callDate: formData.callDate,
+      fundId: formData.fundId,
+      eventType: formData.eventType,
+      eventNumber: formData.eventNumber,
+      eventDate: formData.eventDate,
       dueDate: formData.dueDate,
-      status: 'draft',
       description: formData.description,
-      investorCount: 45 // Mock data
+      status: 'draft',
+      totalAmount: formData.totalAmount,
+      currency: formData.currency,
+      purpose: formData.purpose,
+      notices: formData.notices,
+      calculations: formData.calculations,
+      notes: formData.notes,
+      metadata: formData.metadata,
+      fundName: 'New Fund'
     };
     setActivities([...activities, newActivity]);
     setShowCreateModal(false);
     setFormData({
-      fund: '',
-      type: 'capital_call',
-      amount: '',
-      callDate: '',
+      fundId: 0,
+      eventType: 'capital_call',
+      eventNumber: '',
+      eventDate: '',
       dueDate: '',
-      description: ''
+      description: '',
+      totalAmount: '',
+      currency: 'USD',
+      purpose: '',
+      notices: {},
+      calculations: {},
+      notes: '',
+      metadata: {}
     });
   };
 
   const handleApproval = (id: number, approved: boolean) => {
     setActivities(activities.map(activity => 
       activity.id === id 
-        ? { ...activity, status: approved ? 'approved' : 'cancelled', approvedBy: approved ? 'Current User' : undefined }
+        ? { ...activity, status: approved ? 'approved' : 'cancelled', approvedBy: approved ? 1 : undefined, approverName: approved ? 'Current User' : undefined }
         : activity
     ));
     setShowApprovalModal(null);
@@ -186,18 +226,19 @@ const CapitalActivitiesPage: React.FC = () => {
         ? { 
             ...activity, 
             status: newStatus,
-            completedDate: newStatus === 'completed' ? new Date().toISOString().split('T')[0] : undefined
+            completedAt: newStatus === 'completed' ? new Date().toISOString().split('T')[0] : undefined
           }
         : activity
     ));
   };
 
   const filteredActivities = activities.filter(activity => {
-    const matchesSearch = activity.fund.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = (activity.fundName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         activity.eventType.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          activity.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = !filterType || activity.type === filterType;
+    const matchesType = !filterType || activity.eventType === filterType;
     const matchesStatus = !filterStatus || activity.status === filterStatus;
-    const matchesFund = !filterFund || activity.fund === filterFund;
+    const matchesFund = !filterFund || activity.fundName === filterFund;
     return matchesSearch && matchesType && matchesStatus && matchesFund;
   });
 
@@ -260,12 +301,12 @@ const CapitalActivitiesPage: React.FC = () => {
 
   // Calculate summary metrics
   const totalCapitalCalls = activities
-    .filter(a => a.type === 'capital_call' && a.status === 'completed')
-    .reduce((sum, a) => sum + a.amount, 0);
+    .filter(a => a.eventType === 'capital_call' && a.status === 'completed')
+    .reduce((sum, a) => sum + parseFloat(a.totalAmount || '0'), 0);
   
   const totalDistributions = activities
-    .filter(a => a.type === 'distribution' && a.status === 'completed')
-    .reduce((sum, a) => sum + a.amount, 0);
+    .filter(a => a.eventType === 'distribution' && a.status === 'completed')
+    .reduce((sum, a) => sum + parseFloat(a.totalAmount || '0'), 0);
 
   const pendingActivities = activities.filter(a => a.status === 'pending' || a.status === 'approved').length;
 
@@ -488,6 +529,7 @@ const CapitalActivitiesPage: React.FC = () => {
       </Card>
 
       {/* Activities Table */}
+<<<<<<< HEAD
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -580,6 +622,92 @@ const CapitalActivitiesPage: React.FC = () => {
                           onClick={() => handleStatusUpdate(activity.id, 'pending')}
                           color="info"
                           title="Submit for Approval"
+=======
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Activity
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Type
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Fund
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Amount
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Call Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Due Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Investors
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredActivities.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                    No activities found
+                  </td>
+                </tr>
+              ) : (
+                filteredActivities.map((activity) => (
+                  <tr key={activity.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        {getTypeIcon(activity.eventType)}
+                        <div className="ml-3">
+                          <div className="text-sm font-medium text-gray-900">{activity.description}</div>
+                          <div className="text-sm text-gray-500">ID: {activity.id}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {activity.eventType.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      Fund #{activity.fundId}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatCurrency(parseFloat(activity.totalAmount) || 0)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {new Date(activity.eventDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {activity.dueDate ? new Date(activity.dueDate).toLocaleDateString() : '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>
+                        {getStatusIcon(activity.status)}
+                        <span className="ml-1">{activity.status}</span>
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {activity.calculations?.investorCount || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end space-x-2">
+                        <Link
+                          to={`/capital-activities/${activity.id}`}
+                          className="text-indigo-600 hover:text-indigo-900"
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)
                         >
                           <CheckIcon />
                         </IconButton>
@@ -614,6 +742,7 @@ const CapitalActivitiesPage: React.FC = () => {
       </TableContainer>
 
       {/* Create Activity Modal */}
+<<<<<<< HEAD
       <Dialog
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
@@ -702,6 +831,100 @@ const CapitalActivitiesPage: React.FC = () => {
           </DialogActions>
         </form>
       </Dialog>
+=======
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Create Capital Activity</h3>
+              <form onSubmit={handleCreateActivity} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Fund</label>
+                  <select
+                    required
+                    value={formData.fundId}
+                    onChange={(e) => setFormData({ ...formData, fundId: parseInt(e.target.value) })}
+                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="">Select Fund</option>
+                    <option value="1">Growth Fund III</option>
+                    <option value="2">Venture Fund II</option>
+                    <option value="3">Real Estate Fund I</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Type</label>
+                  <select
+                    value={formData.eventType}
+                    onChange={(e) => setFormData({ ...formData, eventType: e.target.value as any })}
+                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="capital_call">Capital Call</option>
+                    <option value="distribution">Distribution</option>
+                    <option value="transfer">Transfer</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Amount</label>
+                  <input
+                    type="number"
+                    required
+                    value={formData.totalAmount}
+                    onChange={(e) => setFormData({ ...formData, totalAmount: e.target.value })}
+                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Call Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.eventDate}
+                    onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
+                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Due Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.dueDate}
+                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Description</label>
+                  <textarea
+                    required
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                    className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700"
+                  >
+                    Create Activity
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)
 
       {/* Approval Modal */}
       <Dialog

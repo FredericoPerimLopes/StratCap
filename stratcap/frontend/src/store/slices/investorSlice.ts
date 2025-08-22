@@ -1,35 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { investorAPI } from '../../services/api';
+import { InvestorEntity as Investor } from '../../types/api';
 
-export interface Investor {
-  id: number;
-  name: string;
-  legalName: string;
-  type: 'individual' | 'institution' | 'fund' | 'trust' | 'other';
-  entityType?: string;
-  taxId?: string;
-  registrationNumber?: string;
-  domicile: string;
-  taxResidence?: string;
-  accreditedInvestor: boolean;
-  qualifiedPurchaser: boolean;
-  address?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  country?: string;
-  primaryContact?: string;
-  primaryEmail?: string;
-  primaryPhone?: string;
-  kycStatus: 'pending' | 'approved' | 'rejected' | 'expired';
-  kycDate?: string;
-  amlStatus: 'pending' | 'approved' | 'rejected' | 'expired';
-  amlDate?: string;
-  notes?: string;
-  metadata?: Record<string, any>;
-  createdAt?: string;
-  updatedAt?: string;
-}
+export type { Investor };
 
 interface InvestorState {
   investors: Investor[];
@@ -71,7 +44,7 @@ export const fetchInvestorById = createAsyncThunk(
 
 export const createInvestor = createAsyncThunk(
   'investor/createInvestor',
-  async (data: Partial<Investor>) => {
+  async (data: Omit<Investor, 'id' | 'createdAt' | 'updatedAt'>) => {
     const response = await investorAPI.create(data);
     return response.data;
   }
@@ -79,7 +52,7 @@ export const createInvestor = createAsyncThunk(
 
 export const updateInvestor = createAsyncThunk(
   'investor/updateInvestor',
-  async ({ id, data }: { id: number; data: Partial<Investor> }) => {
+  async ({ id, data }: { id: number; data: Partial<Omit<Investor, 'id' | 'createdAt' | 'updatedAt'>> }) => {
     const response = await investorAPI.update(id, data);
     return response.data;
   }

@@ -109,6 +109,7 @@ kubeconfig
 *.temp
 ~*
 
+<<<<<<< HEAD
 logs
 dev-debug.log
 # Dependency directories
@@ -127,6 +128,8 @@ dev-debug.log
 # tasks/ 
 
 
+=======
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)
 # Claude Flow generated files
 .claude/settings.local.json
 .mcp.json
@@ -151,8 +154,12 @@ claude-flow
 claude-flow.bat
 claude-flow.ps1
 hive-mind-prompt-*.txt
+<<<<<<< HEAD
 .claude/
 .claude-flow/
 .roo/
 .hive-mind/
 .claude/commands/sparc/tdd.md
+=======
+
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)

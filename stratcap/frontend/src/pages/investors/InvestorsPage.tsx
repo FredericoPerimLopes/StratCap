@@ -66,6 +66,8 @@ interface InvestorFormData {
   qualifiedPurchaser: boolean;
   primaryEmail: string;
   primaryPhone: string;
+  kycStatus?: 'pending' | 'approved' | 'rejected' | 'expired';
+  amlStatus?: 'pending' | 'approved' | 'rejected' | 'expired';
 }
 
 const InvestorsPage: React.FC = () => {
@@ -93,10 +95,12 @@ const InvestorsPage: React.FC = () => {
     legalName: '',
     type: 'institution',
     domicile: 'US',
-    accreditedInvestor: true,
+    accreditedInvestor: false,
     qualifiedPurchaser: false,
     primaryEmail: '',
-    primaryPhone: ''
+    primaryPhone: '',
+    kycStatus: 'pending',
+    amlStatus: 'pending'
   });
 
   useEffect(() => {
@@ -119,6 +123,7 @@ const InvestorsPage: React.FC = () => {
     }
     
     try {
+<<<<<<< HEAD
       // Prepare the data with all required fields
       const investorData = {
         ...formData,
@@ -129,16 +134,26 @@ const InvestorsPage: React.FC = () => {
       console.log('Sending investor data:', investorData); // Debug log
       
       await dispatch(createInvestor(investorData)).unwrap();
+=======
+      const submissionData = {
+        ...formData,
+        kycStatus: formData.kycStatus || 'pending',
+        amlStatus: formData.amlStatus || 'pending'
+      };
+      await dispatch(createInvestor(submissionData)).unwrap();
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)
       setShowCreateModal(false);
       setFormData({
         name: '',
         legalName: '',
         type: 'institution',
         domicile: 'US',
-        accreditedInvestor: true,
+        accreditedInvestor: false,
         qualifiedPurchaser: false,
         primaryEmail: '',
-        primaryPhone: ''
+        primaryPhone: '',
+        kycStatus: 'pending',
+        amlStatus: 'pending'
       });
     } catch (error) {
       console.error('Failed to create investor:', error);

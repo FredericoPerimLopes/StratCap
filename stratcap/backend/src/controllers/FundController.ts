@@ -77,15 +77,13 @@ export class FundController {
 
       res.status(200).json({
         success: true,
-        data: {
-          funds: rows,
-          pagination: {
-            currentPage: Number(page),
-            totalPages: Math.ceil(count / Number(limit)),
-            totalItems: count,
-            itemsPerPage: Number(limit)
-          }
-        },
+        data: rows,
+        pagination: {
+          total: count,
+          page: Number(page),
+          limit: Number(limit),
+          pages: Math.ceil(count / Number(limit))
+        }
       });
     } catch (error) {
       next(error);

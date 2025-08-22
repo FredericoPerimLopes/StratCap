@@ -35,99 +35,93 @@ import {
 
 interface Commitment {
   id: number;
-  investor: string;
-  investorType: 'individual' | 'institution' | 'fund' | 'trust';
-  fund: string;
-  totalCommitment: number;
-  calledAmount: number;
-  distributedAmount: number;
-  remainingCommitment: number;
-  commitmentDate: string;
-  status: 'active' | 'fulfilled' | 'cancelled';
-  investorId: number;
   fundId: number;
-  terms?: string;
+  investorEntityId: number;
+  investorClassId: number;
+  commitmentAmount: string;
+  commitmentDate: string;
+  closingId?: number;
+  status: 'pending' | 'active' | 'suspended' | 'terminated';
+  sideLetterTerms?: Record<string, any>;
+  feeOverrides?: Record<string, any>;
+  capitalCalled: string;
+  capitalReturned: string;
+  unfundedCommitment: string;
+  preferredReturn: string;
+  carriedInterest: string;
+  notes?: string;
+  metadata?: Record<string, any>;
+  // Display fields populated from relations
+  investorName?: string;
+  fundName?: string;
+  investorType?: string;
 }
 
 interface CommitmentFormData {
-  investor: string;
-  fund: string;
-  totalCommitment: string;
+  fundId: number;
+  investorEntityId: number;
+  investorClassId: number;
+  commitmentAmount: string;
   commitmentDate: string;
-  terms: string;
+  closingId?: number;
+  sideLetterTerms?: Record<string, any>;
+  feeOverrides?: Record<string, any>;
+  notes?: string;
+  metadata?: Record<string, any>;
 }
 
 const CommitmentsPage: React.FC = () => {
   const [commitments, setCommitments] = useState<Commitment[]>([
     {
       id: 1,
-      investor: 'Pension Fund Alpha',
-      investorType: 'institution',
-      fund: 'Growth Fund III',
-      totalCommitment: 25000000,
-      calledAmount: 18000000,
-      distributedAmount: 5000000,
-      remainingCommitment: 7000000,
+      fundId: 1,
+      investorEntityId: 1,
+      investorClassId: 1,
+      commitmentAmount: '25000000',
       commitmentDate: '2023-01-15',
       status: 'active',
-      investorId: 1,
-      fundId: 1
+      capitalCalled: '18000000',
+      capitalReturned: '5000000',
+      unfundedCommitment: '7000000',
+      preferredReturn: '0',
+      carriedInterest: '0',
+      investorName: 'Pension Fund Alpha',
+      fundName: 'Growth Fund III',
+      investorType: 'institution'
     },
     {
       id: 2,
-      investor: 'Endowment Beta',
-      investorType: 'institution',
-      fund: 'Growth Fund III',
-      totalCommitment: 15000000,
-      calledAmount: 15000000,
-      distributedAmount: 8000000,
-      remainingCommitment: 0,
+      fundId: 1,
+      investorEntityId: 2,
+      investorClassId: 1,
+      commitmentAmount: '15000000',
       commitmentDate: '2023-02-20',
-      status: 'fulfilled',
-      investorId: 2,
-      fundId: 1
+      status: 'active',
+      capitalCalled: '15000000',
+      capitalReturned: '8000000',
+      unfundedCommitment: '0',
+      preferredReturn: '0',
+      carriedInterest: '0',
+      investorName: 'Endowment Beta',
+      fundName: 'Growth Fund III',
+      investorType: 'institution'
     },
     {
       id: 3,
-      investor: 'John Smith Family Trust',
-      investorType: 'trust',
-      fund: 'Venture Fund II',
-      totalCommitment: 5000000,
-      calledAmount: 3500000,
-      distributedAmount: 1200000,
-      remainingCommitment: 1500000,
+      fundId: 2,
+      investorEntityId: 3,
+      investorClassId: 1,
+      commitmentAmount: '5000000',
       commitmentDate: '2023-03-10',
       status: 'active',
-      investorId: 3,
-      fundId: 2
-    },
-    {
-      id: 4,
-      investor: 'Insurance Corp',
-      investorType: 'institution',
-      fund: 'Real Estate Fund I',
-      totalCommitment: 30000000,
-      calledAmount: 12000000,
-      distributedAmount: 2000000,
-      remainingCommitment: 18000000,
-      commitmentDate: '2023-04-05',
-      status: 'active',
-      investorId: 4,
-      fundId: 3
-    },
-    {
-      id: 5,
-      investor: 'Sovereign Wealth Fund',
-      investorType: 'institution',
-      fund: 'Growth Fund III',
-      totalCommitment: 50000000,
-      calledAmount: 35000000,
-      distributedAmount: 12000000,
-      remainingCommitment: 15000000,
-      commitmentDate: '2023-01-30',
-      status: 'active',
-      investorId: 5,
-      fundId: 1
+      capitalCalled: '3500000',
+      capitalReturned: '1200000',
+      unfundedCommitment: '1500000',
+      preferredReturn: '0',
+      carriedInterest: '0',
+      investorName: 'John Smith Family Trust',
+      fundName: 'Venture Fund II',
+      investorType: 'trust'
     }
   ]);
   
@@ -138,38 +132,55 @@ const CommitmentsPage: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
   const [formData, setFormData] = useState<CommitmentFormData>({
-    investor: '',
-    fund: '',
-    totalCommitment: '',
+    fundId: 0,
+    investorEntityId: 0,
+    investorClassId: 0,
+    commitmentAmount: '',
     commitmentDate: '',
-    terms: ''
+    closingId: undefined,
+    sideLetterTerms: {},
+    feeOverrides: {},
+    notes: '',
+    metadata: {}
   });
 
   const handleCreateCommitment = async (e: React.FormEvent) => {
     e.preventDefault();
     const newCommitment: Commitment = {
       id: Date.now(),
-      investor: formData.investor,
-      investorType: 'institution',
-      fund: formData.fund,
-      totalCommitment: parseFloat(formData.totalCommitment),
-      calledAmount: 0,
-      distributedAmount: 0,
-      remainingCommitment: parseFloat(formData.totalCommitment),
+      fundId: formData.fundId,
+      investorEntityId: formData.investorEntityId,
+      investorClassId: formData.investorClassId,
+      commitmentAmount: formData.commitmentAmount,
       commitmentDate: formData.commitmentDate,
+      closingId: formData.closingId,
       status: 'active',
-      investorId: Date.now(),
-      fundId: Date.now(),
-      terms: formData.terms
+      sideLetterTerms: formData.sideLetterTerms,
+      feeOverrides: formData.feeOverrides,
+      capitalCalled: '0',
+      capitalReturned: '0',
+      unfundedCommitment: formData.commitmentAmount,
+      preferredReturn: '0',
+      carriedInterest: '0',
+      notes: formData.notes,
+      metadata: formData.metadata,
+      investorName: 'New Investor',
+      fundName: 'New Fund',
+      investorType: 'institution'
     };
     setCommitments([...commitments, newCommitment]);
     setShowCreateModal(false);
     setFormData({
-      investor: '',
-      fund: '',
-      totalCommitment: '',
+      fundId: 0,
+      investorEntityId: 0,
+      investorClassId: 0,
+      commitmentAmount: '',
       commitmentDate: '',
-      terms: ''
+      closingId: undefined,
+      sideLetterTerms: {},
+      feeOverrides: {},
+      notes: '',
+      metadata: {}
     });
   };
 
@@ -179,9 +190,9 @@ const CommitmentsPage: React.FC = () => {
   };
 
   const filteredCommitments = commitments.filter(commitment => {
-    const matchesSearch = commitment.investor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         commitment.fund.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFund = !filterFund || commitment.fund === filterFund;
+    const matchesSearch = (commitment.investorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         commitment.fundName?.toLowerCase().includes(searchTerm.toLowerCase())) || false;
+    const matchesFund = !filterFund || commitment.fundName === filterFund;
     const matchesStatus = !filterStatus || commitment.status === filterStatus;
     const matchesType = !filterInvestorType || commitment.investorType === filterInvestorType;
     return matchesSearch && matchesFund && matchesStatus && matchesType;
@@ -220,10 +231,10 @@ const CommitmentsPage: React.FC = () => {
   };
 
   // Calculate summary metrics
-  const totalCommitments = commitments.reduce((sum, c) => sum + c.totalCommitment, 0);
-  const totalCalled = commitments.reduce((sum, c) => sum + c.calledAmount, 0);
-  const totalDistributed = commitments.reduce((sum, c) => sum + c.distributedAmount, 0);
-  const totalRemaining = commitments.reduce((sum, c) => sum + c.remainingCommitment, 0);
+  const totalCommitments = commitments.reduce((sum, c) => sum + parseFloat(c.commitmentAmount || '0'), 0);
+  const totalCalled = commitments.reduce((sum, c) => sum + parseFloat(c.capitalCalled || '0'), 0);
+  const totalDistributed = commitments.reduce((sum, c) => sum + parseFloat(c.capitalReturned || '0'), 0);
+  const totalRemaining = commitments.reduce((sum, c) => sum + parseFloat(c.unfundedCommitment || '0'), 0);
 
   // Sample data for charts
   const commitmentTrendData = [
@@ -248,7 +259,7 @@ const CommitmentsPage: React.FC = () => {
     { fund: 'Real Estate Fund I', commitments: 30000000, called: 12000000 }
   ];
 
-  const uniqueFunds = [...new Set(commitments.map(c => c.fund))];
+  const uniqueFunds = [...new Set(commitments.map(c => `Fund ${c.fundId}`))];
 
   return (
     <div className="space-y-6">
@@ -469,42 +480,42 @@ const CommitmentsPage: React.FC = () => {
                   <tr key={commitment.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {getInvestorTypeIcon(commitment.investorType)}
+                        {getInvestorTypeIcon('institution')}
                         <div className="ml-3">
-                          <div className="text-sm font-medium text-gray-900">{commitment.investor}</div>
-                          <div className="text-sm text-gray-500">{commitment.investorType}</div>
+                          <div className="text-sm font-medium text-gray-900">Investor #{commitment.investorEntityId}</div>
+                          <div className="text-sm text-gray-500">Institution</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {commitment.fund}
+                      Fund #{commitment.fundId}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(commitment.totalCommitment)}
+                      {formatCurrency(parseFloat(commitment.commitmentAmount) || 0)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{formatCurrency(commitment.calledAmount)}</div>
+                      <div className="text-sm text-gray-900">{formatCurrency(parseFloat(commitment.capitalCalled) || 0)}</div>
                       <div className="w-full bg-gray-200 rounded-full h-1.5">
                         <div 
                           className="bg-blue-600 h-1.5 rounded-full" 
-                          style={{ width: `${getCallPercentage(commitment.calledAmount, commitment.totalCommitment)}%` }}
+                          style={{ width: `${getCallPercentage(parseFloat(commitment.capitalCalled) || 0, parseFloat(commitment.commitmentAmount) || 0)}%` }}
                         ></div>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {getCallPercentage(commitment.calledAmount, commitment.totalCommitment).toFixed(1)}%
+                        {getCallPercentage(parseFloat(commitment.capitalCalled) || 0, parseFloat(commitment.commitmentAmount) || 0).toFixed(1)}%
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(commitment.distributedAmount)}
+                      {formatCurrency(parseFloat(commitment.capitalReturned) || 0)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(commitment.remainingCommitment)}
+                      {formatCurrency(parseFloat(commitment.unfundedCommitment) || 0)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(commitment.status)}`}>
                         {commitment.status === 'active' && <CheckCircleIcon className="h-3 w-3 mr-1" />}
-                        {commitment.status === 'fulfilled' && <CheckCircleIcon className="h-3 w-3 mr-1" />}
-                        {commitment.status === 'cancelled' && <ExclamationTriangleIcon className="h-3 w-3 mr-1" />}
+                        {commitment.status === 'active' && <CheckCircleIcon className="h-3 w-3 mr-1" />}
+                        {commitment.status === 'terminated' && <ExclamationTriangleIcon className="h-3 w-3 mr-1" />}
                         {commitment.status}
                       </span>
                     </td>
@@ -553,8 +564,8 @@ const CommitmentsPage: React.FC = () => {
                   <input
                     type="text"
                     required
-                    value={formData.investor}
-                    onChange={(e) => setFormData({ ...formData, investor: e.target.value })}
+                    value={formData.investorEntityId}
+                    onChange={(e) => setFormData({ ...formData, investorEntityId: parseInt(e.target.value) })}
                     className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
@@ -562,14 +573,14 @@ const CommitmentsPage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700">Fund</label>
                   <select
                     required
-                    value={formData.fund}
-                    onChange={(e) => setFormData({ ...formData, fund: e.target.value })}
+                    value={formData.fundId}
+                    onChange={(e) => setFormData({ ...formData, fundId: parseInt(e.target.value) })}
                     className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                   >
                     <option value="">Select Fund</option>
-                    {uniqueFunds.map(fund => (
-                      <option key={fund} value={fund}>{fund}</option>
-                    ))}
+                    <option value="1">Fund 1</option>
+                    <option value="2">Fund 2</option>
+                    <option value="3">Fund 3</option>
                   </select>
                 </div>
                 <div>
@@ -577,8 +588,8 @@ const CommitmentsPage: React.FC = () => {
                   <input
                     type="number"
                     required
-                    value={formData.totalCommitment}
-                    onChange={(e) => setFormData({ ...formData, totalCommitment: e.target.value })}
+                    value={formData.commitmentAmount}
+                    onChange={(e) => setFormData({ ...formData, commitmentAmount: e.target.value })}
                     className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
@@ -595,8 +606,8 @@ const CommitmentsPage: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Terms</label>
                   <textarea
-                    value={formData.terms}
-                    onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
+                    value={formData.notes || ''}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     rows={3}
                     className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                   />

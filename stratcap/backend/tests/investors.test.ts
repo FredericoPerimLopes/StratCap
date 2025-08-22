@@ -700,9 +700,9 @@ describe('InvestorController', () => {
 describe('Investor Analytics', () => {
   it('should calculate investor portfolio diversification', () => {
     const commitments = [
-      { fundId: 1, commitmentAmount: '5000000', fund: { fundType: 'private_equity' } },
-      { fundId: 2, commitmentAmount: '3000000', fund: { fundType: 'real_estate' } },
-      { fundId: 3, commitmentAmount: '2000000', fund: { fundType: 'infrastructure' } },
+      { fundId: 1, commitmentAmount: '5000000', fund: { type: 'master' } },
+      { fundId: 2, commitmentAmount: '3000000', fund: { type: 'feeder' } },
+      { fundId: 3, commitmentAmount: '2000000', fund: { type: 'parallel' } },
     ];
 
     const totalCommitments = commitments.reduce((sum, c) => 

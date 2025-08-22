@@ -3,6 +3,7 @@
     "allow": [
       "mcp__ruv-swarm",
       "mcp__claude-flow",
+<<<<<<< HEAD
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
       "Bash(rm:*)",
@@ -25,6 +26,9 @@
       "Bash(lsof:*)",
       "Bash(npm ls:*)",
       "Bash(npx tsc:*)"
+=======
+      "Bash(find:*)"
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)
     ],
     "deny": []
   }

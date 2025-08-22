@@ -48,6 +48,22 @@ import {
   clearError
 } from '../../store/slices/fundSlice';
 
+<<<<<<< HEAD
+=======
+interface FundFormData {
+  fundFamilyId?: number;
+  name: string;
+  code: string;
+  type: 'master' | 'feeder' | 'parallel' | 'subsidiary';
+  vintage: number;
+  targetSize: string;
+  currency: string;
+  status?: 'fundraising' | 'investing' | 'harvesting' | 'closed';
+  managementFeeRate: string;
+  carriedInterestRate: string;
+  preferredReturnRate: string;
+}
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)
 
 const FundsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -57,11 +73,57 @@ const FundsPage: React.FC = () => {
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
+<<<<<<< HEAD
+=======
+  const [formData, setFormData] = useState<FundFormData>({
+    name: '',
+    code: '',
+    type: 'master',
+    vintage: new Date().getFullYear(),
+    targetSize: '',
+    currency: 'USD',
+    managementFeeRate: '2.0',
+    carriedInterestRate: '20.0',
+    preferredReturnRate: '8.0',
+    fundFamilyId: 1,
+    status: 'fundraising'
+  });
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)
 
   useEffect(() => {
     dispatch(fetchFunds());
   }, [dispatch]);
 
+<<<<<<< HEAD
+=======
+  const handleCreateFund = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const submissionData = {
+        ...formData,
+        fundFamilyId: formData.fundFamilyId || 1,
+        status: formData.status || 'fundraising'
+      };
+      await dispatch(createFund(submissionData)).unwrap();
+      setShowCreateModal(false);
+      setFormData({
+        name: '',
+        code: '',
+        type: 'master',
+        vintage: new Date().getFullYear(),
+        targetSize: '',
+        currency: 'USD',
+        managementFeeRate: '2.0',
+        carriedInterestRate: '20.0',
+        preferredReturnRate: '8.0',
+        fundFamilyId: 1,
+        status: 'fundraising'
+      });
+    } catch (error) {
+      console.error('Failed to create fund:', error);
+    }
+  };
+>>>>>>> 80a95e2 (fix backedn frontend mismatch)
 
   const handleDeleteFund = async (id: number) => {
     try {

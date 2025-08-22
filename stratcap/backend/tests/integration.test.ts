@@ -74,7 +74,7 @@ describe('Integration Tests', () => {
         .send({
           name: 'Test Fund I',
           fundFamilyId: testFundFamily.id,
-          fundType: 'private_equity',
+          type: 'master',
           targetSize: '100000000',
           managementFeeRate: '2.0',
           carriedInterestRate: '20.0',
@@ -209,7 +209,7 @@ describe('Integration Tests', () => {
       testFund = await Fund.create({
         name: 'Fee Test Fund',
         fundFamilyId: testFundFamily.id,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '100000000.00',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',
@@ -310,7 +310,7 @@ describe('Integration Tests', () => {
       const fund1 = await Fund.create({
         name: 'Fund I',
         fundFamilyId: testFundFamily.id,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '100000000.00',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',
@@ -321,7 +321,7 @@ describe('Integration Tests', () => {
       const fund2 = await Fund.create({
         name: 'Fund II',
         fundFamilyId: testFundFamily.id,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '150000000.00',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',
@@ -391,7 +391,7 @@ describe('Integration Tests', () => {
       testFund = await Fund.create({
         name: 'Analytics Test Fund',
         fundFamilyId: testFundFamily.id,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '100000000.00',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',
@@ -558,7 +558,7 @@ describe('Integration Tests', () => {
         Fund.create({
           name: `Pagination Fund ${i + 1}`,
           fundFamilyId: fundFamily.id,
-          fundType: 'private_equity',
+          type: 'master',
           targetSize: '10000000.00',
           managementFeeRate: '2.0',
           carriedInterestRate: '20.0',
@@ -600,7 +600,7 @@ describe('Integration Tests', () => {
       const fund = await Fund.create({
         name: 'Consistency Test Fund',
         fundFamilyId: fundFamily.id,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '100000000.00',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',

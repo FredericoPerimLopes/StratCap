@@ -59,7 +59,7 @@ describe('FundController', () => {
         id: 1,
         name: 'Test Fund I',
         fundFamilyId: 1,
-        fundType: 'private_equity',
+        type: 'master',
         status: 'fundraising',
         targetSize: '100000000.00',
         managementFeeRate: '2.0',
@@ -73,7 +73,7 @@ describe('FundController', () => {
       mockRequest.body = {
         name: 'Test Fund I',
         fundFamilyId: 1,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '100000000',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',
@@ -115,7 +115,7 @@ describe('FundController', () => {
       mockRequest.body = {
         name: 'Test Fund I',
         fundFamilyId: 999,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '100000000',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',
@@ -151,7 +151,7 @@ describe('FundController', () => {
       mockRequest.body = {
         name: 'Test Fund I',
         fundFamilyId: 1,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '0',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',
@@ -172,7 +172,7 @@ describe('FundController', () => {
         {
           id: 1,
           name: 'Test Fund I',
-          fundType: 'private_equity',
+          type: 'master',
           status: 'active',
           targetSize: '100000000.00',
           raisedToDate: '75000000.00',
@@ -180,7 +180,7 @@ describe('FundController', () => {
         {
           id: 2,
           name: 'Test Fund II',
-          fundType: 'private_equity',
+          type: 'master',
           status: 'fundraising',
           targetSize: '150000000.00',
           raisedToDate: '25000000.00',
@@ -216,7 +216,7 @@ describe('FundController', () => {
           id: 1,
           name: 'Test Fund I',
           fundFamilyId: 1,
-          fundType: 'private_equity',
+          type: 'master',
         },
       ];
 
@@ -258,7 +258,7 @@ describe('FundController', () => {
       const mockFund = {
         id: 1,
         name: 'Test Fund I',
-        fundType: 'private_equity',
+        type: 'master',
         status: 'active',
         targetSize: '100000000.00',
         raisedToDate: '75000000.00',
@@ -562,7 +562,7 @@ describe('FundController', () => {
       mockRequest.body = {
         name: 'Test Fund I',
         fundFamilyId: 1,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: '100000000',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',
@@ -583,7 +583,7 @@ describe('FundController', () => {
       mockRequest.body = {
         name: 'Test Fund I',
         fundFamilyId: 1,
-        fundType: 'private_equity',
+        type: 'master',
         targetSize: 'invalid_number',
         managementFeeRate: '2.0',
         carriedInterestRate: '20.0',

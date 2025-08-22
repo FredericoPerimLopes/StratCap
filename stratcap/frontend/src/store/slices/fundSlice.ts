@@ -1,28 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fundAPI } from '../../services/api';
+import { Fund } from '../../types/api';
 
-export interface Fund {
-  id: number;
-  fundFamilyId: number;
-  name: string;
-  code: string;
-  type: 'master' | 'feeder' | 'parallel' | 'subsidiary';
-  vintage: number;
-  targetSize: string;
-  hardCap?: string;
-  managementFeeRate: string;
-  carriedInterestRate: string;
-  preferredReturnRate: string;
-  investmentPeriodEnd?: string;
-  termEnd?: string;
-  extensionPeriods?: number;
-  extensionLength?: number;
-  currency: string;
-  status: 'fundraising' | 'investing' | 'harvesting' | 'closed';
-  settings?: Record<string, any>;
-  createdAt?: string;
-  updatedAt?: string;
-}
+export type { Fund };
 
 interface FundState {
   funds: Fund[];
@@ -66,7 +46,7 @@ export const fetchFundById = createAsyncThunk(
 
 export const createFund = createAsyncThunk(
   'fund/createFund',
-  async (data: Partial<Fund>) => {
+  async (data: Omit<Fund, 'id' | 'createdAt' | 'updatedAt'>) => {
     const response = await fundAPI.create(data);
     return response.data;
   }
@@ -74,7 +54,7 @@ export const createFund = createAsyncThunk(
 
 export const updateFund = createAsyncThunk(
   'fund/updateFund',
-  async ({ id, data }: { id: number; data: Partial<Fund> }) => {
+  async ({ id, data }: { id: number; data: Partial<Omit<Fund, 'id' | 'createdAt' | 'updatedAt'>> }) => {
     const response = await fundAPI.update(id, data);
     return response.data;
   }
