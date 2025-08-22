@@ -7,7 +7,6 @@ import {
   Tabs,
   Tab,
   Switch,
-  FormControlLabel,
   TextField,
   Button,
   Divider,
@@ -22,13 +21,11 @@ import {
   Alert,
   Chip
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import {
   Person as PersonIcon,
   Security as SecurityIcon,
   Notifications as NotificationsIcon,
   Palette as PaletteIcon,
-  Language as LanguageIcon,
   Storage as StorageIcon
 } from '@mui/icons-material';
 
@@ -65,7 +62,7 @@ const SettingsPage: React.FC = () => {
     }
   });
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -121,44 +118,40 @@ const SettingsPage: React.FC = () => {
           {/* Profile Tab */}
           <TabPanel value={tabValue} index={0}>
             <Typography variant="h6" sx={{ mb: 3 }}>Profile Settings</Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Full Name"
-                  defaultValue="John Smith"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Email Address"
-                  defaultValue="john.smith@company.com"
-                  variant="outlined"
-                  type="email"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Phone Number"
-                  defaultValue="+1 (555) 123-4567"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Department</InputLabel>
-                  <Select defaultValue="finance" label="Department">
-                    <MenuItem value="finance">Finance</MenuItem>
-                    <MenuItem value="operations">Operations</MenuItem>
-                    <MenuItem value="compliance">Compliance</MenuItem>
-                    <MenuItem value="management">Management</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, 
+              gap: 3 
+            }}>
+              <TextField
+                fullWidth
+                label="Full Name"
+                defaultValue="John Smith"
+                variant="outlined"
+              />
+              <TextField
+                fullWidth
+                label="Email Address"
+                defaultValue="john.smith@company.com"
+                variant="outlined"
+                type="email"
+              />
+              <TextField
+                fullWidth
+                label="Phone Number"
+                defaultValue="+1 (555) 123-4567"
+                variant="outlined"
+              />
+              <FormControl fullWidth>
+                <InputLabel>Department</InputLabel>
+                <Select defaultValue="finance" label="Department">
+                  <MenuItem value="finance">Finance</MenuItem>
+                  <MenuItem value="operations">Operations</MenuItem>
+                  <MenuItem value="compliance">Compliance</MenuItem>
+                  <MenuItem value="management">Management</MenuItem>
+                </Select>
+              </FormControl>
+              <Box sx={{ gridColumn: { xs: '1', md: '1 / -1' } }}>
                 <TextField
                   fullWidth
                   label="Bio"
@@ -167,8 +160,8 @@ const SettingsPage: React.FC = () => {
                   defaultValue="Senior Financial Analyst with 10+ years of experience in fund management."
                   variant="outlined"
                 />
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
             <Box sx={{ mt: 3 }}>
               <Button variant="contained" sx={{ mr: 2 }}>
                 Save Changes
@@ -240,52 +233,50 @@ const SettingsPage: React.FC = () => {
           {/* Appearance Tab */}
           <TabPanel value={tabValue} index={2}>
             <Typography variant="h6" sx={{ mb: 3 }}>Appearance & Language</Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Theme</InputLabel>
-                  <Select
-                    value={settings.appearance.theme}
-                    label="Theme"
-                    onChange={handleAppearanceChange('theme')}
-                  >
-                    <MenuItem value="light">Light</MenuItem>
-                    <MenuItem value="dark">Dark</MenuItem>
-                    <MenuItem value="auto">Auto</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Language</InputLabel>
-                  <Select
-                    value={settings.appearance.language}
-                    label="Language"
-                    onChange={handleAppearanceChange('language')}
-                  >
-                    <MenuItem value="en">English</MenuItem>
-                    <MenuItem value="es">Spanish</MenuItem>
-                    <MenuItem value="fr">French</MenuItem>
-                    <MenuItem value="de">German</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Timezone</InputLabel>
-                  <Select
-                    value={settings.appearance.timezone}
-                    label="Timezone"
-                    onChange={handleAppearanceChange('timezone')}
-                  >
-                    <MenuItem value="UTC">UTC</MenuItem>
-                    <MenuItem value="EST">Eastern Time</MenuItem>
-                    <MenuItem value="PST">Pacific Time</MenuItem>
-                    <MenuItem value="GMT">Greenwich Mean Time</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, 
+              gap: 3 
+            }}>
+              <FormControl fullWidth>
+                <InputLabel>Theme</InputLabel>
+                <Select
+                  value={settings.appearance.theme}
+                  label="Theme"
+                  onChange={handleAppearanceChange('theme')}
+                >
+                  <MenuItem value="light">Light</MenuItem>
+                  <MenuItem value="dark">Dark</MenuItem>
+                  <MenuItem value="auto">Auto</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Language</InputLabel>
+                <Select
+                  value={settings.appearance.language}
+                  label="Language"
+                  onChange={handleAppearanceChange('language')}
+                >
+                  <MenuItem value="en">English</MenuItem>
+                  <MenuItem value="es">Spanish</MenuItem>
+                  <MenuItem value="fr">French</MenuItem>
+                  <MenuItem value="de">German</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Timezone</InputLabel>
+                <Select
+                  value={settings.appearance.timezone}
+                  label="Timezone"
+                  onChange={handleAppearanceChange('timezone')}
+                >
+                  <MenuItem value="UTC">UTC</MenuItem>
+                  <MenuItem value="EST">Eastern Time</MenuItem>
+                  <MenuItem value="PST">Pacific Time</MenuItem>
+                  <MenuItem value="GMT">Greenwich Mean Time</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           </TabPanel>
 
           {/* Privacy & Security Tab */}
@@ -340,39 +331,35 @@ const SettingsPage: React.FC = () => {
           {/* Data & Storage Tab */}
           <TabPanel value={tabValue} index={4}>
             <Typography variant="h6" sx={{ mb: 3 }}>Data & Storage</Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="subtitle1" sx={{ mb: 1 }}>Storage Usage</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      You are using 2.3 GB of 10 GB available storage
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                      <Chip label="Documents: 1.2 GB" size="small" />
-                      <Chip label="Reports: 0.8 GB" size="small" />
-                      <Chip label="Cache: 0.3 GB" size="small" />
-                    </Box>
-                    <Button variant="outlined" size="small">
-                      Clear Cache
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="subtitle1" sx={{ mb: 1 }}>Data Export</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Download a copy of your personal data and settings
-                    </Typography>
-                    <Button variant="contained">
-                      Export Data
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>Storage Usage</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    You are using 2.3 GB of 10 GB available storage
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                    <Chip label="Documents: 1.2 GB" size="small" />
+                    <Chip label="Reports: 0.8 GB" size="small" />
+                    <Chip label="Cache: 0.3 GB" size="small" />
+                  </Box>
+                  <Button variant="outlined" size="small">
+                    Clear Cache
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>Data Export</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Download a copy of your personal data and settings
+                  </Typography>
+                  <Button variant="contained">
+                    Export Data
+                  </Button>
+                </CardContent>
+              </Card>
+            </Box>
           </TabPanel>
         </CardContent>
       </Card>

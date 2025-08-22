@@ -90,10 +90,10 @@ const fundSlice = createSlice({
         state.isLoading = false;
         // Handle nested backend response structure
         console.log('📝 Redux payload:', action.payload);
-        const funds = action.payload.data?.funds || action.payload.funds || [];
+        const funds = (action.payload as any).data?.funds || (action.payload as any).funds || [];
         console.log('📊 Extracted funds:', funds);
         state.funds = funds;
-        state.pagination = action.payload.data?.pagination || action.payload.pagination || null;
+        state.pagination = (action.payload as any).data?.pagination || (action.payload as any).pagination || null;
       })
       .addCase(fetchFunds.rejected, (state, action) => {
         state.isLoading = false;

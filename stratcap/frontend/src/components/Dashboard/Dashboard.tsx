@@ -15,8 +15,8 @@ import {
   Refresh as RefreshIcon,
   Notifications as NotificationsIcon
 } from '@mui/icons-material';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
-import { fundAPI, investorAPI, capitalActivityAPI, feeAPI } from '../../services/api';
+import { format } from 'date-fns';
+import { fundAPI, investorAPI, capitalActivityAPI } from '../../services/api';
 import { DashboardTemplate, MetricCard } from '../common/PageTemplate/DashboardTemplate';
 
 interface DashboardMetrics {
@@ -64,40 +64,40 @@ const Dashboard: React.FC = () => {
       // const feesRes = await feeAPI.getFeeCalculations(fundId, {...});
       const feesRes = { data: { data: { fees: [] } } }; // Mock empty response
 
-      // Extract data from nested backend response structure
-      const funds = fundsRes.data.data?.funds || fundsRes.data.funds || [];
-      const investors = investorsRes.data.data?.investors || investorsRes.data.investors || [];
-      const activities = activitiesRes.data?.activities || activitiesRes.data || [];
-      const fees = feesRes.data.data?.fees || feesRes.data.fees || [];
+      // Extract data from nested backend response structure with proper typing
+      const funds: any[] = (fundsRes.data as any)?.data?.funds || (fundsRes.data as any)?.funds || [];
+      const investors: any[] = (investorsRes.data as any)?.data?.investors || (investorsRes.data as any)?.investors || [];
+      const activities: any[] = (activitiesRes.data as any)?.activities || (activitiesRes.data as any) || [];
+      const fees: any[] = (feesRes.data as any)?.data?.fees || (feesRes.data as any)?.fees || [];
 
-      const totalAUM = funds.reduce((sum, fund) => sum + (fund.currentNAV || 0), 0);
-      const previousAUM = funds.reduce((sum, fund) => sum + (fund.previousNAV || fund.currentNAV || 0), 0);
+      const totalAUM = funds.reduce((sum: number, fund: any) => sum + (fund.currentNAV || 0), 0);
+      const previousAUM = funds.reduce((sum: number, fund: any) => sum + (fund.previousNAV || fund.currentNAV || 0), 0);
       const aumChange = previousAUM > 0 ? ((totalAUM - previousAUM) / previousAUM) * 100 : 0;
 
-      const activeFunds = funds.filter(f => f.status === 'active').length;
-      const activeInvestors = investors.filter(i => i.status === 'active').length;
+      const activeFunds = funds.filter((f: any) => f.status === 'active').length;
+      const activeInvestors = investors.filter((i: any) => i.status === 'active').length;
       
-      const totalCommitments = funds.reduce((sum, fund) => sum + (fund.totalCommitments || 0), 0);
-      const unfundedCommitments = funds.reduce((sum, fund) => sum + (fund.unfundedCommitments || 0), 0);
+      const totalCommitments = funds.reduce((sum: number, fund: any) => sum + (fund.totalCommitments || 0), 0);
+      const unfundedCommitments = funds.reduce((sum: number, fund: any) => sum + (fund.unfundedCommitments || 0), 0);
 
       const currentYear = new Date().getFullYear();
-      const ytdActivities = activities.filter(a => new Date(a.eventDate).getFullYear() === currentYear);
+      const ytdActivities = activities.filter((a: any) => new Date(a.eventDate).getFullYear() === currentYear);
       const ytdCapitalCalls = ytdActivities
-        .filter(a => a.activityType === 'capital_call')
-        .reduce((sum, a) => sum + (a.totalAmount || 0), 0);
+        .filter((a: any) => a.activityType === 'capital_call')
+        .reduce((sum: number, a: any) => sum + (a.totalAmount || 0), 0);
       const ytdDistributions = ytdActivities
-        .filter(a => a.activityType === 'distribution')
-        .reduce((sum, a) => sum + (a.totalAmount || 0), 0);
+        .filter((a: any) => a.activityType === 'distribution')
+        .reduce((sum: number, a: any) => sum + (a.totalAmount || 0), 0);
 
-      const pendingActivities = activities.filter(a => a.status === 'pending' || a.status === 'draft').length;
-      const upcomingFees = fees.filter(f => f.status === 'pending').length;
+      const pendingActivities = activities.filter((a: any) => a.status === 'pending' || a.status === 'draft').length;
+      const upcomingFees = fees.filter((f: any) => f.status === 'pending').length;
 
-      const fundPerformance = funds.filter(f => f.performance);
+      const fundPerformance = funds.filter((f: any) => f.performance);
       const averageIRR = fundPerformance.length > 0
-        ? fundPerformance.reduce((sum, f) => sum + (f.performance?.netIRR || 0), 0) / fundPerformance.length
+        ? fundPerformance.reduce((sum: number, f: any) => sum + (f.performance?.netIRR || 0), 0) / fundPerformance.length
         : 0;
       const averageMOIC = fundPerformance.length > 0
-        ? fundPerformance.reduce((sum, f) => sum + (f.performance?.moic || 0), 0) / fundPerformance.length
+        ? fundPerformance.reduce((sum: number, f: any) => sum + (f.performance?.moic || 0), 0) / fundPerformance.length
         : 0;
 
       setMetrics({

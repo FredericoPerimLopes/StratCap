@@ -1,18 +1,10 @@
 [
   {
-<<<<<<< HEAD
-    "id": "cmd-hooks-1755799535299",
+    "id": "cmd-hooks-1755883343242",
     "type": "hooks",
     "success": true,
-    "duration": 57.0398120000001,
-    "timestamp": 1755799535357,
-=======
-    "id": "cmd-hooks-1755871926089",
-    "type": "hooks",
-    "success": true,
-    "duration": 10.409087,
-    "timestamp": 1755871926100,
->>>>>>> 80a95e2 (fix backedn frontend mismatch)
+    "duration": 8.101931999999977,
+    "timestamp": 1755883343250,
     "metadata": {}
   }
 ]

@@ -7,19 +7,13 @@ import {
   Button,
   Card,
   CardContent,
-  Grid,
   Chip,
-  Divider,
   Alert,
   CircularProgress,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
   TableRow,
-  Paper,
-  IconButton,
   Tabs,
   Tab
 } from '@mui/material';
@@ -89,7 +83,7 @@ const FundDetails: React.FC = () => {
     navigate('/funds');
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -190,63 +184,57 @@ const FundDetails: React.FC = () => {
       )}
 
       {/* Fund Overview Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid xs={12} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <MoneyIcon sx={{ fontSize: 40, color: 'success.main', mb: 1 }} />
-              <Typography variant="h6" component="div">
-                {formatCurrency(currentFund.targetSize)}
-              </Typography>
-              <Typography color="text.secondary">
-                Target Size
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid xs={12} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <CalendarIcon sx={{ fontSize: 40, color: 'info.main', mb: 1 }} />
-              <Typography variant="h6" component="div">
-                {currentFund.vintage}
-              </Typography>
-              <Typography color="text.secondary">
-                Vintage Year
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid xs={12} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <TrendingUpIcon sx={{ fontSize: 40, color: 'warning.main', mb: 1 }} />
-              <Typography variant="h6" component="div">
-                {formatPercentage(currentFund.carriedInterestRate)}
-              </Typography>
-              <Typography color="text.secondary">
-                Carried Interest
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid xs={12} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <AccountBalanceIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
-              <Typography variant="h6" component="div">
-                {formatPercentage(currentFund.managementFeeRate)}
-              </Typography>
-              <Typography color="text.secondary">
-                Management Fee
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, 
+        gap: 3, 
+        mb: 4 
+      }}>
+        <Card>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <MoneyIcon sx={{ fontSize: 40, color: 'success.main', mb: 1 }} />
+            <Typography variant="h6" component="div">
+              {formatCurrency(currentFund.targetSize)}
+            </Typography>
+            <Typography color="text.secondary">
+              Target Size
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <CalendarIcon sx={{ fontSize: 40, color: 'info.main', mb: 1 }} />
+            <Typography variant="h6" component="div">
+              {currentFund.vintage}
+            </Typography>
+            <Typography color="text.secondary">
+              Vintage Year
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <TrendingUpIcon sx={{ fontSize: 40, color: 'warning.main', mb: 1 }} />
+            <Typography variant="h6" component="div">
+              {formatPercentage(currentFund.carriedInterestRate)}
+            </Typography>
+            <Typography color="text.secondary">
+              Carried Interest
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <AccountBalanceIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
+            <Typography variant="h6" component="div">
+              {formatPercentage(currentFund.managementFeeRate)}
+            </Typography>
+            <Typography color="text.secondary">
+              Management Fee
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Tabs */}
       <Card>
@@ -260,8 +248,12 @@ const FundDetails: React.FC = () => {
 
         {/* Overview Tab */}
         <TabPanel value={tabValue} index={0}>
-          <Grid container spacing={3}>
-            <Grid xs={12} md={6}>
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, 
+            gap: 3 
+          }}>
+            <Box>
               <Typography variant="h6" sx={{ mb: 2 }}>Basic Information</Typography>
               <Table size="small">
                 <TableBody>
@@ -299,9 +291,8 @@ const FundDetails: React.FC = () => {
                   </TableRow>
                 </TableBody>
               </Table>
-            </Grid>
-            
-            <Grid xs={12} md={6}>
+            </Box>
+            <Box>
               <Typography variant="h6" sx={{ mb: 2 }}>Financial Structure</Typography>
               <Table size="small">
                 <TableBody>
@@ -335,8 +326,8 @@ const FundDetails: React.FC = () => {
                   </TableRow>
                 </TableBody>
               </Table>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </TabPanel>
 
         {/* Performance Tab */}

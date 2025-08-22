@@ -38,7 +38,6 @@ import {
   FormControlLabel,
   Checkbox
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import {
   Add as PlusIcon,
   Search as MagnifyingGlassIcon,
@@ -55,7 +54,7 @@ import {
   CheckCircle as CheckCircleIcon,
   AccessTime as ClockIcon
 } from '@mui/icons-material';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface InvestorFormData {
   name: string;
@@ -123,25 +122,12 @@ const InvestorsPage: React.FC = () => {
     }
     
     try {
-<<<<<<< HEAD
-      // Prepare the data with all required fields
-      const investorData = {
-        ...formData,
-        kycStatus: 'pending', // Required by backend
-        amlStatus: 'pending', // Required by backend
-      };
-      
-      console.log('Sending investor data:', investorData); // Debug log
-      
-      await dispatch(createInvestor(investorData)).unwrap();
-=======
       const submissionData = {
         ...formData,
         kycStatus: formData.kycStatus || 'pending',
         amlStatus: formData.amlStatus || 'pending'
       };
       await dispatch(createInvestor(submissionData)).unwrap();
->>>>>>> 80a95e2 (fix backedn frontend mismatch)
       setShowCreateModal(false);
       setFormData({
         name: '',
@@ -328,8 +314,8 @@ const InvestorsPage: React.FC = () => {
       )}
 
       {/* Analytics Overview */}
-      <Grid container spacing={4} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6} xl={4}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 4, mb: 4 }}>
+        <Box>
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ pb: 2 }}>
               <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>Investor Types</Typography>
@@ -377,9 +363,9 @@ const InvestorsPage: React.FC = () => {
               )}
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6} xl={4}>
+        <Box>
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ pb: 2 }}>
               <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>KYC Status</Typography>
@@ -425,9 +411,9 @@ const InvestorsPage: React.FC = () => {
               )}
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={12} xl={4}>
+        <Box>
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ pb: 2 }}>
               <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>Geographic Distribution</Typography>
@@ -474,14 +460,14 @@ const InvestorsPage: React.FC = () => {
               )}
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Filters */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={3}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3, alignItems: 'center' }}>
+            <Box>
               <TextField
                 fullWidth
                 placeholder="Search investors..."
@@ -496,8 +482,8 @@ const InvestorsPage: React.FC = () => {
                 }}
                 size="small"
               />
-            </Grid>
-            <Grid item xs={12} md={3}>
+            </Box>
+            <Box>
               <FormControl fullWidth size="small">
                 <InputLabel>Investor Type</InputLabel>
                 <Select
@@ -513,8 +499,8 @@ const InvestorsPage: React.FC = () => {
                   <MenuItem value="other">Other</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
+            </Box>
+            <Box>
               <FormControl fullWidth size="small">
                 <InputLabel>KYC Status</InputLabel>
                 <Select
@@ -529,16 +515,16 @@ const InvestorsPage: React.FC = () => {
                   <MenuItem value="expired">Expired</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
+            </Box>
+            <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <FunnelIcon sx={{ fontSize: 16 }} />
                 <Typography variant="body2" color="text.secondary">
                   {filteredInvestors.length} of {investorsArray.length} investors
                 </Typography>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 

@@ -9,7 +9,6 @@ import {
   Button,
   Card,
   CardContent,
-  Grid,
   Chip,
   Table,
   TableBody,
@@ -249,146 +248,136 @@ const FundFamilyDetails: React.FC = () => {
             </Box>
           </Box>
 
-          <Grid container spacing={3} sx={{ mt: 2 }}>
-            <Grid xs={12} md={3}>
-              <Box sx={{ borderLeft: 4, borderColor: 'primary.main', pl: 2 }}>
-                <Typography variant="body2" color="text.secondary">Status</Typography>
-                <Chip 
-                  label={currentFundFamily.status} 
-                  size="small" 
-                  color="primary"
-                  variant="outlined"
-                />
-              </Box>
-            </Grid>
-            <Grid xs={12} md={3}>
-              <Box sx={{ borderLeft: 4, borderColor: 'success.main', pl: 2 }}>
-                <Typography variant="body2" color="text.secondary">Management Company</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {currentFundFamily.managementCompany}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid xs={12} md={3}>
-              <Box sx={{ borderLeft: 4, borderColor: 'secondary.main', pl: 2 }}>
-                <Typography variant="body2" color="text.secondary">Primary Currency</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {currentFundFamily.primaryCurrency}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid xs={12} md={3}>
-              <Box sx={{ borderLeft: 4, borderColor: 'warning.main', pl: 2 }}>
-                <Typography variant="body2" color="text.secondary">Fiscal Year End</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {new Date(currentFundFamily.fiscalYearEnd).toLocaleDateString()}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' }, 
+            gap: 3, 
+            mt: 2 
+          }}>
+            <Box sx={{ borderLeft: 4, borderColor: 'primary.main', pl: 2 }}>
+              <Typography variant="body2" color="text.secondary">Status</Typography>
+              <Chip 
+                label={currentFundFamily.status} 
+                size="small" 
+                color="primary"
+                variant="outlined"
+              />
+            </Box>
+            <Box sx={{ borderLeft: 4, borderColor: 'success.main', pl: 2 }}>
+              <Typography variant="body2" color="text.secondary">Management Company</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {currentFundFamily.managementCompany}
+              </Typography>
+            </Box>
+            <Box sx={{ borderLeft: 4, borderColor: 'secondary.main', pl: 2 }}>
+              <Typography variant="body2" color="text.secondary">Primary Currency</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {currentFundFamily.primaryCurrency}
+              </Typography>
+            </Box>
+            <Box sx={{ borderLeft: 4, borderColor: 'warning.main', pl: 2 }}>
+              <Typography variant="body2" color="text.secondary">Fiscal Year End</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {new Date(currentFundFamily.fiscalYearEnd).toLocaleDateString()}
+              </Typography>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 
       {/* Summary Metrics */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid xs={12} sm={6} lg={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <CurrencyDollarIcon sx={{ fontSize: 32, color: 'primary.main', mr: 2 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Total Committed</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {formatCurrency(summaryMetrics.totalCommitted)}
-                  </Typography>
-                </Box>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, 
+        gap: 3, 
+        mb: 3 
+      }}>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <CurrencyDollarIcon sx={{ fontSize: 32, color: 'primary.main', mr: 2 }} />
+              <Box>
+                <Typography variant="body2" color="text.secondary">Total Committed</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  {formatCurrency(summaryMetrics.totalCommitted)}
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid xs={12} sm={6} lg={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <BanknotesIcon sx={{ fontSize: 32, color: 'success.main', mr: 2 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Total Funds</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {summaryMetrics.totalFunds}
-                  </Typography>
-                </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <BanknotesIcon sx={{ fontSize: 32, color: 'success.main', mr: 2 }} />
+              <Box>
+                <Typography variant="body2" color="text.secondary">Total Funds</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  {summaryMetrics.totalFunds}
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid xs={12} sm={6} lg={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <UsersIcon sx={{ fontSize: 32, color: 'secondary.main', mr: 2 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Total Called</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {formatCurrency(summaryMetrics.totalCalled)}
-                  </Typography>
-                </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <UsersIcon sx={{ fontSize: 32, color: 'secondary.main', mr: 2 }} />
+              <Box>
+                <Typography variant="body2" color="text.secondary">Total Called</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  {formatCurrency(summaryMetrics.totalCalled)}
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid xs={12} sm={6} lg={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ChartBarIcon sx={{ fontSize: 32, color: 'warning.main', mr: 2 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Avg IRR</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {summaryMetrics.averageIRR.toFixed(1)}%
-                  </Typography>
-                </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <ChartBarIcon sx={{ fontSize: 32, color: 'warning.main', mr: 2 }} />
+              <Box>
+                <Typography variant="body2" color="text.secondary">Avg IRR</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  {summaryMetrics.averageIRR.toFixed(1)}%
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid xs={12} sm={6} lg={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <CurrencyDollarIcon sx={{ fontSize: 32, color: 'info.main', mr: 2 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Total Distributed</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {formatCurrency(summaryMetrics.totalDistributed)}
-                  </Typography>
-                </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <CurrencyDollarIcon sx={{ fontSize: 32, color: 'info.main', mr: 2 }} />
+              <Box>
+                <Typography variant="body2" color="text.secondary">Total Distributed</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  {formatCurrency(summaryMetrics.totalDistributed)}
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid xs={12} sm={6} lg={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ChartBarIcon sx={{ fontSize: 32, color: 'error.main', mr: 2 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Avg Multiple</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {summaryMetrics.averageMultiple.toFixed(2)}x
-                  </Typography>
-                </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <ChartBarIcon sx={{ fontSize: 32, color: 'error.main', mr: 2 }} />
+              <Box>
+                <Typography variant="body2" color="text.secondary">Avg Multiple</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  {summaryMetrics.averageMultiple.toFixed(2)}x
+                </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Tabs */}
       <Card>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs 
             value={activeTab} 
-            onChange={(event, newValue) => setActiveTab(newValue)}
+            onChange={(_, newValue) => setActiveTab(newValue)}
             aria-label="fund family details tabs"
           >
             <Tab label="Overview" value="overview" />
@@ -402,8 +391,12 @@ const FundFamilyDetails: React.FC = () => {
           {/* Overview Tab */}
           {activeTab === 'overview' && (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Grid container spacing={3}>
-                <Grid xs={12} lg={6}>
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, 
+                gap: 3 
+              }}>
+                <Box>
                   <Typography variant="h6" sx={{ mb: 2 }}>Vintage Distribution</Typography>
                   <Box sx={{ width: '100%', height: 300 }}>
                     <ResponsiveContainer width="100%" height={300}>
@@ -421,8 +414,8 @@ const FundFamilyDetails: React.FC = () => {
                       </BarChart>
                     </ResponsiveContainer>
                   </Box>
-                </Grid>
-                <Grid xs={12} lg={6}>
+                </Box>
+                <Box>
                   <Typography variant="h6" sx={{ mb: 2 }}>Fund Status Distribution</Typography>
                   <Box sx={{ width: '100%', height: 300 }}>
                     <ResponsiveContainer width="100%" height={300}>
@@ -446,8 +439,8 @@ const FundFamilyDetails: React.FC = () => {
                       </PieChart>
                     </ResponsiveContainer>
                   </Box>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
 
               {currentFundFamily.description && (
                 <Card sx={{ bgcolor: 'grey.50' }}>
@@ -550,8 +543,12 @@ const FundFamilyDetails: React.FC = () => {
           {/* Performance Tab */}
           {activeTab === 'performance' && (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Grid container spacing={3}>
-                <Grid xs={12} lg={6}>
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, 
+                gap: 3 
+              }}>
+                <Box>
                   <Typography variant="h6" sx={{ mb: 2 }}>Historical Performance</Typography>
                   <Box sx={{ width: '100%', height: 300 }}>
                     <ResponsiveContainer width="100%" height={300}>
@@ -572,37 +569,41 @@ const FundFamilyDetails: React.FC = () => {
                       </LineChart>
                     </ResponsiveContainer>
                   </Box>
-                </Grid>
-                <Grid xs={12} lg={6}>
+                </Box>
+                <Box>
                   <Typography variant="h6" sx={{ mb: 2 }}>Key Metrics</Typography>
                   <Card sx={{ bgcolor: 'grey.50', mb: 2 }}>
                     <CardContent>
-                      <Grid container spacing={2}>
-                        <Grid xs={6}>
+                      <Box sx={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: '1fr 1fr', 
+                        gap: 2 
+                      }}>
+                        <Box>
                           <Typography variant="body2" color="text.secondary">Average IRR</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                             {summaryMetrics.averageIRR.toFixed(1)}%
                           </Typography>
-                        </Grid>
-                        <Grid xs={6}>
+                        </Box>
+                        <Box>
                           <Typography variant="body2" color="text.secondary">Average Multiple</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                             {summaryMetrics.averageMultiple.toFixed(2)}x
                           </Typography>
-                        </Grid>
-                        <Grid xs={6}>
+                        </Box>
+                        <Box>
                           <Typography variant="body2" color="text.secondary">Total Called</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                             {formatCurrency(summaryMetrics.totalCalled)}
                           </Typography>
-                        </Grid>
-                        <Grid xs={6}>
+                        </Box>
+                        <Box>
                           <Typography variant="body2" color="text.secondary">Total Distributed</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                             {formatCurrency(summaryMetrics.totalDistributed)}
                           </Typography>
-                        </Grid>
-                      </Grid>
+                        </Box>
+                      </Box>
                     </CardContent>
                   </Card>
                   <Alert severity="info">
@@ -614,8 +615,8 @@ const FundFamilyDetails: React.FC = () => {
                       Past performance is not indicative of future results.
                     </Typography>
                   </Alert>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Box>
           )}
 
@@ -627,26 +628,30 @@ const FundFamilyDetails: React.FC = () => {
               <Card sx={{ bgcolor: 'grey.50' }}>
                 <CardContent>
                   <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>Financial Settings</Typography>
-                  <Grid container spacing={3}>
-                    <Grid xs={12} md={4}>
+                  <Box sx={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, 
+                    gap: 3 
+                  }}>
+                    <Box>
                       <Typography variant="body2" color="text.secondary">Management Fee</Typography>
                       <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                         {currentFundFamily.settings?.defaultManagementFeeRate || 2}%
                       </Typography>
-                    </Grid>
-                    <Grid xs={12} md={4}>
+                    </Box>
+                    <Box>
                       <Typography variant="body2" color="text.secondary">Carried Interest</Typography>
                       <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                         {currentFundFamily.settings?.defaultCarriedInterestRate || 20}%
                       </Typography>
-                    </Grid>
-                    <Grid xs={12} md={4}>
+                    </Box>
+                    <Box>
                       <Typography variant="body2" color="text.secondary">Preferred Return</Typography>
                       <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                         {currentFundFamily.settings?.defaultPreferredReturn || 8}%
                       </Typography>
-                    </Grid>
-                  </Grid>
+                    </Box>
+                  </Box>
                 </CardContent>
               </Card>
 

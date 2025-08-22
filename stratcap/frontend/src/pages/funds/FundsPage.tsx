@@ -19,7 +19,6 @@ import {
   Paper,
   Chip,
   IconButton,
-  Grid,
   Card,
   CardContent,
   Alert,
@@ -48,22 +47,19 @@ import {
   clearError
 } from '../../store/slices/fundSlice';
 
-<<<<<<< HEAD
-=======
-interface FundFormData {
-  fundFamilyId?: number;
-  name: string;
-  code: string;
-  type: 'master' | 'feeder' | 'parallel' | 'subsidiary';
-  vintage: number;
-  targetSize: string;
-  currency: string;
-  status?: 'fundraising' | 'investing' | 'harvesting' | 'closed';
-  managementFeeRate: string;
-  carriedInterestRate: string;
-  preferredReturnRate: string;
-}
->>>>>>> 80a95e2 (fix backedn frontend mismatch)
+// interface FundFormData {
+//   fundFamilyId?: number;
+//   name: string;
+//   code: string;
+//   type: 'master' | 'feeder' | 'parallel' | 'subsidiary';
+//   vintage: number;
+//   targetSize: string;
+//   currency: string;
+//   status?: 'fundraising' | 'investing' | 'harvesting' | 'closed';
+//   managementFeeRate: string;
+//   carriedInterestRate: string;
+//   preferredReturnRate: string;
+// }
 
 const FundsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -73,57 +69,52 @@ const FundsPage: React.FC = () => {
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
-<<<<<<< HEAD
-=======
-  const [formData, setFormData] = useState<FundFormData>({
-    name: '',
-    code: '',
-    type: 'master',
-    vintage: new Date().getFullYear(),
-    targetSize: '',
-    currency: 'USD',
-    managementFeeRate: '2.0',
-    carriedInterestRate: '20.0',
-    preferredReturnRate: '8.0',
-    fundFamilyId: 1,
-    status: 'fundraising'
-  });
->>>>>>> 80a95e2 (fix backedn frontend mismatch)
+  // const [showCreateModal, setShowCreateModal] = useState(false);
+  // const [formData, setFormData] = useState<FundFormData>({
+  //   name: '',
+  //   code: '',
+  //   type: 'master',
+  //   vintage: new Date().getFullYear(),
+  //   targetSize: '',
+  //   currency: 'USD',
+  //   managementFeeRate: '2.0',
+  //   carriedInterestRate: '20.0',
+  //   preferredReturnRate: '8.0',
+  //   fundFamilyId: 1,
+  //   status: 'fundraising'
+  // });
 
   useEffect(() => {
     dispatch(fetchFunds());
   }, [dispatch]);
 
-<<<<<<< HEAD
-=======
-  const handleCreateFund = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const submissionData = {
-        ...formData,
-        fundFamilyId: formData.fundFamilyId || 1,
-        status: formData.status || 'fundraising'
-      };
-      await dispatch(createFund(submissionData)).unwrap();
-      setShowCreateModal(false);
-      setFormData({
-        name: '',
-        code: '',
-        type: 'master',
-        vintage: new Date().getFullYear(),
-        targetSize: '',
-        currency: 'USD',
-        managementFeeRate: '2.0',
-        carriedInterestRate: '20.0',
-        preferredReturnRate: '8.0',
-        fundFamilyId: 1,
-        status: 'fundraising'
-      });
-    } catch (error) {
-      console.error('Failed to create fund:', error);
-    }
-  };
->>>>>>> 80a95e2 (fix backedn frontend mismatch)
+  // const handleCreateFund = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     const submissionData = {
+  //       ...formData,
+  //       fundFamilyId: formData.fundFamilyId || 1,
+  //       status: formData.status || 'fundraising'
+  //     };
+  //     await dispatch(createFund(submissionData)).unwrap();
+  //     setShowCreateModal(false);
+  //     setFormData({
+  //       name: '',
+  //       code: '',
+  //       type: 'master',
+  //       vintage: new Date().getFullYear(),
+  //       targetSize: '',
+  //       currency: 'USD',
+  //       managementFeeRate: '2.0',
+  //       carriedInterestRate: '20.0',
+  //       preferredReturnRate: '8.0',
+  //       fundFamilyId: 1,
+  //       status: 'fundraising'
+  //     });
+  //   } catch (error) {
+  //     console.error('Failed to create fund:', error);
+  //   }
+  // };
 
   const handleDeleteFund = async (id: number) => {
     try {
@@ -216,8 +207,8 @@ const FundsPage: React.FC = () => {
       {/* Filters */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={3} alignItems="center">
-            <Grid xs={12} md={3}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' }, gap: 3, alignItems: 'center' }}>
+            <Box>
               <TextField
                 fullWidth
                 placeholder="Search funds..."
@@ -232,8 +223,8 @@ const FundsPage: React.FC = () => {
                 }}
                 size="small"
               />
-            </Grid>
-            <Grid xs={12} md={3}>
+            </Box>
+            <Box>
               <FormControl fullWidth size="small">
                 <InputLabel>Fund Type</InputLabel>
                 <Select
@@ -248,8 +239,8 @@ const FundsPage: React.FC = () => {
                   <MenuItem value="subsidiary">Subsidiary</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid xs={12} md={3}>
+            </Box>
+            <Box>
               <FormControl fullWidth size="small">
                 <InputLabel>Status</InputLabel>
                 <Select
@@ -264,14 +255,14 @@ const FundsPage: React.FC = () => {
                   <MenuItem value="closed">Closed</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid xs={12} md={3}>
+            </Box>
+            <Box>
               <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
                 <BusinessIcon sx={{ mr: 1, fontSize: 20 }} />
                 {filteredFunds.length} of {funds.length} funds
               </Typography>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 
