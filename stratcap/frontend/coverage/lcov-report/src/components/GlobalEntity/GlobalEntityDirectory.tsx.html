@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/67</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/65</span>
+                <span class='fraction'>0/63</span>
             </div>
         
             
@@ -589,9 +589,7 @@
 <a name='L524'></a><a href='#L524'>524</a>
 <a name='L525'></a><a href='#L525'>525</a>
 <a name='L526'></a><a href='#L526'>526</a>
-<a name='L527'></a><a href='#L527'>527</a>
-<a name='L528'></a><a href='#L528'>528</a>
-<a name='L529'></a><a href='#L529'>529</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L527'></a><a href='#L527'>527</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -617,10 +615,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1015,8 +1010,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1126,7 +1122,6 @@
   CardContent,
   Typography,
   TextField,
-  Button,
   Grid,
   Table,
   TableBody,
@@ -1134,7 +1129,6 @@
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Chip,
   IconButton,
   InputAdornment,
@@ -1152,7 +1146,6 @@
   Business as BusinessIcon,
   Person as PersonIcon,
   AccountBalance as FundIcon,
-  TrendingUp as InvestmentIcon,
   Visibility as ViewIcon,
   Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
@@ -1160,7 +1153,7 @@
 } from '@mui/icons-material';
 <span class="cstat-no" title="statement not covered" >import { useSnackbar } from 'notistack';</span>
 <span class="cstat-no" title="statement not covered" >import api from '../../services/api';</span>
-<span class="cstat-no" title="statement not covered" >import { formatCurrency, formatDate, formatPercentage } from '../../utils/formatters';</span>
+<span class="cstat-no" title="statement not covered" >import { formatCurrency, formatDate } from '../../utils/formatters';</span>
 &nbsp;
 interface GlobalEntity {
   id: string;
@@ -1287,7 +1280,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;Box&gt;
       &lt;Grid container spacing={3} alignItems="center" sx={{ mb: 3 }}&gt;
-        &lt;Grid item xs&gt;
+        &lt;Grid size="grow"&gt;
           &lt;Typography variant="h4" component="h1"&gt;
             Global Entity Directory
           &lt;/Typography&gt;
@@ -1295,7 +1288,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
             Comprehensive view of all entities across funds
           &lt;/Typography&gt;
         &lt;/Grid&gt;
-        &lt;Grid item&gt;
+        &lt;Grid size="auto"&gt;
           &lt;IconButton onClick={fetchGlobalEntities} color="primary"&gt;
             &lt;RefreshIcon /&gt;
           &lt;/IconButton&gt;
@@ -1306,7 +1299,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
       &lt;Card sx={{ mb: 3 }}&gt;
         &lt;CardContent&gt;
           &lt;Grid container spacing={3} alignItems="center"&gt;
-            &lt;Grid item xs={12} md={6}&gt;
+            &lt;Grid size={{ xs: 12, md: 6 }}&gt;
               &lt;TextField
                 fullWidth
                 variant="outlined"
@@ -1322,7 +1315,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
                 }}
               /&gt;
             &lt;/Grid&gt;
-            &lt;Grid item xs={12} md={4}&gt;
+            &lt;Grid size={{ xs: 12, md: 4 }}&gt;
               &lt;TextField
                 fullWidth
                 select
@@ -1338,7 +1331,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
                 ))}
               &lt;/TextField&gt;
             &lt;/Grid&gt;
-            &lt;Grid item xs={12} md={2}&gt;
+            &lt;Grid size={{ xs: 12, md: 2 }}&gt;
               &lt;Typography variant="body2" color="textSecondary"&gt;
                 {filteredEntities.length} entities
               &lt;/Typography&gt;
@@ -1351,7 +1344,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
         &lt;LinearProgress /&gt;
       ) : (
         &lt;Card&gt;
-          &lt;Tabs value={selectedTab} onChange={<span class="fstat-no" title="function not covered" >(e</span>, newValue) =&gt; <span class="cstat-no" title="statement not covered" >setSelectedTab(newValue)}</span>&gt;
+          &lt;Tabs value={selectedTab} onChange={<span class="fstat-no" title="function not covered" >(_</span>, newValue) =&gt; <span class="cstat-no" title="statement not covered" >setSelectedTab(newValue)}</span>&gt;
             &lt;Tab label="Table View" /&gt;
             &lt;Tab label="Card View" /&gt;
             &lt;Tab label="Summary View" /&gt;
@@ -1468,7 +1461,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
             {/* Card View */}
             &lt;Grid container spacing={2}&gt;
               {filteredEntities.map(<span class="fstat-no" title="function not covered" >(e</span>ntity) =&gt; (
-<span class="cstat-no" title="statement not covered" >                &lt;Grid item xs={12} md={6} lg={4} key={entity.id}&gt;</span>
+<span class="cstat-no" title="statement not covered" >                &lt;Grid size={{ xs: 12, md: 6, lg: 4 }} key={entity.id}&gt;</span>
                   &lt;Card variant="outlined" sx={{ height: '100%' }}&gt;
                     &lt;CardContent&gt;
                       &lt;Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}&gt;
@@ -1543,9 +1536,10 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
                 const totalCommitments = <span class="cstat-no" title="statement not covered" >typeEntities.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, e) =&gt; </span>
 <span class="cstat-no" title="statement not covered" >                  sum + parseFloat(e.relationshipSummary.totalCommitments),</span> 0
                 );
-                const totalContributions = <span class="cstat-no" title="statement not covered" >typeEntities.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, e) =&gt; </span>
-<span class="cstat-no" title="statement not covered" >                  sum + parseFloat(e.relationshipSummary.totalContributions),</span> 0
-                );
+                // Calculate total contributions for future use
+                // const totalContributions = typeEntities.reduce((sum, e) =&gt; 
+                //   sum + parseFloat(e.relationshipSummary.totalContributions), 0
+                // );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                return (</span>
                   &lt;Accordion key={type.value}&gt;
@@ -1569,7 +1563,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
                     &lt;AccordionDetails&gt;
                       &lt;Grid container spacing={1}&gt;
                         {typeEntities.map(<span class="fstat-no" title="function not covered" >(e</span>ntity) =&gt; (
-<span class="cstat-no" title="statement not covered" >                          &lt;Grid item xs={12} md={6} key={entity.id}&gt;</span>
+<span class="cstat-no" title="statement not covered" >                          &lt;Grid size={{ xs: 12, md: 6 }} key={entity.id}&gt;</span>
                             &lt;Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}&gt;
                               &lt;Typography variant="body2"&gt;{entity.name}&lt;/Typography&gt;
                               &lt;Typography variant="body2"&gt;
@@ -1590,7 +1584,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
 &nbsp;
       {/* Statistics */}
       &lt;Grid container spacing={3} sx={{ mt: 3 }}&gt;
-        &lt;Grid item xs={12} md={3}&gt;
+        &lt;Grid size={{ xs: 12, md: 3 }}&gt;
           &lt;Card&gt;
             &lt;CardContent&gt;
               &lt;Typography color="textSecondary" gutterBottom&gt;
@@ -1602,7 +1596,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
             &lt;/CardContent&gt;
           &lt;/Card&gt;
         &lt;/Grid&gt;
-        &lt;Grid item xs={12} md={3}&gt;
+        &lt;Grid size={{ xs: 12, md: 3 }}&gt;
           &lt;Card&gt;
             &lt;CardContent&gt;
               &lt;Typography color="textSecondary" gutterBottom&gt;
@@ -1616,7 +1610,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
             &lt;/CardContent&gt;
           &lt;/Card&gt;
         &lt;/Grid&gt;
-        &lt;Grid item xs={12} md={3}&gt;
+        &lt;Grid size={{ xs: 12, md: 3 }}&gt;
           &lt;Card&gt;
             &lt;CardContent&gt;
               &lt;Typography color="textSecondary" gutterBottom&gt;
@@ -1630,7 +1624,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
             &lt;/CardContent&gt;
           &lt;/Card&gt;
         &lt;/Grid&gt;
-        &lt;Grid item xs={12} md={3}&gt;
+        &lt;Grid size={{ xs: 12, md: 3 }}&gt;
           &lt;Card&gt;
             &lt;CardContent&gt;
               &lt;Typography color="textSecondary" gutterBottom&gt;
@@ -1654,7 +1648,7 @@ const GlobalEntityDirectory: React.FC = <span class="cstat-no" title="statement 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-15T16:14:44.381Z
+                at 2025-08-30T14:58:37.829Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
