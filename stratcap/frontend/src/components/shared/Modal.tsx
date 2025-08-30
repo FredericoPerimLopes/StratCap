@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
+const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialog-paper': {
     borderRadius: 12,
     boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',

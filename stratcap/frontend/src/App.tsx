@@ -1,20 +1,18 @@
-import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, GlobalStyles } from '@mui/material';
+import { CssBaseline, GlobalStyles, Box, Typography } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import { enhancedTheme } from './theme/enhanced-theme';
 import { ErrorBoundary } from './components/shared';
-import { LoadingSpinner } from './components/shared';
-import AppRoutes from './routes';
+import { AppRouter } from './components/routing/AppRouter';
 
 // Global styles
 const globalStyles = (
   <GlobalStyles
-    styles={(theme) => ({
+    styles={{
       '*': {
         boxSizing: 'border-box',
       },
@@ -34,21 +32,7 @@ const globalStyles = (
         height: '100%',
         width: '100%',
       },
-      // Custom scrollbar
-      '::-webkit-scrollbar': {
-        width: 8,
-      },
-      '::-webkit-scrollbar-track': {
-        background: '#f1f1f1',
-      },
-      '::-webkit-scrollbar-thumb': {
-        background: '#c1c1c1',
-        borderRadius: 4,
-      },
-      '::-webkit-scrollbar-thumb:hover': {
-        background: '#a8a8a8',
-      },
-    })}
+    }}
   />
 );
 
@@ -56,7 +40,7 @@ function App() {
   return (
     <Provider store={store}>
       <PersistGate
-        loading={<LoadingSpinner message="Loading application..." fullScreen />}
+        loading={<Box display="flex" justifyContent="center" alignItems="center" height="100vh"><Typography>Loading...</Typography></Box>}
         persistor={persistor}
       >
         <ThemeProvider theme={enhancedTheme}>
@@ -72,7 +56,7 @@ function App() {
           >
             <ErrorBoundary>
               <BrowserRouter>
-                <AppRoutes />
+                <AppRouter />
               </BrowserRouter>
             </ErrorBoundary>
           </SnackbarProvider>
