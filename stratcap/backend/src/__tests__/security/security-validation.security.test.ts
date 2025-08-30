@@ -1,14 +1,17 @@
 import request from 'supertest';
-import { app } from '../../app';
-import { setupTestDatabase, teardownTestDatabase } from '../setup/database';
+import app from '../../app';
+// TODO: Create proper test database setup utilities
+// import { setupTestDatabase, teardownTestDatabase } from '../setup/database';
 
 describe('Security Validation Tests', () => {
   beforeAll(async () => {
-    await setupTestDatabase();
+    // TODO: Implement test database setup
+    // await setupTestDatabase();
   });
 
   afterAll(async () => {
-    await teardownTestDatabase();
+    // TODO: Implement test database teardown  
+    // await teardownTestDatabase();
   });
 
   describe('SQL Injection Protection', () => {

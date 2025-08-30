@@ -5,9 +5,10 @@ import {
   CardContent,
   CardHeader,
   CardActions,
-  Typography,
   styled,
   alpha,
+  SxProps,
+  Theme,
 } from '@mui/material';
 
 const StyledCard = styled(MuiCard)(({ theme }) => ({
@@ -49,7 +50,7 @@ export interface CardProps extends MuiCardProps {
   children?: React.ReactNode;
   actions?: React.ReactNode;
   loading?: boolean;
-  variant?: 'elevation' | 'outlined' | 'glass';
+  variant?: 'elevation' | 'outlined';
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -63,13 +64,8 @@ export const Card: React.FC<CardProps> = ({
   sx,
   ...props
 }) => {
-  const cardSx = {
+  const cardSx: SxProps<Theme> = {
     ...sx,
-    ...(variant === 'glass' && {
-      background: 'rgba(255, 255, 255, 0.9)',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-    }),
     ...(loading && {
       opacity: 0.7,
       pointerEvents: 'none',
@@ -77,7 +73,7 @@ export const Card: React.FC<CardProps> = ({
   };
 
   return (
-    <StyledCard {...props} sx={cardSx} variant={variant === 'glass' ? undefined : variant}>
+    <StyledCard {...props} sx={cardSx} variant={variant}>
       {(title || subtitle || action) && (
         <StyledCardHeader
           title={title}

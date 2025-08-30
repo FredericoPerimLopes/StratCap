@@ -3,7 +3,6 @@ import {
   Box,
   Paper,
   Typography,
-  Divider,
   styled,
   Grid,
 } from '@mui/material';

@@ -29,7 +29,7 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   border: `1px solid ${alpha(theme.palette.primary.main, 0.08)}`,
 }));
 
-const StyledTableHead = styled(TableHead)(({ theme }) => ({
+const StyledTableHead = styled(TableHead)(() => ({
   '& .MuiTableCell-head': {
     backgroundColor: '#f8fafc',
     fontWeight: 600,
@@ -39,7 +39,7 @@ const StyledTableHead = styled(TableHead)(({ theme }) => ({
   },
 }));
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+const StyledTableCell = styled(TableCell)(() => ({
   borderBottom: '1px solid #f3f4f6',
   padding: '12px 16px',
   fontSize: '0.875rem',

@@ -22,7 +22,7 @@ const ErrorContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
 }));
 
-const ErrorCard = styled(Card)(({ theme }) => ({
+const ErrorCard = styled(Card)(() => ({
   maxWidth: 500,
   textAlign: 'center',
 }));
