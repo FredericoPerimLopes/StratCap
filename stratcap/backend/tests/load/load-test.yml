@@ -1,0 +1,196 @@
+# Artillery load testing configuration
+config:
+  target: 'http://localhost:3001'
+  phases:
+    # Warm-up phase
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm-up"
+    # Ramp-up phase
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 50
+      name: "Ramp-up load"
+    # Sustained load
+    - duration: 300
+      arrivalRate: 50
+      name: "Sustained load"
+    # Peak load
+    - duration: 60
+      arrivalRate: 100
+      name: "Peak load"
+    # Cool-down
+    - duration: 60
+      arrivalRate: 10
+      name: "Cool-down"
+  
+  payload:
+    path: "./test-data.csv"
+    fields:
+      - "email"
+      - "password"
+      - "fundId"
+      - "investorId"
+  
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+  
+  plugins:
+    expect: {}
+    metrics-by-endpoint: {}
+
+scenarios:
+  # Authentication flow
+  - name: "Login Flow"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          expect:
+            - statusCode: 200
+          capture:
+            json: "$.token"
+            as: "authToken"
+      
+      - get:
+          url: "/api/auth/profile"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # Fund management
+  - name: "Fund Operations"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            json: "$.token"
+            as: "authToken"
+      
+      - get:
+          url: "/api/funds"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - get:
+          url: "/api/funds/{{ fundId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - get:
+          url: "/api/funds/{{ fundId }}/performance"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # Investor operations
+  - name: "Investor Operations"
+    weight: 25
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            json: "$.token"
+            as: "authToken"
+      
+      - get:
+          url: "/api/investors"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - get:
+          url: "/api/investors/{{ investorId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - get:
+          url: "/api/investors/{{ investorId }}/commitments"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # Financial calculations
+  - name: "Financial Calculations"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            json: "$.token"
+            as: "authToken"
+      
+      - post:
+          url: "/api/funds/{{ fundId }}/waterfall"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            availableForDistribution: 50000000
+            distributionDate: "2024-01-15"
+          expect:
+            - statusCode: 200
+      
+      - get:
+          url: "/api/funds/{{ fundId }}/nav"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # Report generation
+  - name: "Report Generation"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            json: "$.token"
+            as: "authToken"
+      
+      - post:
+          url: "/api/reports/generate"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            type: "quarterly_fund_report"
+            fundId: "{{ fundId }}"
+            period: "Q1_2024"
+          expect:
+            - statusCode: 202
+          capture:
+            json: "$.reportId"
+            as: "reportId"
+      
+      - get:
+          url: "/api/reports/{{ reportId }}/status"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200

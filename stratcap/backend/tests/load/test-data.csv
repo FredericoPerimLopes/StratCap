@@ -1,0 +1,11 @@
+email,password,fundId,investorId
+admin@stratcap.com,TestPassword123!,1,1
+fundmanager@stratcap.com,TestPassword123!,1,2
+investor@stratcap.com,TestPassword123!,2,3
+analyst@stratcap.com,TestPassword123!,2,4
+user1@example.com,TestPassword123!,1,5
+user2@example.com,TestPassword123!,2,6
+user3@example.com,TestPassword123!,1,7
+user4@example.com,TestPassword123!,2,8
+user5@example.com,TestPassword123!,1,9
+user6@example.com,TestPassword123!,2,10
