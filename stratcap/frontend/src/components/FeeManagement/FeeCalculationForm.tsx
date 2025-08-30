@@ -16,9 +16,12 @@ interface FeeCalculationFormData {
   feeType: 'management' | 'carried_interest' | 'other';
   periodStartDate: string;
   periodEndDate: string;
+  calculationDate: string;
   basis: 'nav' | 'commitments' | 'invested_capital' | 'distributions';
   basisAmount: string;
   feeRate: string;
+  grossFeeAmount: string;
+  netFeeAmount: string;
   description: string;
   calculationMethod: string;
   isAccrual: boolean;
@@ -46,9 +49,12 @@ const FeeCalculationForm: React.FC = () => {
     feeType: 'management',
     periodStartDate: '',
     periodEndDate: '',
+    calculationDate: new Date().toISOString().split('T')[0],
     basis: 'nav',
     basisAmount: '',
     feeRate: '',
+    grossFeeAmount: '',
+    netFeeAmount: '',
     description: '',
     calculationMethod: 'standard',
     isAccrual: false
@@ -76,9 +82,12 @@ const FeeCalculationForm: React.FC = () => {
         feeType: 'management',
         periodStartDate: '2023-10-01',
         periodEndDate: '2023-12-31',
+        calculationDate: '2023-12-31',
         basis: 'nav',
         basisAmount: '500000000',
         feeRate: '0.02',
+        grossFeeAmount: '10000000',
+        netFeeAmount: '10000000',
         description: 'Q4 2023 Management Fee Calculation',
         calculationMethod: 'standard',
         isAccrual: false
@@ -180,6 +189,13 @@ const FeeCalculationForm: React.FC = () => {
       const calculated = basisAmount * feeRate;
       setCalculatedFee(calculated);
       setShowCalculation(true);
+      
+      // Update form data with calculated amounts
+      setFormData(prev => ({
+        ...prev,
+        grossFeeAmount: calculated.toFixed(2),
+        netFeeAmount: calculated.toFixed(2) // Assuming no offsets for now
+      }));
     }
   };
 
@@ -199,8 +215,14 @@ const FeeCalculationForm: React.FC = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Convert fundId to number and prepare payload for backend
+      const payload = {
+        ...formData,
+        fundId: parseInt(formData.fundId), // Convert to number as backend expects
+      };
+      
       // In real app, this would be an API call
-      console.log('Fee calculation data:', formData);
+      console.log('Fee calculation data:', payload);
       
       navigate('/fee-management');
     } catch (error) {
@@ -310,7 +332,7 @@ const FeeCalculationForm: React.FC = () => {
                 </div>
 
                 {/* Period Dates */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Period Start Date *
@@ -348,6 +370,20 @@ const FeeCalculationForm: React.FC = () => {
                     {getErrorForField('periodEndDate') && (
                       <p className="mt-1 text-sm text-red-600">{getErrorForField('periodEndDate')}</p>
                     )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Calculation Date *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={formData.calculationDate}
+                        onChange={(e) => handleInputChange('calculationDate', e.target.value)}
+                        className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                      <CalendarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-3 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
 
@@ -412,6 +448,45 @@ const FeeCalculationForm: React.FC = () => {
                     )}
                     <p className="mt-1 text-xs text-gray-500">
                       Enter as decimal (e.g., 0.02 for 2%)
+                    </p>
+                  </div>
+                </div>
+
+                {/* Fee Amounts */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Gross Fee Amount ($)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.grossFeeAmount}
+                        onChange={(e) => handleInputChange('grossFeeAmount', e.target.value)}
+                        className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="0.00"
+                      />
+                      <CurrencyDollarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-3 pointer-events-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Net Fee Amount ($)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.netFeeAmount}
+                        onChange={(e) => handleInputChange('netFeeAmount', e.target.value)}
+                        className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="0.00"
+                      />
+                      <CurrencyDollarIcon className="h-5 w-5 text-gray-400 absolute right-3 top-3 pointer-events-none" />
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      After offsets and waivers
                     </p>
                   </div>
                 </div>

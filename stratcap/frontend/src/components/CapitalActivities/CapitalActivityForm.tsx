@@ -11,7 +11,7 @@ import {
 
 interface CapitalActivityFormData {
   fundId: number | null;
-  type: 'capital_call' | 'distribution' | 'equalization' | 'reallocation';
+  eventType: 'capital_call' | 'distribution' | 'equalization' | 'reallocation';
   eventNumber: string;
   eventDate: string;
   dueDate: string;
@@ -26,11 +26,25 @@ interface CapitalActivityFormData {
   }>;
 }
 
-interface CapitalActivity extends CapitalActivityFormData {
+interface CapitalActivity {
   id: number;
+  fundId: number | null;
+  eventType: 'capital_call' | 'distribution' | 'equalization' | 'reallocation';
+  eventNumber: string;
+  eventDate: string;
+  dueDate: string;
+  baseAmount: number | string;
+  feeAmount: number | string;
+  expenseAmount: number | string;
+  description: string;
   status: string;
   fundName?: string;
   totalAmount?: number;
+  investors?: Array<{
+    investorId: number;
+    amount: number;
+    percentage: number;
+  }>;
 }
 
 interface Fund {
@@ -55,7 +69,7 @@ const CapitalActivityForm: React.FC = () => {
   
   const [formData, setFormData] = useState<CapitalActivityFormData>({
     fundId: null,
-    type: 'capital_call',
+    eventType: 'capital_call',
     eventNumber: '',
     eventDate: new Date().toISOString().split('T')[0],
     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -85,13 +99,14 @@ const CapitalActivityForm: React.FC = () => {
             
             setFormData({
               fundId: activity.fundId,
-              type: activity.type,
+              eventType: activity.eventType,
               eventNumber: activity.eventNumber,
               eventDate: activity.eventDate.split('T')[0],
               dueDate: activity.dueDate.split('T')[0],
-              baseAmount: activity.baseAmount,
-              feeAmount: activity.feeAmount,
-              expenseAmount: activity.expenseAmount,
+              // Convert string amounts to numbers for form inputs
+              baseAmount: typeof activity.baseAmount === 'string' ? parseFloat(activity.baseAmount) : activity.baseAmount || 0,
+              feeAmount: typeof activity.feeAmount === 'string' ? parseFloat(activity.feeAmount) : activity.feeAmount || 0,
+              expenseAmount: typeof activity.expenseAmount === 'string' ? parseFloat(activity.expenseAmount) : activity.expenseAmount || 0,
               description: activity.description,
               investors: activity.investors || []
             });
@@ -110,9 +125,9 @@ const CapitalActivityForm: React.FC = () => {
     fetchInitialData();
   }, [id, isEdit]);
   
-  // Auto-generate event number when type or fund changes
+  // Auto-generate event number when eventType or fund changes
   useEffect(() => {
-    if (formData.fundId && formData.type && !isEdit) {
+    if (formData.fundId && formData.eventType && !isEdit) {
       const fund = funds.find(f => f.id === formData.fundId);
       if (fund) {
         const typePrefix = {
@@ -120,7 +135,7 @@ const CapitalActivityForm: React.FC = () => {
           distribution: 'DIST',
           equalization: 'EQ',
           reallocation: 'REAL'
-        }[formData.type];
+        }[formData.eventType];
         
         const year = new Date().getFullYear();
         const eventNumber = `${typePrefix}-${year}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
@@ -128,7 +143,7 @@ const CapitalActivityForm: React.FC = () => {
         setFormData(prev => ({ ...prev, eventNumber }));
       }
     }
-  }, [formData.fundId, formData.type, funds, isEdit]);
+  }, [formData.fundId, formData.eventType, funds, isEdit]);
   
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -176,9 +191,14 @@ const CapitalActivityForm: React.FC = () => {
     setError(null);
     
     try {
+      const totalAmount = formData.baseAmount + formData.feeAmount + formData.expenseAmount;
       const submitData = {
         ...formData,
-        totalAmount: formData.baseAmount + formData.feeAmount + formData.expenseAmount,
+        // Convert amount fields to strings for backend (decimal precision)
+        baseAmount: formData.baseAmount.toString(),
+        feeAmount: formData.feeAmount.toString(),
+        expenseAmount: formData.expenseAmount.toString(),
+        totalAmount: totalAmount.toString(),
         status: 'draft' as const
       };
       
@@ -282,13 +302,13 @@ const CapitalActivityForm: React.FC = () => {
             </div>
             
             <div>
-              <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="eventType" className="block text-sm font-medium text-gray-700">
                 Activity Type *
               </label>
               <select
-                id="type"
-                value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                id="eventType"
+                value={formData.eventType}
+                onChange={(e) => setFormData({ ...formData, eventType: e.target.value as any })}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               >
                 <option value="capital_call">Capital Call</option>

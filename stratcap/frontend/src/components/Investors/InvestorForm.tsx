@@ -1,5 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+  FormControl,
+  FormLabel,
+  FormHelperText,
+  Grid,
+  Checkbox,
+  FormControlLabel,
+  Alert,
+  Divider
+} from '@mui/material';
 import { AppDispatch } from '../../store/store';
 import { createInvestor, updateInvestor, Investor } from '../../store/slices/investorSlice';
 import { investorSchema, validateForm, formatDateForBackend, formatDateForInput } from '../../utils/validation';
@@ -48,8 +66,9 @@ const InvestorForm: React.FC<InvestorFormProps> = ({ investor, onSubmit, onCance
     }
   }, [investor]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string; value: string } }) => {
+    const { name, value } = e.target;
+    const type = 'type' in e.target ? (e.target as HTMLInputElement).type : undefined;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
@@ -120,367 +139,394 @@ const InvestorForm: React.FC<InvestorFormProps> = ({ investor, onSubmit, onCance
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-        {investor ? 'Edit Investor' : 'Create New Investor'}
-      </h2>
-      
-      {errors.general && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-          <p className="text-red-800">{errors.general}</p>
-        </div>
-      )}
+    <Container maxWidth="lg">
+      <Paper elevation={3} sx={{ p: 4, mt: 2 }}>
+        <Typography variant="h4" component="h2" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
+          {investor ? 'Edit Investor' : 'Create New Investor'}
+        </Typography>
+        
+        {errors.general && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {errors.general}
+          </Alert>
+        )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Information */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name || ''}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
-                  errors.name ? 'border-red-300' : 'border-gray-300'
-                }`}
-                required
-              />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Legal Name *</label>
-              <input
-                type="text"
-                name="legalName"
-                value={formData.legalName || ''}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
-                  errors.legalName ? 'border-red-300' : 'border-gray-300'
-                }`}
-                required
-              />
-              {errors.legalName && <p className="mt-1 text-sm text-red-600">{errors.legalName}</p>}
-            </div>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+          {/* Basic Information */}
+          <Paper elevation={1} sx={{ p: 3, mb: 3, bgcolor: 'grey.50' }}>
+            <Typography variant="h6" component="h3" gutterBottom sx={{ mb: 3, fontWeight: 'medium' }}>
+              Basic Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="name"
+                  label="Name"
+                  value={formData.name || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  error={!!errors.name}
+                  helperText={errors.name}
+                  variant="outlined"
+                />
+              </Grid>
+              
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="legalName"
+                  label="Legal Name"
+                  value={formData.legalName || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  error={!!errors.legalName}
+                  helperText={errors.legalName}
+                  variant="outlined"
+                />
+              </Grid>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
-              <select
-                name="type"
-                value={formData.type || 'institution'}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
-                  errors.type ? 'border-red-300' : 'border-gray-300'
-                }`}
-                required
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth required error={!!errors.type}>
+                  <FormLabel component="label">Type</FormLabel>
+                  <Select
+                    name="type"
+                    value={formData.type || 'institution'}
+                    onChange={handleChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="individual">Individual</MenuItem>
+                    <MenuItem value="institution">Institution</MenuItem>
+                    <MenuItem value="fund">Fund</MenuItem>
+                    <MenuItem value="trust">Trust</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                  {errors.type && <FormHelperText>{errors.type}</FormHelperText>}
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="entityType"
+                  label="Entity Type"
+                  value={formData.entityType || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  placeholder="e.g., Pension Fund, Endowment"
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="taxId"
+                  label="Tax ID"
+                  value={formData.taxId || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="registrationNumber"
+                  label="Registration Number"
+                  value={formData.registrationNumber || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Location Information */}
+          <Paper elevation={1} sx={{ p: 3, mb: 3, bgcolor: 'grey.50' }}>
+            <Typography variant="h6" component="h3" gutterBottom sx={{ mb: 3, fontWeight: 'medium' }}>
+              Location Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="domicile"
+                  label="Domicile (Country Code)"
+                  value={formData.domicile || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  inputProps={{ maxLength: 2 }}
+                  placeholder="US"
+                  error={!!errors.domicile}
+                  helperText={errors.domicile}
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="taxResidence"
+                  label="Tax Residence"
+                  value={formData.taxResidence || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  inputProps={{ maxLength: 2 }}
+                  placeholder="US"
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  name="address"
+                  label="Address"
+                  value={formData.address || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="city"
+                  label="City"
+                  value={formData.city || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="state"
+                  label="State"
+                  value={formData.state || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="postalCode"
+                  label="Postal Code"
+                  value={formData.postalCode || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="country"
+                  label="Country"
+                  value={formData.country || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Contact Information */}
+          <Paper elevation={1} sx={{ p: 3, mb: 3, bgcolor: 'grey.50' }}>
+            <Typography variant="h6" component="h3" gutterBottom sx={{ mb: 3, fontWeight: 'medium' }}>
+              Contact Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="primaryContact"
+                  label="Primary Contact"
+                  value={formData.primaryContact || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="primaryEmail"
+                  label="Primary Email"
+                  type="email"
+                  value={formData.primaryEmail || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  error={!!errors.primaryEmail}
+                  helperText={errors.primaryEmail}
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="primaryPhone"
+                  label="Primary Phone"
+                  type="tel"
+                  value={formData.primaryPhone || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Qualification Status */}
+          <Paper elevation={1} sx={{ p: 3, mb: 3, bgcolor: 'grey.50' }}>
+            <Typography variant="h6" component="h3" gutterBottom sx={{ mb: 3, fontWeight: 'medium' }}>
+              Qualification Status
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="accreditedInvestor"
+                      checked={formData.accreditedInvestor || false}
+                      onChange={handleChange}
+                      color="primary"
+                    />
+                  }
+                  label="Accredited Investor"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="qualifiedPurchaser"
+                      checked={formData.qualifiedPurchaser || false}
+                      onChange={handleChange}
+                      color="primary"
+                    />
+                  }
+                  label="Qualified Purchaser"
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Compliance Status */}
+          <Paper elevation={1} sx={{ p: 3, mb: 3, bgcolor: 'grey.50' }}>
+            <Typography variant="h6" component="h3" gutterBottom sx={{ mb: 3, fontWeight: 'medium' }}>
+              Compliance Status
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth>
+                  <FormLabel component="label">KYC Status</FormLabel>
+                  <Select
+                    name="kycStatus"
+                    value={formData.kycStatus || 'pending'}
+                    onChange={handleChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="approved">Approved</MenuItem>
+                    <MenuItem value="rejected">Rejected</MenuItem>
+                    <MenuItem value="expired">Expired</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="kycDate"
+                  label="KYC Date"
+                  type="date"
+                  value={formatDateForInput(formData.kycDate)}
+                  onChange={handleChange}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth>
+                  <FormLabel component="label">AML Status</FormLabel>
+                  <Select
+                    name="amlStatus"
+                    value={formData.amlStatus || 'pending'}
+                    onChange={handleChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="approved">Approved</MenuItem>
+                    <MenuItem value="rejected">Rejected</MenuItem>
+                    <MenuItem value="expired">Expired</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  name="amlDate"
+                  label="AML Date"
+                  type="date"
+                  value={formatDateForInput(formData.amlDate)}
+                  onChange={handleChange}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Notes */}
+          <Box sx={{ mb: 3 }}>
+            <TextField
+              name="notes"
+              label="Notes"
+              value={formData.notes || ''}
+              onChange={handleChange}
+              fullWidth
+              multiline
+              rows={4}
+              placeholder="Additional notes or comments..."
+              variant="outlined"
+            />
+          </Box>
+
+          {/* Form Actions */}
+          <Divider sx={{ mb: 3 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 2 }}>
+            {onCancel && (
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={onCancel}
+                size="large"
               >
-                <option value="individual">Individual</option>
-                <option value="institution">Institution</option>
-                <option value="fund">Fund</option>
-                <option value="trust">Trust</option>
-                <option value="other">Other</option>
-              </select>
-              {errors.type && <p className="mt-1 text-sm text-red-600">{errors.type}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Entity Type</label>
-              <input
-                type="text"
-                name="entityType"
-                value={formData.entityType || ''}
-                onChange={handleChange}
-                placeholder="e.g., Pension Fund, Endowment"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tax ID</label>
-              <input
-                type="text"
-                name="taxId"
-                value={formData.taxId || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Registration Number</label>
-              <input
-                type="text"
-                name="registrationNumber"
-                value={formData.registrationNumber || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Location Information */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Location Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Domicile (Country Code) *</label>
-              <input
-                type="text"
-                name="domicile"
-                value={formData.domicile || ''}
-                onChange={handleChange}
-                maxLength={2}
-                placeholder="US"
-                className={`w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
-                  errors.domicile ? 'border-red-300' : 'border-gray-300'
-                }`}
-                required
-              />
-              {errors.domicile && <p className="mt-1 text-sm text-red-600">{errors.domicile}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tax Residence</label>
-              <input
-                type="text"
-                name="taxResidence"
-                value={formData.taxResidence || ''}
-                onChange={handleChange}
-                maxLength={2}
-                placeholder="US"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-              <input
-                type="text"
-                name="state"
-                value={formData.state || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
-              <input
-                type="text"
-                name="postalCode"
-                value={formData.postalCode || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-              <input
-                type="text"
-                name="country"
-                value={formData.country || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Contact Information */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Primary Contact</label>
-              <input
-                type="text"
-                name="primaryContact"
-                value={formData.primaryContact || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Primary Email</label>
-              <input
-                type="email"
-                name="primaryEmail"
-                value={formData.primaryEmail || ''}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 ${
-                  errors.primaryEmail ? 'border-red-300' : 'border-gray-300'
-                }`}
-              />
-              {errors.primaryEmail && <p className="mt-1 text-sm text-red-600">{errors.primaryEmail}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Primary Phone</label>
-              <input
-                type="tel"
-                name="primaryPhone"
-                value={formData.primaryPhone || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Qualification Status */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Qualification Status</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="accreditedInvestor"
-                name="accreditedInvestor"
-                checked={formData.accreditedInvestor || false}
-                onChange={handleChange}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-              />
-              <label htmlFor="accreditedInvestor" className="ml-2 block text-sm text-gray-900">
-                Accredited Investor
-              </label>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="qualifiedPurchaser"
-                name="qualifiedPurchaser"
-                checked={formData.qualifiedPurchaser || false}
-                onChange={handleChange}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-              />
-              <label htmlFor="qualifiedPurchaser" className="ml-2 block text-sm text-gray-900">
-                Qualified Purchaser
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {/* Compliance Status */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Compliance Status</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">KYC Status</label>
-              <select
-                name="kycStatus"
-                value={formData.kycStatus || 'pending'}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="expired">Expired</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">KYC Date</label>
-              <input
-                type="date"
-                name="kycDate"
-                value={formatDateForInput(formData.kycDate)}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">AML Status</label>
-              <select
-                name="amlStatus"
-                value={formData.amlStatus || 'pending'}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="expired">Expired</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">AML Date</label>
-              <input
-                type="date"
-                name="amlDate"
-                value={formatDateForInput(formData.amlDate)}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Notes */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea
-            name="notes"
-            value={formData.notes || ''}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Additional notes or comments..."
-          />
-        </div>
-
-        {/* Form Actions */}
-        <div className="flex justify-end space-x-3 pt-4 border-t">
-          {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                Cancel
+              </Button>
+            )}
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isLoading}
+              size="large"
+              color="primary"
             >
-              Cancel
-            </button>
-          )}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Saving...' : investor ? 'Update Investor' : 'Create Investor'}
-          </button>
-        </div>
-      </form>
-    </div>
+              {isLoading ? 'Saving...' : investor ? 'Update Investor' : 'Create Investor'}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

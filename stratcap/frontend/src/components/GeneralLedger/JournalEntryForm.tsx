@@ -43,7 +43,7 @@ import { formatCurrency } from '../../utils/formatters';
 
 interface JournalEntryLineItem {
   id: string;
-  glAccountId: string;
+  glAccountId: string; // String in form, converted to number on submit
   glAccountName?: string;
   debitAmount: string;
   creditAmount: string;
@@ -133,7 +133,7 @@ const JournalEntryForm: React.FC = () => {
         fundId: entry.fundId,
         lineItems: entry.lineItems.map((item: any) => ({
           id: item.id,
-          glAccountId: item.glAccountId,
+          glAccountId: item.glAccountId.toString(), // Ensure it's string for form
           glAccountName: item.glAccount?.accountName,
           debitAmount: item.debitAmount,
           creditAmount: item.creditAmount,
@@ -171,9 +171,9 @@ const JournalEntryForm: React.FC = () => {
           description: values.description,
           reference: values.reference,
           sourceType: values.sourceType,
-          fundId: values.fundId,
+          fundId: values.fundId ? parseInt(values.fundId) : undefined,
           lineItems: values.lineItems.map(item => ({
-            glAccountId: item.glAccountId,
+            glAccountId: parseInt(item.glAccountId), // Convert string to number
             debitAmount: item.debitAmount || '0',
             creditAmount: item.creditAmount || '0',
             description: item.description,

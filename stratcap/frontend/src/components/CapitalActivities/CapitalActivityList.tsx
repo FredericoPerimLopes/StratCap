@@ -34,7 +34,7 @@ import {
 interface CapitalActivity {
   id: number;
   eventNumber: string;
-  type: 'capital_call' | 'distribution' | 'equalization' | 'reallocation';
+  eventType: 'capital_call' | 'distribution' | 'equalization' | 'reallocation';
   fundName: string;
   totalAmount: number;
   baseAmount: number;
@@ -83,7 +83,7 @@ const CapitalActivityList: React.FC = () => {
         {
           id: 1,
           eventNumber: 'CC-2023-001',
-          type: 'capital_call',
+          eventType: 'capital_call',
           fundName: 'Growth Fund III',
           totalAmount: 25000000,
           baseAmount: 23000000,
@@ -101,7 +101,7 @@ const CapitalActivityList: React.FC = () => {
         {
           id: 2,
           eventNumber: 'DIST-2023-002',
-          type: 'distribution',
+          eventType: 'distribution',
           fundName: 'Growth Fund II',
           totalAmount: 15000000,
           baseAmount: 14000000,
@@ -118,7 +118,7 @@ const CapitalActivityList: React.FC = () => {
         {
           id: 3,
           eventNumber: 'CC-2023-003',
-          type: 'capital_call',
+          eventType: 'capital_call',
           fundName: 'Venture Fund IV',
           totalAmount: 8000000,
           baseAmount: 7500000,
@@ -141,7 +141,7 @@ const CapitalActivityList: React.FC = () => {
       const matchesSearch = activity.eventNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            activity.fundName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            activity.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = !filterType || activity.type === filterType;
+      const matchesType = !filterType || activity.eventType === filterType;
       const matchesStatus = !filterStatus || activity.status === filterStatus;
       const matchesFund = !filterFund || activity.fundName === filterFund;
       return matchesSearch && matchesType && matchesStatus && matchesFund;
@@ -329,7 +329,7 @@ const CapitalActivityList: React.FC = () => {
         ['Event Number', 'Type', 'Fund', 'Total Amount', 'Base Amount', 'Fee Amount', 'Status', 'Event Date', 'Due Date', 'Investors', 'Description'],
         ...dataToExport.map(a => [
           a.eventNumber,
-          getTypeDisplayName(a.type),
+          getTypeDisplayName(a.eventType),
           a.fundName,
           a.totalAmount.toString(),
           a.baseAmount.toString(),
@@ -361,11 +361,11 @@ const CapitalActivityList: React.FC = () => {
 
   // Calculate summary metrics
   const totalCallAmount = activities
-    .filter(a => a.type === 'capital_call' && a.status === 'completed')
+    .filter(a => a.eventType === 'capital_call' && a.status === 'completed')
     .reduce((sum, a) => sum + a.totalAmount, 0);
   
   const totalDistributionAmount = activities
-    .filter(a => a.type === 'distribution' && a.status === 'completed')
+    .filter(a => a.eventType === 'distribution' && a.status === 'completed')
     .reduce((sum, a) => sum + a.totalAmount, 0);
 
   const pendingActivities = activities.filter(a => a.status === 'pending' || a.status === 'approved').length;
@@ -743,8 +743,8 @@ const CapitalActivityList: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeColor(activity.type)}`}>
-                        {getTypeDisplayName(activity.type)}
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeColor(activity.eventType)}`}>
+                        {getTypeDisplayName(activity.eventType)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
