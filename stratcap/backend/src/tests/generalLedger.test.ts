@@ -5,6 +5,7 @@ import { Decimal } from 'decimal.js';
 
 describe('GeneralLedgerService', () => {
   let generalLedgerService: GeneralLedgerService;
+  const TEST_USER_ID = 1; // Use numeric user ID instead of string
 
   beforeEach(() => {
     generalLedgerService = new GeneralLedgerService();
@@ -27,7 +28,7 @@ describe('GeneralLedgerService', () => {
         },
       };
 
-      const glAccount = await generalLedgerService.createGLAccount(request, 'test-user');
+      const glAccount = await generalLedgerService.createGLAccount(request, TEST_USER_ID);
 
       expect(glAccount).toBeDefined();
       expect(glAccount.accountNumber).toBe(request.accountNumber);
@@ -48,11 +49,11 @@ describe('GeneralLedgerService', () => {
       };
 
       // Create first account
-      await generalLedgerService.createGLAccount(request, 'test-user');
+      await generalLedgerService.createGLAccount(request, TEST_USER_ID);
 
       // Try to create duplicate
       await expect(
-        generalLedgerService.createGLAccount(request, 'test-user')
+        generalLedgerService.createGLAccount(request, TEST_USER_ID)
       ).rejects.toThrow('Account number 1000 already exists');
     });
 
@@ -73,7 +74,7 @@ describe('GeneralLedgerService', () => {
           category: 'current_assets',
         };
 
-        const glAccount = await generalLedgerService.createGLAccount(request, 'test-user');
+        const glAccount = await generalLedgerService.createGLAccount(request, TEST_USER_ID);
         expect(glAccount.normalBalance).toBe(testCase.expectedNormalBalance);
       }
     });
@@ -90,14 +91,14 @@ describe('GeneralLedgerService', () => {
         accountName: 'Cash',
         accountType: 'asset',
         category: 'current_assets',
-      }, 'test-user');
+      }, TEST_USER_ID);
 
       expenseAccount = await generalLedgerService.createGLAccount({
         accountNumber: '5000',
         accountName: 'Operating Expenses',
         accountType: 'expense',
         category: 'operating_expenses',
-      }, 'test-user');
+      }, TEST_USER_ID);
     });
 
     test('should create a balanced journal entry', async () => {
@@ -122,7 +123,7 @@ describe('GeneralLedgerService', () => {
         ],
       };
 
-      const journalEntry = await generalLedgerService.createJournalEntry(request, 'test-user');
+      const journalEntry = await generalLedgerService.createJournalEntry(request, TEST_USER_ID);
 
       expect(journalEntry).toBeDefined();
       expect(journalEntry.entryNumber).toBeDefined();
@@ -154,7 +155,7 @@ describe('GeneralLedgerService', () => {
       };
 
       await expect(
-        generalLedgerService.createJournalEntry(request, 'test-user')
+        generalLedgerService.createJournalEntry(request, TEST_USER_ID)
       ).rejects.toThrow('Journal entry is not balanced');
     });
 
@@ -178,7 +179,7 @@ describe('GeneralLedgerService', () => {
       };
 
       await expect(
-        generalLedgerService.createJournalEntry(request, 'test-user')
+        generalLedgerService.createJournalEntry(request, TEST_USER_ID)
       ).rejects.toThrow('Line item cannot have both debit and credit amounts');
     });
 
@@ -202,14 +203,14 @@ describe('GeneralLedgerService', () => {
         ],
       };
 
-      const journalEntry = await generalLedgerService.createJournalEntry(request, 'test-user');
+      const journalEntry = await generalLedgerService.createJournalEntry(request, TEST_USER_ID);
       expect(journalEntry.status).toBe('draft');
 
       // Post the entry
-      const postedEntry = await generalLedgerService.postJournalEntry(journalEntry.id, 'test-user');
+      const postedEntry = await generalLedgerService.postJournalEntry(journalEntry.id, TEST_USER_ID);
 
       expect(postedEntry.status).toBe('posted');
-      expect(postedEntry.postedBy).toBe('test-user');
+      expect(postedEntry.postedBy).toBe(TEST_USER_ID);
       expect(postedEntry.postedAt).toBeDefined();
       expect(postedEntry.canPost()).toBe(false);
       expect(postedEntry.canReverse()).toBe(true);
@@ -235,15 +236,15 @@ describe('GeneralLedgerService', () => {
         ],
       };
 
-      const originalEntry = await generalLedgerService.createJournalEntry(request, 'test-user');
-      await generalLedgerService.postJournalEntry(originalEntry.id, 'test-user');
+      const originalEntry = await generalLedgerService.createJournalEntry(request, TEST_USER_ID);
+      await generalLedgerService.postJournalEntry(originalEntry.id, TEST_USER_ID);
 
       // Reverse the entry
       const reversalReason = 'Incorrect amount recorded';
       const reversalEntry = await generalLedgerService.reverseJournalEntry(
         originalEntry.id,
         reversalReason,
-        'test-user'
+        TEST_USER_ID
       );
 
       expect(reversalEntry).toBeDefined();
@@ -287,7 +288,7 @@ describe('GeneralLedgerService', () => {
           accountName: config.name,
           accountType: config.type as any,
           category: config.category as any,
-        }, 'test-user');
+        }, TEST_USER_ID);
         accounts.push(account);
       }
 
@@ -311,8 +312,8 @@ describe('GeneralLedgerService', () => {
             creditAmount: '100000.00',
           },
         ],
-      }, 'test-user');
-      await generalLedgerService.postJournalEntry(entry1.id, 'test-user');
+      }, TEST_USER_ID);
+      await generalLedgerService.postJournalEntry(entry1.id, TEST_USER_ID);
       journalEntries.push(entry1);
 
       // Entry 2: Revenue transaction
@@ -332,8 +333,8 @@ describe('GeneralLedgerService', () => {
             creditAmount: '25000.00',
           },
         ],
-      }, 'test-user');
-      await generalLedgerService.postJournalEntry(entry2.id, 'test-user');
+      }, TEST_USER_ID);
+      await generalLedgerService.postJournalEntry(entry2.id, TEST_USER_ID);
       journalEntries.push(entry2);
 
       // Entry 3: Expense transaction
@@ -353,8 +354,8 @@ describe('GeneralLedgerService', () => {
             creditAmount: '15000.00',
           },
         ],
-      }, 'test-user');
-      await generalLedgerService.postJournalEntry(entry3.id, 'test-user');
+      }, TEST_USER_ID);
+      await generalLedgerService.postJournalEntry(entry3.id, TEST_USER_ID);
       journalEntries.push(entry3);
     });
 
@@ -479,7 +480,7 @@ describe('GeneralLedgerService', () => {
         category: 'current_assets',
         requiresSubAccount: true,
         allowsDirectPosting: false,
-      }, 'test-user');
+      }, TEST_USER_ID);
 
       // Create child account
       const childAccount = await generalLedgerService.createGLAccount({
@@ -488,7 +489,7 @@ describe('GeneralLedgerService', () => {
         accountType: 'asset',
         category: 'current_assets',
         parentAccountId: parentAccount.id,
-      }, 'test-user');
+      }, TEST_USER_ID);
 
       expect(childAccount.parentAccountId).toBe(parentAccount.id);
       expect(parentAccount.canPostDirectly()).toBe(false);
@@ -496,7 +497,7 @@ describe('GeneralLedgerService', () => {
     });
 
     test('should validate that parent account exists', async () => {
-      const invalidParentId = 'non-existent-id';
+      const invalidParentId = 99999; // Use non-existent numeric ID
 
       await expect(
         generalLedgerService.createGLAccount({
@@ -505,7 +506,7 @@ describe('GeneralLedgerService', () => {
           accountType: 'asset',
           category: 'current_assets',
           parentAccountId: invalidParentId,
-        }, 'test-user')
+        }, TEST_USER_ID)
       ).rejects.toThrow('Parent account not found');
     });
 
@@ -517,7 +518,7 @@ describe('GeneralLedgerService', () => {
         category: 'current_assets',
         requiresSubAccount: true,
         allowsDirectPosting: false,
-      }, 'test-user');
+      }, TEST_USER_ID);
 
       const request: JournalEntryRequest = {
         entryDate: new Date(),
@@ -533,7 +534,7 @@ describe('GeneralLedgerService', () => {
       };
 
       await expect(
-        generalLedgerService.createJournalEntry(request, 'test-user')
+        generalLedgerService.createJournalEntry(request, TEST_USER_ID)
       ).rejects.toThrow('does not allow direct posting');
     });
   });
@@ -567,7 +568,7 @@ describe('GeneralLedgerService', () => {
       };
 
       await expect(
-        generalLedgerService.createJournalEntry(request, 'test-user')
+        generalLedgerService.createJournalEntry(request, TEST_USER_ID)
       ).rejects.toThrow(); // Should fail validation
     });
 
@@ -577,7 +578,7 @@ describe('GeneralLedgerService', () => {
         accountName: 'Cash',
         accountType: 'asset',
         category: 'current_assets',
-      }, 'test-user');
+      }, TEST_USER_ID);
 
       const request: JournalEntryRequest = {
         entryDate: new Date(),
@@ -593,7 +594,7 @@ describe('GeneralLedgerService', () => {
       };
 
       await expect(
-        generalLedgerService.createJournalEntry(request, 'test-user')
+        generalLedgerService.createJournalEntry(request, TEST_USER_ID)
       ).rejects.toThrow('Debit and credit amounts must be non-negative');
     });
 
@@ -603,7 +604,7 @@ describe('GeneralLedgerService', () => {
         accountName: 'Cash',
         accountType: 'asset',
         category: 'current_assets',
-      }, 'test-user');
+      }, TEST_USER_ID);
 
       const request: JournalEntryRequest = {
         entryDate: new Date(),
@@ -619,7 +620,7 @@ describe('GeneralLedgerService', () => {
       };
 
       await expect(
-        generalLedgerService.createJournalEntry(request, 'test-user')
+        generalLedgerService.createJournalEntry(request, TEST_USER_ID)
       ).rejects.toThrow('Line item must have either debit or credit amount');
     });
   });

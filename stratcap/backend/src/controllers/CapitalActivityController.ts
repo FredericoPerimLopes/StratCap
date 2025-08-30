@@ -66,7 +66,7 @@ class CapitalActivityController {
         offset,
       });
 
-      res.json({
+      return res.json({
         activities,
         pagination: {
           total: count,
@@ -77,7 +77,7 @@ class CapitalActivityController {
       });
     } catch (error) {
       console.error('Error fetching capital activities:', error);
-      res.status(500).json({ error: 'Failed to fetch capital activities' });
+      return res.status(500).json({ error: 'Failed to fetch capital activities' });
     }
   }
 
