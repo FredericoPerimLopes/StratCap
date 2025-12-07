@@ -1,90 +1,61 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import {
-  BuildingOfficeIcon,
-  BanknotesIcon,
-  UsersIcon,
-  ChartBarIcon,
-} from '@heroicons/react/24/outline';
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Chip,
+  Button,
+  List,
+  ListItem
+} from '@mui/material';
+import {
+  Business as BusinessIcon,
+  AccountBalance as AccountBalanceIcon,
+  People as PeopleIcon,
+  BarChart as BarChartIcon,
+} from '@mui/icons-material';
+import { DashboardTemplate, MetricCard } from '../components/common/PageTemplate/DashboardTemplate';
 import { RootState } from '../store/store';
-
-interface StatCardProps {
-  title: string;
-  value: string;
-  icon: React.ElementType;
-  change?: string;
-  changeType?: 'increase' | 'decrease';
-}
-
-const StatCard: React.FC<StatCardProps> = ({
-  title,
-  value,
-  icon: Icon,
-  change,
-  changeType,
-}) => {
-  return (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
-      <div className="p-5">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <Icon className="h-6 w-6 text-gray-400" aria-hidden="true" />
-          </div>
-          <div className="ml-5 w-0 flex-1">
-            <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">{title}</dt>
-              <dd className="text-lg font-medium text-gray-900">{value}</dd>
-            </dl>
-          </div>
-        </div>
-        {change && (
-          <div className="mt-3">
-            <span
-              className={`text-sm font-medium ${
-                changeType === 'increase' ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              {change}
-            </span>
-            <span className="text-sm text-gray-500"> from last month</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
 
 const DashboardPage: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
-  const stats = [
+  // Convert stats to MetricCard format for DashboardTemplate
+  const dashboardMetrics: MetricCard[] = [
     {
       title: 'Total Fund Families',
       value: '12',
-      icon: BuildingOfficeIcon,
-      change: '+2',
-      changeType: 'increase' as const,
+      change: {
+        value: 2,
+        trend: 'up'
+      }
     },
     {
       title: 'Active Funds',
       value: '24',
-      icon: BanknotesIcon,
-      change: '+3',
-      changeType: 'increase' as const,
+      change: {
+        value: 3,
+        trend: 'up'
+      }
     },
     {
       title: 'Total Investors',
       value: '156',
-      icon: UsersIcon,
-      change: '+12',
-      changeType: 'increase' as const,
+      change: {
+        value: 12,
+        trend: 'up'
+      }
     },
     {
       title: 'AUM',
       value: '$2.4B',
-      icon: ChartBarIcon,
-      change: '+8.2%',
-      changeType: 'increase' as const,
+      change: {
+        value: 8.2,
+        trend: 'up'
+      }
     },
   ];
 
@@ -115,91 +86,90 @@ const DashboardPage: React.FC = () => {
     },
   ];
 
+  const getStatusColor = (status: string): 'success' | 'warning' | 'primary' => {
+    switch (status) {
+      case 'Completed':
+        return 'success';
+      case 'Pending':
+        return 'warning';
+      default:
+        return 'primary';
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {user?.firstName}!
-        </h1>
-        <p className="mt-1 text-gray-600">
-          Here's an overview of your fund administration platform.
-        </p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
-          <StatCard
-            key={index}
-            title={stat.title}
-            value={stat.value}
-            icon={stat.icon}
-            change={stat.change}
-            changeType={stat.changeType}
-          />
-        ))}
-      </div>
-
-      {/* Recent Activities */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Recent Activities</h2>
-        </div>
-        <div className="px-6 py-4">
-          <div className="flow-root">
-            <ul className="-my-5 divide-y divide-gray-200">
+    <DashboardTemplate
+      title={`Welcome back, ${user?.firstName}!`}
+      subtitle="Here&apos;s an overview of your fund administration platform."
+      metrics={dashboardMetrics}
+    >
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {/* Recent Activities */}
+        <Card>
+          <CardContent sx={{ p: 0 }}>
+            <Box sx={{ px: 3, py: 2, borderBottom: 1, borderColor: 'divider' }}>
+              <Typography variant="h6" color="text.primary">
+                Recent Activities
+              </Typography>
+            </Box>
+            <List sx={{ p: 0 }}>
               {recentActivities.map((activity) => (
-                <li key={activity.id} className="py-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {activity.type} - {activity.fund}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {activity.amount} • {activity.date}
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          activity.status === 'Completed'
-                            ? 'bg-green-100 text-green-800'
-                            : activity.status === 'Pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}
-                      >
-                        {activity.status}
-                      </span>
-                    </div>
-                  </div>
-                </li>
+                <ListItem
+                  key={activity.id}
+                  sx={{ px: 3, py: 2, borderBottom: 1, borderColor: 'divider', '&:last-child': { borderBottom: 'none' } }}
+                >
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="body2" color="text.primary" sx={{ fontWeight: 500, mb: 0.5 }}>
+                      {activity.type} - {activity.fund}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {activity.amount} • {activity.date}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={activity.status}
+                    color={getStatusColor(activity.status)}
+                    size="small"
+                    variant="outlined"
+                  />
+                </ListItem>
               ))}
-            </ul>
-          </div>
-        </div>
-      </div>
+            </List>
+          </CardContent>
+        </Card>
 
-      {/* Quick Actions */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <button className="btn btn-primary">
-            Create Capital Call
-          </button>
-          <button className="btn btn-secondary">
-            Add New Investor
-          </button>
-          <button className="btn btn-outline">
-            Generate Report
-          </button>
-          <button className="btn btn-outline">
-            View Transactions
-          </button>
-        </div>
-      </div>
-    </div>
+        {/* Quick Actions */}
+        <Card>
+          <CardContent sx={{ p: 3 }}>
+            <Typography variant="h6" color="text.primary" sx={{ mb: 3 }}>
+              Quick Actions
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Button variant="contained" fullWidth sx={{ py: 1.5 }}>
+                  Create Capital Call
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Button variant="outlined" fullWidth sx={{ py: 1.5 }}>
+                  Add New Investor
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Button variant="outlined" fullWidth sx={{ py: 1.5 }}>
+                  Generate Report
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Button variant="outlined" fullWidth sx={{ py: 1.5 }}>
+                  View Transactions
+                </Button>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Box>
+    </DashboardTemplate>
   );
 };
 
